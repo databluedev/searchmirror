@@ -1,0 +1,229 @@
+# SearchMirror — fully local development stack.
+#
+# This file is the DEVELOPMENT stack and nothing else: auto-reloading dev
+# servers, a seeded demo account, DEBUG on. Do not deploy it. A production
+# deployment layers docker-compose.prod.yml on top of it —
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile prod up -d --build
+#
+# — and docs/DEPLOYMENT.md is the ordered checklist for everything the
+# overlay cannot do for you (TLS, secrets, backups, log rotation).
+
+# Docker's json-file driver keeps every line a container has ever written
+# until the disk fills. Ten megabytes over three files per service is enough
+# to debug a crash and small enough to forget about. This bounds only the
+# stdout/stderr Docker captures -- the application also appends to
+# backend/logs/ and engine/logs/ on the host, which nothing rotates. See
+# docs/DEPLOYMENT.md.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  mongo:
+    image: mongo:4.4
+    container_name: tracker-mongo
+    # Every service restarts unless it was stopped deliberately. Without this
+    # a single uncaught error leaves a container dead until a human notices;
+    # that has already happened here (the app container died on an EIO).
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-tracker}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-trackerlocal}
+      MONGO_INITDB_DATABASE: ${MONGO_DB:-tracker}
+    # Bound to loopback, not 0.0.0.0. This is a root-credentialed database
+    # whose default password is published in this repository, so publishing
+    # the port on every interface put an open admin database on any host with
+    # a routable address. Nothing outside the compose network needs it: the
+    # backend and engine reach mongo as `mongo:27017`, and local inspection
+    # still works both ways --
+    #     docker compose exec mongo mongo -u tracker -p --authenticationDatabase admin
+    #     a GUI client pointed at 127.0.0.1:27017
+    # The production overlay removes the published port entirely.
+    ports: ["127.0.0.1:27017:27017"]
+    volumes: ["mongo_data:/data/db"]
+    healthcheck:
+      test: ["CMD", "mongo", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    logging: *default-logging
+
+  backend:
+    build: { context: ./backend, dockerfile: ../docker/Dockerfile.django }
+    container_name: tracker-backend
+    restart: unless-stopped
+    env_file: [.env]
+    environment:
+      # setpriv keeps root's environment, and HOME=/root is not writable by
+      # the app user -- fontconfig (WeasyPrint) and pip caches both land there.
+      HOME: /home/app
+    volumes: ["./backend:/app", "./shared:/app/shared"]
+    # Bound to 127.0.0.1 like mongo and the engine. Publishing on every
+    # interface also created an IPv6 listener that accepts and then resets, so
+    # "localhost" (which resolves to ::1 first on Windows) failed instead of
+    # falling back to IPv4 -- and it exposed the dev API to the local network.
+    ports: ["127.0.0.1:8000:8000"]
+    depends_on:
+      mongo: { condition: service_healthy }
+    # Root for two statements, then not root at all. The application appends to
+    # logs/ and files/, which live inside the bind mount: they cannot be made
+    # writable at build time because the mount does not exist yet, and on any
+    # stack that has run before they are already owned by root. So the command
+    # creates and chowns exactly those two paths -- never /app itself, which is
+    # your source tree -- and `exec setpriv` hands the container over to the
+    # unprivileged `app` user for everything after, migrations included.
+    # Verify with: docker compose exec backend ps -o user,args
+    command: >
+      sh -c "mkdir -p logs files && chown -R app:app logs files &&
+      exec setpriv --reuid=app --regid=app --init-groups --
+      sh -c 'python manage.py migrate --noinput && python scripts/seed_local.py && python manage.py runserver 0.0.0.0:8000'"
+    # There is no HTTP readiness endpoint to point this at yet, so it proves
+    # only that something is accepting connections on 8000. That is still the
+    # gap `depends_on` had: the container is *created* immediately but spends
+    # 10-30s in migrate and seed before the port opens, and the frontend spent
+    # that window firing failing API calls. Swap the test for the readiness
+    # endpoint when it lands (docs/DEPLOYMENT.md records the spec).
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "8000"]
+      interval: 5s
+      timeout: 3s
+      # 60s of grace plus 200s of retries. Generous on purpose: `app` will not
+      # start until this passes, and a cold first boot runs migrations against
+      # an empty database. If it never passes, `docker compose logs backend`
+      # has the reason -- a crash-looping backend keeps restarting the grace
+      # period, so `up` waits rather than failing fast.
+      retries: 40
+      start_period: 60s
+    logging: *default-logging
+
+  # Daily rank scheduling. Without this nothing ever ranks on its own: the
+  # engine has always had a complete scheduled path, but no process called it,
+  # so a self-hoster saw ranks only when someone pressed Refresh.
+  #
+  # It runs `manage.py rank_schedule` every 15 minutes. That command is cheap
+  # and idempotent -- it queues only projects whose next run time has passed,
+  # and queueing advances that time by a day, so ticking often costs nothing.
+  # Projects rank in the 01:00 hour, spread across it by project id.
+  #
+  # The management command is used rather than the HTTP endpoint on purpose:
+  # /rank/schedule is a public URL that spends provider credits, so it demands
+  # CRON_TOKEN. A local process needs no such proof. Set CRON_TOKEN only if you
+  # want to drive the HTTP endpoint from an external cron instead.
+  scheduler:
+    build: { context: ./backend, dockerfile: ../docker/Dockerfile.django }
+    container_name: tracker-scheduler
+    restart: unless-stopped
+    env_file: [.env]
+    environment:
+      HOME: /home/app
+    volumes: ["./backend:/app", "./shared:/app/shared"]
+    depends_on:
+      backend: { condition: service_healthy }
+    command: >
+      sh -c "exec setpriv --reuid=app --regid=app --init-groups --
+      sh -c 'while true; do python manage.py rank_schedule || true; sleep 900; done'"
+    logging: *default-logging
+
+  engine:
+    build: { context: ./engine, dockerfile: ../docker/Dockerfile.engine }
+    container_name: tracker-engine
+    restart: unless-stopped
+    env_file: [.env]
+    environment:
+      HOME: /home/app
+    volumes: ["./engine:/app", "./shared:/app/shared"]
+    # Bound to loopback, not 0.0.0.0. The engine is an internal service -- the
+    # backend reaches it as `engine:8001` over the compose network, and ranking
+    # is driven by `python rank_local.py` inside the container. Publishing it
+    # on every interface exposed automation endpoints that spend provider
+    # credits to anything that could route to the host.
+    ports: ["127.0.0.1:8001:8001"]
+    depends_on:
+      mongo: { condition: service_healthy }
+    # Same privilege drop as the backend. project/files/ is included because
+    # the engine writes every SERP response and competitor map under it.
+    command: >
+      sh -c "mkdir -p logs project/files && chown -R app:app logs project/files &&
+      exec setpriv --reuid=app --regid=app --init-groups --
+      python manage.py runserver 0.0.0.0:8001"
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "8001"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 45s
+    logging: *default-logging
+
+  app:
+    build: { context: ./app, dockerfile: ../docker/Dockerfile.node.vite }
+    container_name: tracker-app
+    restart: unless-stopped
+    environment:
+      # Only VITE_-prefixed names reach import.meta.env. Same value the CRA
+      # service gets as REACT_APP_API_URL.
+      # Must match an origin in CORS_ALLOWED_ORIGINS. The IPv4 form is used
+      # throughout the docs and tests, so the browser's origin and this value
+      # agree without relying on how the host resolves "localhost".
+      VITE_API_URL: http://127.0.0.1:8000
+      # The dev server listens on 3000 inside the container; the browser
+      # reaches it on 3001. The HMR socket needs the published port.
+      VITE_HMR_CLIENT_PORT: "3001"
+      # setpriv keeps root's environment; npm would write its cache to
+      # /root/.npm and fail.
+      HOME: /home/node
+    volumes:
+      - ./app:/app
+      - app_modules:/app/node_modules
+    ports: ["127.0.0.1:3001:3000"]
+    depends_on:
+      # Waits for the API to accept connections, not merely for its container
+      # to exist -- otherwise the first screen loads against a backend still
+      # running migrations and every request 502s.
+      backend: { condition: service_healthy }
+    # node_modules is a named volume; Docker creates it root-owned, so npm
+    # install has to be handed a directory it can write before the drop to
+    # `node`. The chown covers the volume only, never the bind-mounted source.
+    command: >
+      sh -c "chown -R node:node /app/node_modules &&
+      exec setpriv --reuid=node --regid=node --init-groups --
+      sh -c 'npm install --legacy-peer-deps --no-audit --no-fund && npm run dev'"
+    # Plain node, so this needs no curl/wget in the image. A cold start runs a
+    # full npm install first, hence the long start_period.
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 240s
+    logging: *default-logging
+
+  # Production builds. Not started by `docker compose up` -- they only come up
+  # with `--profile prod`, so the dev services above keep :3000 and :3001 to
+  # themselves. Run with:
+  #   docker compose --profile prod up -d --build app-prod
+  app-prod:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.node.vite.prod
+      args:
+        VITE_API_URL: http://127.0.0.1:8000
+    container_name: tracker-app-prod
+    restart: unless-stopped
+    profiles: ["prod"]
+    ports: ["4001:80"]
+    depends_on:
+      backend: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging: *default-logging
+
+volumes:
+  app_modules:
+  mongo_data:

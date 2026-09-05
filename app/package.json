@@ -1,0 +1,79 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@hello-pangea/dnd": "^18.0.1",
+    "@moeindana/google-oauth": "^0.1.5",
+    "@mui/lab": "^5.0.0-alpha.122",
+    "@mui/material": "^5.11.12",
+    "@mui/system": "^5.11.12",
+    "@mui/x-date-pickers": "^6.0.1",
+    "@react-oauth/google": "^0.11.1",
+    "apexcharts": "^3.37.1",
+    "axios": "^1.20.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "dayjs": "^1.11.7",
+    "dompurify": "^3.2.4",
+    "htmlparser2": "^10.0.0",
+    "lucide-react": "^0.468.0",
+    "material-ui-popup-state": "^3.1.1",
+    "moment": "^2.29.3",
+    "quill": "2.0.2",
+    "react": "^18.3.1",
+    "react-apexcharts": "^1.4.0",
+    "react-csv": "^2.2.2",
+    "react-data-table-component": "^7.5.2",
+    "react-dnd": "^14.0.5",
+    "react-dnd-html5-backend": "^14.1.0",
+    "react-dom": "^18.3.1",
+    "react-pro-sidebar": "^0.7.1",
+    "react-quill-new": "^3.7.0",
+    "react-router-dom": "^5.3.0",
+    "react-tag-input": "^6.8.0",
+    "react-toastify": "^10.0.6",
+    "react-top-loading-bar": "^2.1.0",
+    "smooth-scrollbar": "^8.7.4",
+    "styled-components": "^5.3.11",
+    "swiper": "^14.2.0",
+    "tailwind-merge": "^2.6.0",
+    "universal-cookie": "^8.1.2",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "type": "module",
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "sass": "^1.83.0",
+    "sass-embedded": "^1.103.1",
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7",
+    "vite": "^6.4.3"
+  },
+  "overrides": {
+    "quill": "2.0.2"
+  },
+  "license": "AGPL-3.0-only"
+}

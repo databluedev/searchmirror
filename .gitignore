@@ -1,0 +1,113 @@
+# Secrets — never commit
+.env
+.env.*
+# Both templates are committed and contain no secrets. Without these
+# negations the `.env.*` rule above swallows them and neither ships.
+!.env.example
+!.env.production.example
+*.orig
+**/client_secrets.json
+**/google-ads*.yaml
+
+# Python
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Node
+node_modules/
+build/
+dist/
+.vite/
+
+# Data / generated
+engine/files/
+engine/logs/
+engine/project/files/
+# Generated Content Planner HTML, one file per plan (contentmanager/views.py).
+# The backend twin of engine/files/. docker-compose mkdir -p's it on boot.
+backend/files/
+*.log
+nohup.out
+*.sqlite3
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Internal working notes on the commercial predecessor — staff names, credential
+# analysis, competitor internals. Kept on disk, never published.
+docs/legacy/
+docs/audit/
+
+# Cut-over leftovers
+*.pre-cutover
+
+# DESIGN.md, PRODUCT-DESIGN.md and ORCHESTRATION.md were ignored here because
+# they named the commercial product this was adapted from. They were rewritten
+# for a public audience on 2026-09-05 and are now published on purpose: about
+# twenty source comments cite them as the contract they implement, and a
+# published repo whose comments point at missing files is worse than one that
+# ships the files. PLAN.md and BUILD-PLAN.md were dated scoping and are gone.
+
+# Development screenshots, still filenamed after the predecessor and taken
+# before the rebrand -- they no longer match the UI.
+docs/screenshots/
+
+# Internal audit artifacts, dated working notes and pre-launch registers. All
+# of these were deleted on 2026-09-05 -- the registers catalogued unfixed
+# vulnerabilities by file and line, and the session notes recorded how a fix was
+# reached rather than anything a reader of this repo needs. The patterns stay so
+# that a new one is not committed by reflex; docs/ is deliberately NOT ignored
+# wholesale, so a doc written for users can still be added.
+docs/ISSUE-REGISTER-*.md
+docs/PRELAUNCH-AUDIT-*.md
+docs/TRACKER-TASKS-*.md
+docs/REACT18-SHADCN-MIGRATION-*.md
+docs/SESSION-RECORD-*.md
+docs/SESSION-REPORT-*.md
+docs/VERIFICATION-*.md
+docs/UI-ISSUES-*.md
+docs/GRID-FIX-*.md
+docs/DASHBOARD-CLARITY-*.md
+docs/ENGINE-WINDOW-*.md
+docs/LANDING-AUTH-*.md
+docs/MULTI-COUNTRY-*.md
+docs/PLANNER-DEADCODE-*.md
+docs/AI-OVERVIEW-*.md
+docs/PLAN.md
+docs/BUILD-PLAN.md
+docs/superpowers/
+
+
+# Runtime competitor maps written per-group by the engine via comppage.
+# The curated filter_domain_list.json beside them is tracked; these are not.
+backend/competitor/ai_files/domains/
+backend/competitor/ai_files/keys/
+.gitnexus
+
+# Collected Django static. STATIC_ROOT is backend/static (tracker/settings.py:111),
+# so `collectstatic` writes django.contrib.admin's and DRF's own assets here --
+# 3.9MB of vendored build output that does not belong in the repo. The dev stack
+# never needed it: runserver under DEBUG serves those files from the installed
+# packages. Run collectstatic as a deploy step instead.
+#
+# backend/static/uploads/ is NOT build output -- it is the mail and PDF logo,
+# hand-placed inside STATIC_ROOT, and it stays tracked. `collectstatic --clear`
+# would delete it.
+backend/static/admin/
+backend/static/rest_framework/
+
+# Agent tooling and planning. Useful while building this, not part of what the
+# project ships: `.claude/` and `AGENTS.md` configure coding agents, `CLAUDE.md`
+# is instructions to one, and `openspec/` holds the change proposals behind the
+# work. A reader of this repository needs README.md, CONTRIBUTING.md and docs/.
+.claude/
+openspec/
+AGENTS.md
+CLAUDE.md

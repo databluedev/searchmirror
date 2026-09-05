@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# A second push to the same PR cancels the first: the suite boots a whole
+# Docker stack, so overlapping runs are expensive and the older answer is
+# never the one anyone wants.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: API and regression suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure the stack
+        # .env.example is committed and contains only safe local defaults --
+        # a published MongoDB password and DJANGO_DEBUG=True, both fine here
+        # because nothing is reachable from outside the runner.
+        run: cp .env.example .env
+
+      - name: Start the stack
+        # `scheduler` is deliberately EXCLUDED. It queues due projects and pokes
+        # the engine, and a rank run spends real provider credits. CI must never
+        # start it, even though no key is configured here.
+        run: docker compose up -d --wait mongo backend engine
+
+      - name: Django checks
+        run: |
+          docker compose exec -T backend python manage.py check
+          docker compose exec -T engine  python manage.py check
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install test dependencies
+        # Declared in tests/requirements.txt: most tests are HTTP clients, but a
+        # few import backend modules directly and need their dependencies here.
+        run: pip install --quiet -r tests/requirements.txt
+
+      - name: Run the suite
+        # The suite is an HTTP client: djongo cannot build a Django test
+        # database, so it drives the running stack. See docs/TESTING.md.
+        run: python -m pytest tests -q
+
+      - name: Stack logs on failure
+        if: failure()
+        run: |
+          echo "::group::backend"; docker compose logs --tail=200 backend; echo "::endgroup::"
+          echo "::group::engine";  docker compose logs --tail=200 engine;  echo "::endgroup::"
+          echo "::group::mongo";   docker compose logs --tail=100 mongo;   echo "::endgroup::"
+
+  build:
+    name: Frontend builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'          # matches docker/Dockerfile.node.vite
+
+      - name: Build the application
+        working-directory: app
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build the marketing site
+        working-directory: landing
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+          pnpm build

@@ -1,0 +1,675 @@
+// ---------------------------------------------------------------------------
+// Data layer -- see docs/DESIGN.md ("Table", "Button", "Input").
+//
+// Imported LAST from style.scss, so everything here wins the cascade over the
+// legacy page sheets and over _modern.scss. It exists because the MUI theme
+// cannot reach react-data-table-component: that library renders its own
+// .rdt_* class names through styled-components, so the table, its toolbar and
+// its pagination have to be dressed here.
+//
+// Every value is a token. No hex literals live in this file.
+// ---------------------------------------------------------------------------
+
+// The numeric columns of the keyword table, addressed by the column `id` given
+// in pages/serpRank/data_table.js. rdt stamps that id onto both the header cell
+// and every body cell as data-column-id, which is the only stable hook we have:
+// the user can reorder and hide columns, so nth-child would address the wrong
+// column the moment they do.
+$numeric-columns: "rank", "brk", "1d", "7d", "15d", "clks", "imps", "sv";
+
+// ===========================================================================
+// 1. TABLE SHELL
+// ===========================================================================
+
+// The card is the outer div; the scroll happens on rdt's own responsive
+// wrapper inside it. That way a wide table scrolls under a fixed pagination
+// footer, the rounded corners stay clipped, and the page never moves sideways.
+.SR-Listtable {
+   background-color: var(--surface);
+   border: 1px solid var(--line);
+   border-radius: var(--r-md);
+   overflow: hidden;
+   max-width: 100%;
+   min-width: 0;
+
+   > div:first-child {
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-width: 100%;
+   }
+}
+
+// The page container must be allowed to be narrower than its content, or the
+// grid/flex parent stretches to the table's intrinsic width and the whole
+// document scrolls sideways instead of the table.
+//
+// It is also not a card: _modern.scss wraps it in a surface, a border and a
+// drop shadow, which put a card inside a card and added a shadow DESIGN.md
+// allows only on things that genuinely float. The table is the card.
+.SR-table {
+   background-color: transparent;
+   border: 0;
+   border-radius: 0;
+   box-shadow: none;
+   min-width: 0;
+
+   > #listtable {
+      min-width: 0;
+   }
+
+   // "Total keywords (128)" -- card-title role, count in muted ink.
+   > .fB:first-child {
+      color: var(--ink);
+      font-family: "SemiBold", var(--font);
+      font-size: 15px;
+      letter-spacing: -0.015em;
+
+      span {
+         color: var(--ink-3);
+         font-variant-numeric: tabular-nums;
+      }
+   }
+}
+
+.SR-Listtable {
+   box-shadow: none;
+}
+
+.SR-Listtable .rdt_Table {
+   background-color: transparent;
+   border: 0;
+   border-radius: 0;
+   overflow: visible;
+}
+
+// --- header row ------------------------------------------------------------
+// No fill: micro-label over the card's own ground, one hairline under it, same
+// as .dashTable th on the dashboard and the reports tables.
+.SR-Listtable {
+   .rdt_TableHead,
+   .rdt_TableHeadRow {
+      background-color: transparent !important;
+      border-bottom: 1px solid var(--line) !important;
+      min-height: 40px !important;
+   }
+
+   .rdt_TableCol {
+      color: var(--ink-3) !important;
+      font-family: "SemiBold", var(--font);
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.08em;
+      line-height: 1.3;
+      text-transform: uppercase;
+   }
+
+   // rdt makes the sortable label a focusable div; it must show a focus ring.
+   .rdt_TableCol_Sortable {
+      color: inherit;
+      border-radius: var(--r-sm);
+
+      &:focus-visible {
+         outline: 2px solid var(--accent);
+         outline-offset: 2px;
+      }
+   }
+
+   .__rdt_custom_sort_icon__ {
+      color: var(--ink-4);
+
+      path {
+         fill: currentColor;
+      }
+   }
+}
+
+// --- body rows -------------------------------------------------------------
+.SR-Listtable {
+   .rdt_TableRow {
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--line-2) !important;
+      color: var(--ink);
+      height: auto !important;
+      min-height: 52px !important;
+      transition: background-color var(--dur) var(--ease);
+
+      &:last-of-type {
+         border-bottom: 0 !important;
+      }
+   }
+
+   // Beats rdt's own highlightOnHoverStyle, which styled-components emits at a
+   // higher specificity than a single class can reach.
+   .rdt_TableBody .rdt_TableRow:hover:nth-of-type(n) {
+      background-color: var(--surface-2);
+      outline: 0;
+   }
+
+   .rdt_TableCell {
+      color: var(--ink);
+      font-size: 13.5px;
+      line-height: 1.45;
+      padding-top: var(--sp-2);
+      padding-bottom: var(--sp-2);
+   }
+}
+
+// --- selection checkbox ----------------------------------------------------
+// dev_style.scss paints every checkbox solid blue with !important, so an
+// unchecked box reads as checked. accent-color gives the native control the
+// brand colour only when it is actually on.
+.SR-Listtable,
+.gd_rdt_CustomTable {
+   .rdt_TableCol input[type="checkbox"],
+   .rdt_TableCell input[type="checkbox"] {
+      background-color: transparent !important;
+      accent-color: var(--accent);
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+
+      &:focus-visible {
+         outline: 2px solid var(--accent);
+         outline-offset: 2px;
+      }
+   }
+}
+
+// ===========================================================================
+// 2. NUMERIC COLUMNS
+// Right-aligned and tabular, so digits line up down the column. The inner
+// cells are bootstrap flex rows, so the utility class has to be turned round
+// as well -- it carries !important.
+// ===========================================================================
+
+@each $col in $numeric-columns {
+   .SR-Listtable .rdt_TableCol[data-column-id="#{$col}"],
+   .SR-Listtable .rdt_TableCell[data-column-id="#{$col}"] {
+      justify-content: flex-end;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+   }
+
+   .SR-Listtable .rdt_TableCol[data-column-id="#{$col}"] .rdt_TableCol_Sortable {
+      justify-content: flex-end;
+      width: 100%;
+   }
+
+   .SR-Listtable .rdt_TableCell[data-column-id="#{$col}"] {
+      font-family: "SemiBold", var(--font);
+      font-size: 14px;
+      font-weight: 600;
+
+      > div,
+      .justify-content-center {
+         justify-content: flex-end !important;
+         width: 100%;
+      }
+   }
+}
+
+// Rank is what the table is for -- give it the full data-numeral role.
+.SR-Listtable .rdt_TableCell[data-column-id="rank"] {
+   font-size: 15px;
+}
+
+// --- AI Overview -----------------------------------------------------------
+// Every state is a word, because the question the column asks -- is my site
+// quoted by Google's AI -- is answered in language, not in a glyph. The
+// sparkle only ever accompanies a word; it never carries the state alone.
+//
+// Cited follows the house "you are in it" pattern (--accent, solid glyph and
+// the only semibold in the column). Shown keeps the same glyph outlined, one
+// step down in ink. The measured "None" is quieter still, and the dash for the
+// states nobody measured is the quietest. --ink-3 is the floor DESIGN.md rule
+// 4 allows, so the ladder is built from weight and glyph, not from paler text.
+.SR-Listtable .rdt_TableCol[data-column-id="aio"],
+.SR-Listtable .rdt_TableCell[data-column-id="aio"] {
+   justify-content: center;
+   text-align: center;
+}
+
+.SR-Listtable .rdt_TableCell[data-column-id="aio"] {
+   .aioMark {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-1);
+      min-width: 0;
+   }
+
+   .aioWord {
+      font-size: 12.5px;
+      line-height: 1.3;
+   }
+
+   .aioOwned {
+      color: var(--accent);
+
+      .aioWord {
+         font-family: "SemiBold";
+         font-weight: 600;
+      }
+   }
+
+   .aioShown {
+      color: var(--ink-2);
+   }
+
+   .aioAbsent,
+   .aioUnknown {
+      color: var(--ink-3);
+   }
+}
+
+// ===========================================================================
+// 3. RANK MOVEMENT
+// The only place colour is allowed to speak. It never speaks alone: the arrow
+// glyph stays visible (style.scss flips it 180deg for a decline), and a
+// no-change cell shows a literal dash rather than a colourless blank.
+// ===========================================================================
+
+.SR-Listtable,
+.gd-table,
+.gd_rdt_CustomTable {
+   .arrow {
+      flex: 0 0 auto;
+
+      &.green path {
+         fill: var(--up);
+      }
+
+      &.red path {
+         fill: var(--down);
+      }
+   }
+
+   // The empty/no-change states: the SERP column's "NA", the ">30" rank, the
+   // dash in a delta cell. These are TEXT, so DESIGN.md rule 4 binds and
+   // --ink-3 is the lightest thing permitted -- --flat (#98a2b3, 2.58:1) and
+   // --ink-4 (#9aa0a8, 2.64:1) both fail 4.5:1 on --surface. --ink-3 is
+   // 5.10:1. --flat stays reserved for non-text no-change marks.
+   .lightTxtClr,
+   .lightgray {
+      color: var(--ink-3) !important;
+   }
+
+   .newlightTxtClr {
+      color: var(--ink-3) !important;
+   }
+
+   .refrshIcon path {
+      fill: var(--ink-4);
+   }
+}
+
+// ===========================================================================
+// 4. PAGINATION
+// ===========================================================================
+
+.rdt_Pagination {
+   background-color: var(--surface) !important;
+   border-top: 1px solid var(--line) !important;
+   color: var(--ink-3) !important;
+   font-size: 12.5px !important;
+   min-height: 52px !important;
+
+   select {
+      background-color: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-sm);
+      color: var(--ink-2);
+      font-family: "Regular", var(--font);
+      font-size: 12.5px;
+      height: 30px;
+
+      &:focus-visible {
+         outline: 2px solid var(--accent);
+         outline-offset: 2px;
+      }
+   }
+
+   button {
+      border-radius: var(--r-pill);
+      color: var(--ink-2);
+      fill: var(--ink-2);
+      transition: background-color var(--dur) var(--ease);
+
+      &:hover:not(:disabled) {
+         background-color: var(--surface-2);
+      }
+
+      &:disabled {
+         color: var(--ink-4);
+         fill: var(--ink-4);
+      }
+
+      &:focus-visible {
+         outline: 2px solid var(--accent);
+         outline-offset: 2px;
+      }
+   }
+}
+
+// ===========================================================================
+// 5. TABLE TOOLBAR
+// Search / Export on the left, tag / refresh / delete / column / view on the
+// right. One row, one rhythm, one control height (38px).
+// ===========================================================================
+
+.SR-table .header {
+   align-items: center;
+   gap: var(--sp-3);
+   row-gap: var(--sp-3);
+
+   .left {
+      align-items: center;
+      grid-template-columns: minmax(160px, 300px) auto;
+      gap: var(--sp-2);
+   }
+
+   .right {
+      align-items: center;
+      justify-content: flex-end;
+      gap: var(--sp-2);
+      grid-gap: var(--sp-2);
+   }
+
+   // -- search field --------------------------------------------------------
+   .search {
+      .MuiOutlinedInput-root {
+         background-color: var(--surface);
+         border-radius: var(--r-sm);
+         height: 38px;
+         font-size: 13.5px;
+      }
+
+      .MuiOutlinedInput-input {
+         color: var(--ink);
+         padding: 0 var(--sp-3);
+
+         &::placeholder {
+            color: var(--ink-4);
+            opacity: 1;
+         }
+      }
+
+      .MuiOutlinedInput-notchedOutline {
+         border-color: var(--line);
+      }
+
+      .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+         border-color: var(--ink-4);
+      }
+
+      .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+         border-color: var(--accent);
+         border-width: 1px;
+         box-shadow: 0 0 0 3px var(--accent-weak);
+      }
+   }
+
+   // -- pill buttons --------------------------------------------------------
+   .borderBtn {
+      background-color: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      box-shadow: none;
+      color: var(--ink);
+      font-family: "SemiBold", var(--font);
+      font-size: 13.5px;
+      height: 38px;
+      min-height: 38px;
+      padding: 0 18px;
+      text-transform: none;
+      white-space: nowrap;
+
+      &:hover {
+         background-color: var(--surface-2);
+         border-color: var(--line);
+         box-shadow: none;
+      }
+
+      svg path {
+         fill: var(--ink-2);
+      }
+   }
+
+   // -- icon-only buttons ---------------------------------------------------
+   .boxIcon,
+   .messageIcon {
+      background-color: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      height: 38px;
+      width: 38px !important;
+      min-width: 38px;
+      padding: 0;
+      transition: background-color var(--dur) var(--ease),
+         border-color var(--dur) var(--ease);
+
+      svg path {
+         fill: var(--ink-2);
+      }
+
+      &:hover {
+         background-color: var(--surface-2);
+
+         svg path {
+            fill: var(--ink);
+         }
+      }
+
+      // "keywords are selected" -- the action is now live.
+      &.kwselect {
+         background-color: var(--accent-weak) !important;
+         border: 1px solid var(--accent) !important;
+
+         svg path {
+            fill: var(--accent);
+         }
+      }
+
+      &:focus-visible {
+         outline: 2px solid var(--accent);
+         outline-offset: 2px;
+      }
+   }
+
+   // Delete is destructive, so it never borrows the accent even when armed.
+   .dangerIcon.dangerIcon {
+      background-color: transparent;
+      border-color: var(--line);
+
+      svg path {
+         fill: var(--ink-2);
+      }
+
+      &.kwselect {
+         background-color: transparent !important;
+         border: 1px solid var(--down) !important;
+
+         svg path {
+            fill: var(--down);
+         }
+      }
+
+      &:hover {
+         background-color: var(--surface-2);
+         border-color: var(--down);
+
+         svg path {
+            fill: var(--down);
+         }
+      }
+   }
+
+   // -- list / grid segmented toggle ---------------------------------------
+   .listaGrid {
+      height: 38px;
+
+      .MuiToggleButton-root {
+         background-color: var(--surface);
+         border: 1px solid var(--line);
+         color: var(--ink-2);
+         font-family: "SemiBold", var(--font);
+         font-size: 13.5px;
+         height: 38px;
+         padding: 0 var(--sp-3);
+         text-transform: none;
+
+         svg path {
+            fill: currentColor;
+         }
+
+         &:hover {
+            background-color: var(--surface-2);
+         }
+      }
+
+      .MuiToggleButton-root:first-of-type {
+         border-radius: var(--r-pill) 0 0 var(--r-pill);
+         padding-left: var(--sp-4);
+      }
+
+      .MuiToggleButton-root:last-of-type {
+         border-radius: 0 var(--r-pill) var(--r-pill) 0;
+         padding-right: var(--sp-4);
+      }
+
+      .MuiToggleButton-root.Mui-selected,
+      .MuiToggleButton-root.active {
+         background-color: var(--ink);
+         border-color: var(--ink);
+         color: var(--surface);
+
+         &:hover {
+            background-color: var(--ink-2);
+            color: var(--surface);
+         }
+
+         path {
+            fill: var(--surface);
+         }
+      }
+   }
+}
+
+// The "Column" menu and the export menu float, so they get the menu treatment.
+.normalToggleList,
+.ExportList {
+   background-color: var(--surface);
+   border: 1px solid var(--line);
+   border-radius: var(--r-md);
+
+   .MuiFormControlLabel-label {
+      color: var(--ink-2);
+      font-size: 13.5px;
+   }
+
+   .MuiCheckbox-root.Mui-checked {
+      color: var(--accent);
+   }
+}
+
+// ===========================================================================
+// 6. EMPTY STATE
+// Micro-label, one sentence, no art beyond the existing glyph.
+// ===========================================================================
+
+.empty_list_table,
+.empty_grid_table {
+   background-color: var(--surface);
+   min-height: 260px;
+   height: auto;
+   padding: var(--sp-7) var(--sp-5);
+}
+
+// The micro-label.
+.ls-table-empty,
+.wd-table-empty {
+   color: var(--ink-3) !important;
+   font-family: "SemiBold", var(--font);
+   font-size: 11px !important;
+   font-weight: 600;
+   letter-spacing: 0.08em;
+   line-height: 1.4 !important;
+   margin-top: var(--sp-4) !important;
+   padding: 0 !important;
+   text-transform: uppercase;
+}
+
+// Converted empty states carry no glyph, so the label is the first thing in
+// the box and must not push itself off the vertical centre.
+.ls-table-empty:first-child,
+.wd-table-empty:first-child {
+   margin-top: 0 !important;
+}
+
+// One sentence of body under it.
+.ls-table-empty-body {
+   color: var(--ink-2);
+   font-size: 13.5px;
+   line-height: 1.55;
+   margin: var(--sp-2) auto 0;
+   max-width: 40ch;
+}
+
+// ===========================================================================
+// 7. GRID VIEW
+// Same ground, same edges, so switching view is a change of layout only, not
+// of visual language.
+// ===========================================================================
+
+.gd-table {
+   background-color: var(--surface);
+   border: 1px solid var(--line);
+   border-radius: var(--r-md) var(--r-md) 0 0;
+
+   .manageTag {
+      background-color: var(--surface-2);
+      color: var(--accent);
+      padding: var(--sp-3) var(--sp-4);
+   }
+}
+
+.gd-table-header {
+   background-color: var(--surface-2);
+   border-radius: var(--r-md) var(--r-md) 0 0;
+   padding: var(--sp-3) var(--sp-4);
+}
+
+.gd_rdt_CustomTable {
+   .rdt_TableHeadRow {
+      background-color: transparent !important;
+      border-bottom: 1px solid var(--line) !important;
+   }
+
+   .rdt_TableCol {
+      color: var(--ink-3) !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+   }
+
+   .rdt_TableRow {
+      border-bottom: 1px solid var(--line-2) !important;
+
+      &:hover:nth-of-type(n) {
+         background-color: var(--surface-2);
+      }
+   }
+}
+
+// The widget tables share the numeral rules with the main table.
+.wd-table-volume,
+.wd-table-position {
+   color: var(--ink) !important;
+   font-variant-numeric: tabular-nums;
+   text-align: right;
+}
+
+.wd-table-keyword {
+   color: var(--ink) !important;
+}

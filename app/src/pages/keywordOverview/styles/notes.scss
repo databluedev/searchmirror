@@ -1,0 +1,40 @@
+@import "../../../assets/styles/style.scss";
+/*@import "../../assets/styles/modules/color.scss";*/
+
+.Toggle-Modal {
+  .dark {
+      outline: none !important; 
+  }
+}
+
+.ko-notesTable {
+
+  .rdt_TableHeadRow {
+    min-height: 40px;
+    background-color: var(--surface-2) !important;
+    border-bottom: 1px solid var(--line) !important; 
+    
+    .rdt_TableCol {
+      /*padding: 0px !important; */
+    }
+  }
+
+  .rdt_TableBody {
+    .rdt_TableRow {
+      border: 1px solid var(--line);
+      border-top: 0px;
+      font-size: 14px;
+      
+      .rdt_TableCell {
+        /*padding: 0px !important; */
+      }
+
+    }
+  }
+
+  .rdt_Pagination {
+    border: none !important;
+    background-color: var(--surface-2) !important;
+  }
+
+}

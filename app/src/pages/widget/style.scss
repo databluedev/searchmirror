@@ -1,0 +1,1086 @@
+// ---------------------------------------------------------------------------
+// The dashboard (routed at /dashboard; the directory is still `widget`).
+//
+// Contract: docs/DESIGN.md. Monochrome editorial. There is no hex in this file
+// and none belongs in it, and there is no coloured fill on this page at all
+// except where colour carries meaning:
+//
+//   --warn   a failed ranking run
+//   --up / --down / --flat   rank direction, and nothing else, ever
+//   --accent links and the focus ring
+//   --ink .. --ink-4   the position-spread ramp, which is sequential data and
+//            therefore ONE hue stepped dark to light, never five colours
+//
+// The one chart on the page is ApexCharts and draws its series in the palette's
+// ink (chart_palette.js, which is the sanctioned place for concrete strings --
+// the library runs shading maths and cannot take a var()). The rules at the
+// bottom only take back the chrome it adds; they never set a series colour.
+//
+// This file no longer @imports assets/styles/style.scss. App.js already loads
+// that bundle once; the page-level import shipped a second full copy of it as
+// its own <style> tag, and the copies then fought over the cascade.
+// ---------------------------------------------------------------------------
+
+// The micro-label from docs/DESIGN.md: 11px / 600 / 0.08em / uppercase. Every
+// section heading on this page is this, at this size -- a sub-heading inside a
+// panel is never larger than the panel's own label.
+%microLabel {
+   color: var(--ink-3);
+   font-family: "SemiBold";
+   font-size: 11px;
+   font-weight: 600;
+   letter-spacing: 0.08em;
+   line-height: 1.2;
+   margin: 0;
+   text-transform: uppercase;
+}
+
+// Every column of numbers on this screen.
+%tabular {
+   font-variant-numeric: tabular-nums;
+}
+
+// ---- header --------------------------------------------------------------
+
+.dashHead {
+   align-items: flex-start;
+   display: flex;
+   flex-wrap: wrap;
+   gap: var(--sp-4);
+   justify-content: space-between;
+   width: 100%;
+}
+
+.dashHead__id {
+   align-items: center;
+   display: flex;
+   gap: var(--sp-4);
+   min-width: 0;
+}
+
+.dashHead__name {
+   min-width: 0;
+}
+
+// Name, domain, region, device and the run times read as one sentence, so they
+// are separated by a middot rather than boxed as chips.
+.dashHead__meta {
+   align-items: center;
+   color: var(--ink-3);
+   display: flex;
+   flex-wrap: wrap;
+   font-size: 13px;
+   gap: var(--sp-1) var(--sp-2);
+   line-height: 1.5;
+
+   > * + *::before {
+      color: var(--ink-4);
+      content: "\00b7";
+      margin-right: var(--sp-2);
+   }
+}
+
+.dashHead__domain {
+   align-items: center;
+   color: var(--accent);
+   display: inline-flex;
+   gap: var(--sp-1);
+   text-decoration: none;
+
+   &:hover {
+      text-decoration: underline;
+   }
+}
+
+.dashHead__actions {
+   flex: none;
+
+   .btn {
+      text-decoration: none;
+   }
+}
+
+// ---- alert bar -----------------------------------------------------------
+// No tinted fill: docs/DESIGN.md forbids coloured card tints, and the state is
+// carried by the solid --warn edge and the --warn mark, both of which clear the
+// 3:1 non-text floor, plus full-strength --ink text.
+
+.dashAlerts {
+   background-color: var(--surface);
+   border: 1px solid var(--line);
+   border-left: 3px solid var(--line);
+   border-radius: var(--r-md);
+   display: flex;
+   flex-direction: column;
+   gap: var(--sp-3);
+   padding: var(--sp-4) var(--sp-5);
+}
+
+.dashAlerts--warn {
+   border-left-color: var(--warn);
+}
+
+.dashAlert {
+   align-items: flex-start;
+   display: flex;
+   gap: var(--sp-3);
+}
+
+.dashAlert__mark {
+   display: flex;
+   flex: none;
+   margin-top: 2px;
+}
+
+.dashAlert--warn .dashAlert__mark {
+   color: var(--warn);
+}
+
+.dashAlert--info .dashAlert__mark {
+   color: var(--ink-3);
+}
+
+.dashAlert__text {
+   color: var(--ink);
+   font-size: 14px;
+   line-height: 1.55;
+   margin: 0;
+   min-width: 0;
+   overflow-wrap: anywhere;
+}
+
+// The machine code is its own element so it can never be concatenated into
+// run.err, which is rendered verbatim.
+.dashAlert__code {
+   @extend %microLabel;
+   display: inline-block;
+   margin-left: var(--sp-2);
+}
+
+// The thing that CLEARS the alert. Secondary weight on purpose: it sits inside
+// a warning, and a filled button there would compete with the page's own
+// primary action. It is the only control in this bar, so it does not need to
+// shout to be found.
+.dashAlert__action {
+   background: var(--surface);
+   border: 1px solid var(--line);
+   border-radius: var(--r-sm);
+   color: var(--ink);
+   cursor: pointer;
+   flex: none;
+   font-size: 13px;
+   font-weight: 500;
+   margin-left: auto;
+   padding: var(--sp-1) var(--sp-3);
+   white-space: nowrap;
+
+   &:hover {
+      background: var(--surface-2);
+      border-color: var(--ink-3);
+   }
+
+   // No focus rule here: _controls.scss already gives every
+   // `button:focus-visible` the accent ring, and this file does not import
+   // the modules, so the mixin is not in scope to repeat it.
+}
+
+// ---- measurement sections ------------------------------------------------
+// The two systems this page reports, and the band that names each of them.
+// components/section_band.js carries the reasoning; this is the treatment.
+//
+// NO COLOUR AT ALL. Not one declaration in this block sets a hue -- the systems
+// are told apart by an icon shape, a name, an acronym tag and a sentence, which
+// is what makes the distinction survive a colour vision deficiency and what
+// keeps --up/--down/--accent/--nav-accent doing the one job each already has.
+
+// Three steps, so grouping is legible from spacing alone before a word is
+// read: 24px between panels inside a section, 48px between one system and the
+// next. A section is a `.layout > *` and inherits that rule's 32px, which is
+// the same gap the panels used to have from each other -- with everything
+// evenly spaced the page was one flat stack and no amount of labelling above a
+// block would have said where it stopped.
+//
+// Deliberately NOT a rule across the page above each band. The page header
+// already closes with a hairline 32px above the first band, and a second rule
+// that close reads as a mistake rather than as a division.
+.dashSection {
+   > * + * {
+      margin-top: var(--sp-5);
+   }
+
+   + .dashSection {
+      margin-top: var(--sp-7);
+   }
+}
+
+.dashSystem {
+   align-items: center;
+   column-gap: var(--sp-3);
+   display: grid;
+   grid-template-columns: auto minmax(0, 1fr);
+   margin-bottom: var(--sp-4);
+}
+
+// The mark sits in a hairline tile rather than loose on the page. At 18px on a
+// white ground a 1.5px stroke is quiet enough to be missed, and this band is
+// the one element on the screen that must not be; the tile gives it an edge and
+// an area without giving it a colour.
+.dashSystem__mark {
+   align-items: center;
+   background-color: var(--surface-2);
+   border: 1px solid var(--line);
+   border-radius: var(--r-sm);
+   color: var(--ink);
+   display: flex;
+   grid-row: 1 / span 2;
+   height: 34px;
+   justify-content: center;
+   width: 34px;
+}
+
+// Card-title scale, in ink -- deliberately a step ABOVE the 11px micro-labels
+// on the panels below it, because the whole point is that a section outranks
+// the panels it contains. It is the only heading on the page between the
+// project name and those labels.
+.dashSystem__name {
+   align-items: center;
+   color: var(--ink);
+   display: flex;
+   flex-wrap: wrap;
+   font-family: "SemiBold";
+   font-size: 15px;
+   font-weight: 600;
+   gap: var(--sp-2);
+   letter-spacing: -0.015em;
+   line-height: 1.3;
+   margin: 0;
+}
+
+// "SEO" / "GEO" -- the vocabulary the question was asked in, as a tag rather
+// than as part of the title, so the plain-English name still leads for a reader
+// who does not use the acronyms.
+.dashSystem__tag {
+   @extend %microLabel;
+   background-color: var(--surface-2);
+   border: 1px solid var(--line);
+   border-radius: var(--r-pill);
+   letter-spacing: 0.1em;
+   padding: 2px var(--sp-2);
+}
+
+.dashSystem__source {
+   color: var(--ink-3);
+   font-size: 12.5px;
+   line-height: 1.5;
+   margin: 2px 0 0;
+}
+
+// ---- panels and rows -----------------------------------------------------
+// Four fixed rows. The proportions are here, in the stylesheet, because they do
+// not depend on the payload: every project gets the same grid and only the
+// numbers inside it change.
+
+.dashPanel {
+   background-color: var(--surface);
+   border: 1px solid var(--line);
+   border-radius: var(--r-md);
+   box-shadow: var(--elev-1);
+   display: flex;
+   flex-direction: column;
+   min-width: 0;
+   padding: var(--sp-5);
+}
+
+.dashPanel__head {
+   align-items: baseline;
+   display: flex;
+   gap: var(--sp-3);
+   justify-content: space-between;
+   margin-bottom: var(--sp-4);
+}
+
+.dashPanel__label {
+   @extend %microLabel;
+}
+
+.dashPanel__action {
+   flex: none;
+}
+
+.dashPanel__empty {
+   color: var(--ink-3);
+   font-size: 14px;
+   line-height: 1.55;
+   margin: 0;
+}
+
+// A closing line of context under a panel's content -- pushed to the bottom so
+// two panels in one row end on the same rule.
+.dashPanel__foot {
+   border-top: 1px solid var(--line-2);
+   color: var(--ink-3);
+   font-size: 12.5px;
+   margin: auto 0 0;
+   padding-top: var(--sp-3);
+   @extend %tabular;
+}
+
+.dashLink {
+   color: var(--accent);
+   font-family: "SemiBold";
+   font-size: 12.5px;
+   font-weight: 600;
+   text-decoration: none;
+   white-space: nowrap;
+
+   &:hover {
+      text-decoration: underline;
+   }
+}
+
+.dashRow {
+   align-items: stretch;
+   display: grid;
+   gap: var(--sp-5);
+
+   > .dashPanel {
+      height: 100%;
+   }
+}
+
+.dashRow--wide {
+   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+
+.dashRow--even {
+   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+// ---- row 1: the stat strip -----------------------------------------------
+// One bordered strip divided by hairlines, not five cards. Five borders and
+// five shadows around five numbers is more furniture than content, and
+// docs/DESIGN.md separates by hairline rather than by box for exactly this.
+
+.dashStats {
+   background-color: var(--surface);
+   border: 1px solid var(--line);
+   border-radius: var(--r-md);
+   box-shadow: var(--elev-1);
+   display: grid;
+   grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.dashStat {
+   border-left: 1px solid var(--line-2);
+   display: flex;
+   flex-direction: column;
+   gap: var(--sp-2);
+   min-width: 0;
+   padding: var(--sp-4) var(--sp-5);
+
+   &:first-child {
+      border-left: 0;
+   }
+}
+
+.dashStat__label {
+   @extend %microLabel;
+}
+
+.dashStat__line {
+   align-items: baseline;
+   display: flex;
+   gap: var(--sp-2);
+   min-width: 0;
+}
+
+.dashStat__value {
+   color: var(--ink);
+   font-family: "SemiBold";
+   font-size: 26px;
+   font-weight: 600;
+   letter-spacing: -0.03em;
+   line-height: 1.1;
+   @extend %tabular;
+}
+
+// The denominator behind a figure. Muted and smaller so the tile still reads as
+// one number at a glance, and never a second line -- the row is 78px and that is
+// a virtue.
+.dashStat__note {
+   color: var(--ink-3);
+   font-size: 12px;
+   white-space: nowrap;
+   @extend %tabular;
+}
+
+// A signed change that is not a direction. Same weight as the delta beside it,
+// because both are changes and should read as the same kind of annotation --
+// and deliberately NOT --up/--down, because adding keywords is not a ranking
+// improvement and green here would assert the opposite of what happened. See
+// the Shift component in stat_row.js.
+.dashStat__shift {
+   color: var(--ink-3);
+   font-family: "SemiBold";
+   font-size: 13px;
+   font-weight: 600;
+   @extend %tabular;
+}
+
+// The only colour in this row, and it is rank direction.
+.dashStat__delta {
+   font-family: "SemiBold";
+   font-size: 13px;
+   font-weight: 600;
+   @extend %tabular;
+
+   &.isUp {
+      color: var(--up);
+   }
+
+   &.isDown {
+      color: var(--down);
+   }
+}
+
+// ---- row 2a: the visibility trend ----------------------------------------
+
+// The list-change note. --ink-2, not the caption grey: it is a statement that
+// must not be skimmed on the one project where it applies, and a footnote under
+// a cliff is exactly what gets skimmed. Not --warn -- nothing has gone wrong,
+// and that token belongs to a failed run.
+.dashTrend__note {
+   color: var(--ink-2);
+   font-size: 13px;
+   line-height: 1.5;
+   margin: var(--sp-4) 0 0;
+}
+
+.dashTrend__noteFig {
+   color: var(--ink);
+   font-family: "SemiBold";
+   font-weight: 600;
+   @extend %tabular;
+}
+
+.dashTrendPanel__foot {
+   border-top: 1px solid var(--line-2);
+   margin-top: var(--sp-4);
+   padding-top: var(--sp-4);
+}
+
+.dashTrend {
+   min-width: 0;
+}
+
+.dashMove {
+   align-items: baseline;
+   display: flex;
+   flex-wrap: wrap;
+   gap: var(--sp-2) var(--sp-5);
+   list-style: none;
+   margin: 0;
+   padding: 0;
+}
+
+.dashMove__item {
+   align-items: baseline;
+   display: flex;
+   gap: var(--sp-2);
+
+   // The mark carries the direction; the number stays ink, because a value is
+   // text and text wears text tokens.
+   &.isUp .dashMove__swatch {
+      background-color: var(--up);
+   }
+
+   &.isDown .dashMove__swatch {
+      background-color: var(--down);
+   }
+
+   &.isFlat .dashMove__swatch {
+      background-color: var(--flat);
+   }
+}
+
+.dashMove__item--note {
+   color: var(--ink-3);
+   font-size: 12.5px;
+   margin-left: auto;
+}
+
+.dashMove__swatch {
+   border-radius: 2px;
+   flex: none;
+   height: 8px;
+   position: relative;
+   top: -1px;
+   width: 8px;
+}
+
+.dashMove__value {
+   color: var(--ink);
+   font-family: "SemiBold";
+   font-size: 15px;
+   font-weight: 600;
+   @extend %tabular;
+}
+
+.dashMove__label {
+   color: var(--ink-3);
+   font-size: 13px;
+}
+
+.dashMove__say {
+   color: var(--ink);
+   font-size: 13.5px;
+   line-height: 1.55;
+   margin: 0;
+}
+
+.dashMove__when {
+   color: var(--ink-3);
+}
+
+// ---- row 2b: position spread ---------------------------------------------
+// Sequential data: one hue stepped dark to light, best to worst. The hue is ink
+// -- an accent ramp is still a wall of blue, and this product is monochrome.
+//
+// The worst band is hollow rather than filled. There is no ink step light
+// enough to sit below --ink-4 and stay visible, and "outside the top thirty" is
+// an absence rather than a quantity, so it takes the outline the never-ranked
+// mark uses.
+
+.dashSpread {
+   display: flex;
+   // The 2px separation between segments is this gap, not a border: a border
+   // would be drawn inside a segment's width and a one-keyword band is already
+   // only a few pixels wide.
+   gap: 2px;
+   height: 10px;
+   margin-bottom: var(--sp-4);
+   width: 100%;
+}
+
+.dashSpread__seg {
+   border-radius: 2px;
+   display: block;
+   // A band holding one keyword out of five hundred is still a band; without a
+   // floor it renders as a sub-pixel sliver and reads as absent.
+   min-width: 3px;
+}
+
+.dashSpread__seg--s1 {
+   background-color: var(--ink);
+}
+
+.dashSpread__seg--s2 {
+   background-color: var(--ink-2);
+}
+
+.dashSpread__seg--s3 {
+   background-color: var(--ink-3);
+}
+
+.dashSpread__seg--s4 {
+   background-color: var(--ink-4);
+}
+
+.dashSpread__seg--s5 {
+   background-color: var(--surface-2);
+   box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.dashBands {
+   display: flex;
+   flex-direction: column;
+   gap: var(--sp-2);
+   list-style: none;
+   margin: 0 0 var(--sp-4);
+   padding: 0;
+}
+
+.dashBand {
+   align-items: center;
+   display: grid;
+   gap: var(--sp-3);
+   grid-template-columns: 10px minmax(0, 1fr) auto;
+}
+
+.dashBand__swatch {
+   border-radius: 2px;
+   height: 10px;
+   width: 10px;
+}
+
+.dashBand__label {
+   color: var(--ink-3);
+   font-size: 13px;
+   @extend %tabular;
+}
+
+.dashBand__value {
+   color: var(--ink);
+   font-family: "SemiBold";
+   font-size: 14px;
+   font-weight: 600;
+   @extend %tabular;
+}
+
+// ---- row 3a: needs attention ---------------------------------------------
+// Every entry is the same four-column grid, so a group line, a keyword row and
+// a gap row align down the panel instead of each finding its own rhythm. The
+// columns are what stops three adjacent fields rendering as one run of text.
+
+.dashAttn {
+   list-style: none;
+   margin: 0;
+   padding: 0;
+}
+
+.dashAttn__row {
+   align-items: center;
+   border-top: 1px solid var(--line-2);
+   column-gap: var(--sp-3);
+   display: grid;
+   grid-template-columns: 16px minmax(0, 1fr) auto auto;
+   padding: var(--sp-3) 0;
+   row-gap: var(--sp-1);
+
+   &:first-child {
+      border-top: 0;
+      padding-top: 0;
+   }
+
+   &:last-child {
+      padding-bottom: 0;
+   }
+}
+
+// A group line puts its count in the second column and the phrase in the third,
+// so the numeral lines up under the marks above it.
+.dashAttn__row--group {
+   grid-template-columns: 16px auto minmax(0, 1fr) auto;
+}
+
+.dashAttn__mark {
+   display: flex;
+   flex: none;
+}
+
+// Only a rank movement is a direction, so only it takes --down. "More than one
+// page competing" and "never ranked" are states; colouring them red would spend
+// the rank-direction colour on something with no direction.
+.dashAttn__row.is-down .dashAttn__mark {
+   color: var(--down);
+}
+
+.dashAttn__row.is-note .dashAttn__mark {
+   color: var(--ink-3);
+}
+
+.dashAttn__count {
+   color: var(--ink);
+   font-family: "SemiBold";
+   font-size: 20px;
+   font-weight: 600;
+   letter-spacing: -0.02em;
+   line-height: 1;
+   @extend %tabular;
+}
+
+.dashAttn__say {
+   color: var(--ink);
+   font-size: 13.5px;
+   line-height: 1.4;
+   min-width: 0;
+}
+
+.dashAttn__sample {
+   color: var(--ink-3);
+   display: block;
+   font-size: 12.5px;
+   overflow-wrap: anywhere;
+}
+
+.dashAttn__kw {
+   color: var(--ink);
+   font-size: 13.5px;
+   line-height: 1.4;
+   overflow-wrap: anywhere;
+   text-decoration: none;
+
+   &:hover {
+      color: var(--accent);
+      text-decoration: underline;
+   }
+
+   &.isPlain:hover {
+      color: var(--ink);
+      text-decoration: none;
+   }
+}
+
+.dashAttn__facts {
+   align-items: baseline;
+   display: flex;
+   flex-wrap: wrap;
+   gap: var(--sp-1) var(--sp-3);
+   justify-content: flex-end;
+   min-width: 0;
+}
+
+.dashAttn__move {
+   align-items: baseline;
+   color: var(--ink-2);
+   display: inline-flex;
+   font-size: 13.5px;
+   gap: var(--sp-1);
+   @extend %tabular;
+}
+
+.dashAttn__arrow {
+   color: var(--ink-4);
+}
+
+.dashAttn__note,
+.dashAttn__holder {
+   color: var(--ink-3);
+   font-size: 12.5px;
+   overflow-wrap: anywhere;
+}
+
+// Fixed width whether or not it holds a value, so the keyword column ends on
+// the same axis down the whole list.
+.dashAttn__delta {
+   font-family: "SemiBold";
+   font-size: 13.5px;
+   font-weight: 600;
+   min-width: 4ch;
+   text-align: right;
+   @extend %tabular;
+
+   &.isUp {
+      color: var(--up);
+   }
+
+   &.isDown {
+      color: var(--down);
+   }
+}
+
+.dashAttn__pos {
+   color: var(--ink);
+}
+
+// ---- row 3b: competitors -------------------------------------------------
+// A table, because six values between two and three have no shape for a chart
+// to show, and three facts per row beat one bar.
+
+.dashTable {
+   border-collapse: collapse;
+   table-layout: auto;
+   width: 100%;
+
+   th,
+   td {
+      padding: var(--sp-2) 0;
+      text-align: left;
+      vertical-align: baseline;
+   }
+
+   th {
+      @extend %microLabel;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: var(--sp-3);
+   }
+
+   td {
+      border-top: 1px solid var(--line-2);
+      color: var(--ink);
+      font-size: 13.5px;
+   }
+
+   tbody tr:first-child td {
+      border-top: 0;
+      padding-top: var(--sp-3);
+   }
+
+   .isNum {
+      padding-left: var(--sp-4);
+      text-align: right;
+      white-space: nowrap;
+      @extend %tabular;
+   }
+
+   td.isNum {
+      font-family: "SemiBold";
+      font-weight: 600;
+   }
+}
+
+.dashTable__domain {
+   overflow-wrap: anywhere;
+}
+
+// ---- row 4: the AI strip -------------------------------------------------
+// One line, not a card. Three short facts and a way through do not need a
+// header, a body and a border of their own.
+
+.dashStrip {
+   align-items: baseline;
+   background-color: var(--surface);
+   border: 1px solid var(--line);
+   border-radius: var(--r-md);
+   box-shadow: var(--elev-1);
+   display: flex;
+   flex-wrap: wrap;
+   gap: var(--sp-2) var(--sp-4);
+   padding: var(--sp-4) var(--sp-5);
+}
+
+.dashStrip__label {
+   @extend %microLabel;
+   flex: none;
+}
+
+// The figure and its correcting note, as one flex item. `flex-shrink` without
+// `flex-grow`: it must be able to give width back when the row is tight, but
+// must not eat the free space that right-aligns the link.
+.dashStrip__content {
+   flex: 0 1 auto;
+   min-width: 0;
+}
+
+.dashStrip__body {
+   color: var(--ink);
+   font-size: 13.5px;
+   line-height: 1.5;
+   margin: 0;
+}
+
+.dashStrip__body--empty {
+   color: var(--ink-3);
+}
+
+// The headline pair. "2 of 8" is the figure and it is the count, never the
+// percentage: the same rate at a different n is different evidence, so the two
+// integers lead and the percent is an aside behind them.
+.dashStrip__lead {
+   color: var(--ink);
+   white-space: nowrap;
+}
+
+.dashStrip__count {
+   font-family: "SemiBold";
+   font-size: 15px;
+   font-weight: 600;
+   letter-spacing: -0.015em;
+   @extend %tabular;
+}
+
+// Subordinate to the count beside it, and deliberately not a second figure:
+// smaller, muted, and never rendered without the pair it was divided from.
+.dashStrip__rate {
+   color: var(--ink-3);
+   font-size: 12px;
+   margin-left: var(--sp-2);
+   @extend %tabular;
+}
+
+.dashStrip__fact::before {
+   color: var(--ink-4);
+   content: "\00b7";
+   margin: 0 var(--sp-2);
+}
+
+.dashStrip__key {
+   color: var(--ink-3);
+}
+
+.dashStrip__go {
+   margin-left: auto;
+}
+
+// The denominator note -- the one element allowed to give this strip a second
+// line, and only when the answer count moved enough to explain the rate moving.
+// It lives inside __content, so it is under the figure it corrects at every
+// width and no wrap can put the link between them.
+.dashStrip__note {
+   color: var(--ink-2);
+   font-size: 13px;
+   line-height: 1.5;
+   margin: var(--sp-2) 0 0;
+}
+
+.dashStrip__noteFig {
+   color: var(--ink);
+   font-family: "SemiBold";
+   font-weight: 600;
+   @extend %tabular;
+}
+
+// ---- chart chrome --------------------------------------------------------
+// Removal only. Every colour on the chart is set in the component from
+// chart_palette.js; nothing here paints a series.
+
+.dashTrend {
+   .apexcharts-canvas {
+      // Apex measures its own box; without this the SVG can force the grid
+      // column wider than its track and the page picks up a sideways scroll.
+      max-width: 100%;
+   }
+
+   // Apex takes a concrete colour for the gridlines and the palette has no
+   // rule-weight entry, so the real token is applied here. At the palette's
+   // annotation ink they would be heavier than the 2px series line they sit
+   // behind.
+   .apexcharts-gridline {
+      stroke: var(--line-2);
+   }
+
+   // Tooltips are disabled in the options -- the latest value is in the stat
+   // row above -- so these should never be built. Belt and braces: a library
+   // upgrade must not put a floating box on a screen with no hover affordance
+   // on touch.
+   .apexcharts-tooltip,
+   .apexcharts-xaxistooltip,
+   .apexcharts-yaxistooltip {
+      display: none !important;
+   }
+}
+
+// ---- loading -------------------------------------------------------------
+// docs/DESIGN.md, "Loading": a --surface-2 skeleton in the shape of the content.
+// No shimmer -- this rebuild adds no animation.
+
+.dashSkel {
+   display: flex;
+   flex-direction: column;
+   gap: var(--sp-6);
+}
+
+.dashSkel__panel {
+   display: flex;
+   flex-direction: column;
+   gap: var(--sp-3);
+}
+
+.dashSkel__bar {
+   background-color: var(--surface-2);
+   border-radius: var(--r-sm);
+   height: 12px;
+}
+
+.dashSkel__bar--row {
+   height: 16px;
+}
+
+// The stat strip and the AI strip, which are both one bordered line.
+.dashSkel__bar--strip {
+   border-radius: var(--r-md);
+   height: 78px;
+}
+
+// ---- narrow --------------------------------------------------------------
+// The grid is fixed but the number of columns is not: the four rows and their
+// order never change, only how many of them fit side by side. Must work at
+// 375px, and the page body never scrolls sideways.
+
+@media (max-width: 1100px) {
+   .dashStats {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+
+      // With three to a row the fourth and fifth tiles start a new row, so the
+      // hairline that divides columns has to divide rows as well.
+      .dashStat:nth-child(3n + 1) {
+         border-left: 0;
+      }
+
+      .dashStat:nth-child(n + 4) {
+         border-top: 1px solid var(--line-2);
+      }
+   }
+
+   .dashRow--wide,
+   .dashRow--even {
+      grid-template-columns: minmax(0, 1fr);
+   }
+}
+
+@media (max-width: 680px) {
+   .dashStats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      .dashStat {
+         border-left: 1px solid var(--line-2);
+         padding: var(--sp-3) var(--sp-4);
+      }
+
+      .dashStat:nth-child(3n + 1) {
+         border-left: 1px solid var(--line-2);
+      }
+
+      .dashStat:nth-child(odd) {
+         border-left: 0;
+      }
+
+      .dashStat:nth-child(n + 3) {
+         border-top: 1px solid var(--line-2);
+      }
+
+      // Five tiles two to a row leaves the fifth on its own; it takes the whole
+      // width rather than sitting beside an empty half.
+      .dashStat:last-child:nth-child(odd) {
+         grid-column: 1 / -1;
+      }
+   }
+
+   .dashStat__value {
+      font-size: 22px;
+   }
+
+   .dashPanel {
+      padding: var(--sp-4);
+   }
+
+   .dashAlerts,
+   .dashStrip {
+      padding: var(--sp-4);
+   }
+
+   // Facts drop under the keyword rather than competing with it for a 320px
+   // measure; the delta keeps its own column so the numbers still align.
+   .dashAttn__row {
+      grid-template-columns: 16px minmax(0, 1fr) auto;
+   }
+
+   .dashAttn__facts {
+      grid-column: 2;
+      justify-content: flex-start;
+   }
+
+   .dashAttn__row--group {
+      grid-template-columns: 16px auto minmax(0, 1fr);
+   }
+
+   .dashStrip__go {
+      margin-left: 0;
+   }
+}
+
+// ---- orphans -------------------------------------------------------------
+// Neither of these belongs to this page. Both are used by pages that never
+// declare them (competitor tables, serpRank, userManagement, keywordResearch)
+// and neither is in the global bundle -- they exist only in four page
+// stylesheets, of which this is one, so whether they apply depends on which
+// page the reader happened to open first. Removing this copy would break the
+// /dashboard -> /keywords path today. They belong in _controls.scss; that is
+// outside this lane and is reported rather than done.
+.defaultClr {
+   color: var(--ink) !important;
+}
+
+.f-14x {
+   font-size: 14px !important;
+}

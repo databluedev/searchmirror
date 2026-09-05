@@ -1,0 +1,2110 @@
+$lightgrayClr: var(--ink-4);
+$darkgrayClr: var(--ink-3);
+$pentanaryClr: #ececef;
+$yellow: #EFE013;
+
+/*command lines*/
+/*Assets/style.css*/
+/*208 --> .MuiButton-containedPrimary:hover */
+/*711 --> .totalkeyword */
+/*766 --> .totalkeyword */
+/*908 --> .totalkeyword */
+
+/*Widget/style.css*/
+/*84 --> .dataTable*/
+
+/*Sidebar page*/
+.pro-sidebar {
+   &.collapsed {
+      width: 60px !important;
+      min-width: 60px !important;
+      box-shadow: 0 2px 5px #576e874a;
+   }
+}
+
+.pro-sidebar .pro-menu .pro-menu-item,
+.mobSidebar .pro-menu .pro-menu-item,
+.serpMenu .pro-menu-item {
+   .item {
+      color: $txtClr;
+   }
+
+   &:hover {
+      .item {
+         color: $primaryClr;
+      }
+   }
+}
+
+.pro-sidebar .pro-menu .pro-menu-item.active,
+.mobSidebar .pro-menu .pro-menu-item.active,
+.serpMenu .pro-menu-item.active {
+   .item {
+      color: $primaryClr;
+      background: var(--accent-weak) !important;
+   }
+
+   .hover {
+      opacity: 1;
+   }
+}
+
+.pro-sidebar .pro-inner-item {
+   padding: 15px 20px !important;
+   margin-bottom: 0 !important;
+}
+
+.pro-sidebar-footer {
+   margin-bottom: 1rem;
+   padding: 0px !important;
+   display: flex;
+   cursor: pointer !important;
+   /* NEW */
+
+   &.active {
+      background: var(--accent-weak) !important;
+   }
+
+   .profileButton {
+      height: auto;
+      padding: 10px 0px !important;
+   }
+
+   .profile {
+      width: 165px;
+   }
+}
+
+.pro-sidebar.active {
+   box-shadow: 0 4px 85px #576e8763 !important;
+}
+
+
+/*Sidebar page*/
+
+/*ProfileImg*/
+.profileImage .img {
+   border: 1px solid transparent;
+   height: 100%;
+   width: 100%;
+   background-color: var(--accent);
+   border-radius: 50px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   color: var(--surface);
+   font-size: 24px;
+   font-family: 'SemiBold';
+}
+
+/*ProfileImg*/
+
+
+/*Notes show drawer*/
+.customSmallDrawer {
+   .MuiBackdrop-root {
+      background: transparent;
+   }
+
+   .MuiDrawer-paper {
+      width: 330px;
+      box-shadow: none;
+      border-left: 1px solid var(--line);
+   }
+
+   .footer {
+      width: 329px;
+      right: 0 !important;
+      left: unset !important;
+      grid-template-columns: 1fr 1fr !important;
+   }
+}
+
+.brownBox {
+   background-color: #fffec4;
+   padding: 15px;
+   border-radius: 5px;
+   border: 1px solid #cfae43;
+   border-left: 7px solid #cfae43;
+}
+
+/*Notes show drawer*/
+
+/*Redeem page table*/
+.primary-card {
+   padding: 4px 7px;
+   border-radius: 3px;
+   background: var(--surface-2);
+   color: $primaryClr;
+}
+
+/*Redeem page table*/
+
+/*Schedule Report start*/
+.actionIcon {
+   height: 34px !important;
+   width: 34px !important;
+
+   &:hover {
+      path {
+         fill: $primaryClr;
+      }
+   }
+}
+
+/*Schedule Report end*/
+
+/*Refresh bar*/
+@media (max-height: 450px) {
+   .refreshing-in {
+      height: 80vh !important;
+   }
+
+   .reFreshing {
+      height: 20vh !important;
+   }
+}
+
+@media (min-height: 451px) and (max-height: 600px) {
+   .refreshing-in {
+      height: 85vh !important;
+   }
+
+   .reFreshing {
+      height: 15vh !important;
+   }
+}
+
+@media (min-height: 601px) and (max-height: 1100px) {
+   .refreshing-in {
+      height: 88vh !important;
+   }
+
+   .reFreshing {
+      height: 12vh !important;
+   }
+}
+
+@media (min-height: 1101px) {
+   .refreshing-in {
+      height: 90vh !important;
+   }
+
+   .reFreshing {
+      height: 10vh !important;
+   }
+}
+
+@media (min-width: 1600px) {
+   .reFreshing .progressCard {
+      width: 30% !important;
+   }
+}
+
+@media (max-width: 575.98px) {
+   .reFreshing {
+      left: 0 !important;
+      width: 100% !important;
+
+      .progressCard {
+         width: 65% !important;
+      }
+   }
+}
+
+.reFreshing {
+   background: var(--surface);
+   position: fixed;
+   bottom: 0;
+   width: 96%;
+   left: 60px;
+   right: 0;
+   z-index: 11;
+   border-top: 1px solid #ececef;
+   display: flex;
+   justify-content: center;
+   padding: 5px;
+   /*padding: 20px;*/
+
+   height: 12vh;
+   align-items: center;
+
+   .progressCard {
+      width: 40%;
+      background: transparent;
+      padding: 0;
+   }
+
+}
+
+
+/*Manage Tag*/
+// Manage Tags is a dialog, not a page. It sits above the rail (9995) and the
+// rail's collapse chevron (9996) for the same reason .full-page-modal below
+// does -- MUI puts a Modal on 1300, which is under both.
+.MuiModal-root.Managetag {
+   z-index: 9998 !important;
+}
+
+.tagDialog {
+   .tagDialog__box {
+      overflow: hidden;
+   }
+
+   .tagDialog__head {
+      align-items: flex-start;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: var(--sp-4);
+      justify-content: space-between;
+      padding: var(--sp-4) var(--sp-5);
+   }
+
+   .tagDialog__title {
+      color: var(--ink) !important;
+      font-size: 17px !important;
+      line-height: 24px !important;
+      margin: 0;
+   }
+
+   .tagDialog__meta {
+      color: var(--ink-3) !important;
+      font-size: 13px !important;
+      line-height: 18px !important;
+      margin-top: 2px;
+   }
+
+   .tagDialog__close {
+      color: var(--ink-3);
+      flex: 0 0 auto;
+      min-width: 0;
+      padding: var(--sp-1);
+
+      &:hover {
+         background-color: var(--surface-2);
+      }
+   }
+
+   // The one part of the dialog that may need to scroll: a project with many
+   // existing tags. The header and the buttons stay put.
+   .tagDialog__body {
+      overflow-y: auto;
+      padding: var(--sp-5);
+   }
+
+   .tagDialog__foot {
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: var(--sp-3);
+      justify-content: flex-end;
+      padding: var(--sp-4) var(--sp-5);
+   }
+
+   .tagChip--on {
+      background-color: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--ink);
+
+      .close {
+         border-left-color: var(--line) !important;
+         color: var(--ink-3);
+      }
+   }
+
+   // The tag lists under the input are a reference, not headings of their own
+   // weight: micro-labels, at the size docs/DESIGN.md gives a section label.
+   .tags-input .fB.f16x {
+      color: var(--ink-3);
+      font-family: "SemiBold";
+      font-size: 11px !important;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+   }
+}
+
+.Managetag {
+
+   /*textarea {*/
+   .tag-input-box {
+      background-color: var(--surface);
+      border: 1px solid var(--line);
+      outline: 0px;
+      padding: 15px;
+      border-radius: var(--r-sm);
+      resize: none;
+      width: 100%;
+      // Enough for the field and two rows of chips. It was 200px, sized for a
+      // full-page sheet; in a dialog that is an empty box asking to be filled.
+      min-height: 96px;
+      margin: 0 0 15px 0;
+
+      &:focus {
+         border: 1px solid var(--accent);
+      }
+
+      &:hover {
+         border: 1px solid var(--accent);
+      }
+   }
+
+   .tags-input ul {
+      list-style: none;
+      margin-left: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+
+      li {
+         background-color: var(--surface-2);
+         padding: 0 0 0 10px;
+         border-radius: 5px;
+         height: 30px;
+         display: flex;
+         align-items: center;
+
+         .close {
+            background: transparent;
+            border-bottom: 0;
+            font-weight: 600;
+            font-size: 12px;
+            border-left: 1px solid var(--surface);
+            border-right: 0;
+            border-top: 0;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            margin-left: 10px;
+            cursor: pointer;
+         }
+      }
+   }
+}
+
+/*Manage Tag*/
+
+
+/*Full page modal common css*/
+.full-page-modal {
+   .fp-modal-box {
+      max-height: calc(100vh - 0px) !important;
+      overflow-y: scroll !important;
+      overflow-x: hidden !important;
+   }
+
+   .fp-modal-header {
+      padding: 20px !important;
+      margin-bottom: 0px !important;
+      top: 0px !important;
+      z-index: 13 !important;
+   }
+
+   .fp-modal-title {
+      font-size: 22px !important;
+      line-height: 28px !important;
+      margin: 0px;
+      display: flex;
+      color: var(--ink) !important;
+   }
+
+   .fp-modal-sub-title {
+      margin-top: 5px !important;
+      font-size: 16px !important;
+      line-height: 20px !important;
+      color: var(--ink-3) !important;
+   }
+}
+
+/*Full page modal common css*/
+
+
+/*Serp Rank Start*/
+.boxIcon,
+.messageIcon {
+   width: 46px !important;
+
+   &:hover {
+      path {
+         fill: $primaryClr;
+      }
+   }
+}
+
+/*Widget css to --> SR list Table */
+.SR-Listtable {
+
+   /*width: 100%;*/
+   /*th {
+      user-select: none;
+   }*/
+   .flag {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+
+      &.md {
+         width: 30px;
+         height: 30px;
+      }
+   }
+
+   /*thead {
+      position: sticky;
+      top: 0;
+      background-color: $lightPrimaryClr;
+      z-index: 2;
+      th {
+         text-align: center;
+         min-width: 100px;
+         &:first-child {
+            text-align: left;
+         }
+      }
+   }
+   th,
+   td {
+      padding: 10px 0;
+      border-bottom: 1px solid #ececef !important;
+   }*/
+}
+
+/*Widget css to--> list Table */
+
+
+/*style csss line 774*/
+.textSwitch {
+   width: 65px !important;
+   height: 26px !important;
+
+   .MuiSwitch-switchBase {
+      top: 5px !important;
+   }
+
+   .MuiSwitch-track {
+      background-color: #cdd7ff !important;
+   }
+
+   .Mui-checked+ {
+      .MuiSwitch-track:before {
+         opacity: 0 !important;
+      }
+
+      .MuiSwitch-track:after {
+         opacity: 1 !important;
+      }
+   }
+
+   .MuiSwitch-track:after {
+      opacity: 0 !important;
+   }
+
+   .MuiSwitch-switchBase.Mui-checked {
+      transform: translateX(39px) !important;
+   }
+}
+
+.SR-table {
+   .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+
+      .left {
+         display: grid;
+         // grid-template-columns: 1fr 45px 100px;
+         grid-template-columns: 1fr 100px;
+         gap: 15px;
+      }
+
+      .right {
+         /*display: grid;
+         // grid-template-columns: 1fr 100px 100px;
+         grid-template-columns: 1fr 170px;*/
+
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         flex-wrap: wrap;
+         grid-gap: 15px;
+         gap: 15px;
+
+         .listaGrid {
+            display: flex;
+
+            .MuiToggleButton-root {
+               font-family: 'SemiBold';
+               color: $darkgrayClr;
+               text-transform: inherit;
+               background-color: var(--surface);
+
+               &:hover {
+                  background-color: $whiteClr;
+               }
+
+               ;
+            }
+
+            .MuiToggleButtonGroup-grouped:not(:first-of-type) {
+               margin-left: 0px;
+            }
+
+            .MuiButton-root:first-child {
+               margin-left: 0px;
+               border-top-right-radius: 0;
+               border-bottom-right-radius: 0;
+               border-right: 0 !important;
+            }
+
+            .MuiButton-root:last-child {
+               border-top-left-radius: 0;
+               border-bottom-left-radius: 0;
+            }
+
+            .Mui-selected,
+            .active {
+               background-color: $primaryClr;
+               color: var(--surface);
+
+               path {
+                  fill: var(--surface);
+               }
+
+               &:hover {
+                  background-color: $primaryClr;
+                  color: var(--surface);
+
+                  path {
+                     fill: var(--surface);
+                  }
+               }
+
+               ;
+            }
+         }
+      }
+   }
+
+   @media (max-width: 575.98px) {
+      .header {
+         .right {
+            width: 100%;
+         }
+      }
+   }
+}
+
+.SR-Listtable {
+
+   .rdt_TableHeadRow {
+      min-height: 40px;
+      background-color: var(--paper);
+      /*z-index: 5;*/
+   }
+
+   .rdt_TableRow {
+      border: 1px solid $pentanaryClr;
+      border-top: 0px;
+      font-size: 14px;
+   }
+
+   .rdt_TableCol,
+   .rdt_TableCell {
+      padding: 0px;
+   }
+
+   .rdt_Pagination {
+      border-top-width: 0px;
+   }
+
+   .dataTable {
+
+      /*border: 1px solid #ececef;*/
+      tbody tr td:first-child {
+         padding: 10px 15px;
+      }
+   }
+
+   thead th:nth-child(2) {
+      text-align: left;
+      min-width: 300px;
+   }
+
+   span.__rdt_custom_sort_icon__ svg {
+      height: 14px !important;
+   }
+}
+
+.rdt_TableCell input[type="checkbox"] {
+   background-color: $primaryClr !important;
+   color: var(--surface);
+}
+
+.kwselect {
+   border: 2px solid $primaryClr !important;
+   background-color: var(--surface) !important;
+   /*background-color: transparent !important;*/
+
+   path {
+      fill: $primaryClr;
+   }
+}
+
+.project-delete,
+.project-rename {
+
+   input {
+      font-size: 12px !important;
+      border-radius: 5px;
+      padding: 6px 15px !important;
+      height: 24px;
+   }
+}
+
+.typoerrortooltip {
+   background: var(--surface) !important;
+   box-shadow: 0px 1px 4px #00001199 !important;
+}
+
+.tagshow {
+   .addtag {
+      background-color: $pentanaryClr;
+      padding: 2px 5px;
+      border-radius: 3px;
+   }
+
+   span+span {
+      margin-left: 5px;
+   }
+}
+
+.TagTooltip {
+   padding: 8px 6px !important;
+   font-size: 12px !important;
+   color: var(--ink) !important;
+   line-height: 18px !important;
+   margin-bottom: 8px !important;
+   background: var(--surface) !important;
+   box-shadow: 0px 1px 4px #00001199 !important;
+   /*box-shadow: 0px 2px 4px #00000018 !important;*/
+   font-family: "Regular" !important;
+   max-width: 250px !important;
+
+   .MuiTooltip-arrow {
+      color: var(--surface) !important;
+   }
+
+   .tool_txt {
+      color: #444;
+      border: 1px solid $pentanaryClr;
+      padding: 3px 6px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 400;
+      /*margin-left: 5px;*/
+   }
+
+}
+
+.addKeyword,
+.addProject {
+   .MuiSwitch-thumb {
+      width: 16px !important;
+      height: 16px !important;
+      border-radius: 50px !important;
+   }
+}
+
+.Toggle-Modal {
+   .MuiBackdrop-root {
+      opacity: 0.45 !important;
+      background: #000000;
+   }
+
+   /*.MuiModal-root {
+      z-index: 999 !important;
+   }*/
+
+   .modal-box {
+      border-radius: 5px;
+   }
+
+   .dark {
+      background: var(--ink);
+      color: var(--surface);
+
+      .closeBtn path {
+         fill: var(--surface);
+      }
+   }
+
+   .light {
+      background: var(--surface);
+      color: var(--ink);
+
+      .closeBtn path {
+         fill: var(--ink);
+      }
+   }
+}
+
+.Property-Toggle-Modal {
+   .MuiBackdrop-root {
+      opacity: 0.45 !important;
+      background: #000000;
+   }
+
+   /*.MuiModal-root {
+      z-index: 999 !important;
+   }*/
+
+   .modal-box {
+      border-radius: 5px;
+   }
+
+   .dark {
+      background: var(--ink);
+      color: var(--surface);
+
+      .closeBtn path {
+         fill: var(--ink);
+      }
+   }
+
+   .light {
+      background: var(--surface);
+      color: var(--ink);
+
+      .closeBtn path {
+         fill: var(--ink);
+      }
+   }
+}
+
+
+.exportTogglelist {}
+
+.ExportList {
+   z-index: 6 !important;
+}
+
+/*Serp Rank End*/
+
+
+/*New class update*/
+::-webkit-scrollbar-track {
+   background: transparent;
+}
+
+#welcomeScrollbar {
+   height: 100vh;
+
+   .scrollbar-track-y {
+      background: transparent !important;
+   }
+
+   .scrollbar-track-x {
+      background: transparent !important;
+   }
+
+   .scrollbar-thumb {
+      background: rgba(0, 0, 0, 0) linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%) repeat scroll 0% 0% !important;
+   }
+}
+
+.passwordInput {
+   padding-right: 0 !important;
+   background: transparent;
+
+   input {
+      padding: 10px 15px !important;
+      font-size: 14px !important;
+      background-color: var(--surface);
+      border: 1px solid $pentanaryClr;
+      border-radius: 5px !important;
+
+      &:hover {
+         border-radius: 5px !important;
+         outline: 1px solid $primaryClr;
+      }
+
+      &:focus {
+         border-radius: 5px !important;
+         outline: 1px solid $primaryClr;
+      }
+   }
+
+   .eyeIcon {
+      position: absolute;
+      right: 12px;
+      bottom: 23px;
+   }
+
+   &.Mui-error {
+      input {
+         outline: 1px solid var(--down);
+      }
+   }
+}
+
+.customSelect {
+   background-color: var(--surface);
+
+   // padding: 10px 0;
+   .MuiSelect-select {
+      padding: 10px 15px !important;
+   }
+
+   .placeText {
+      color: $darkgrayClr;
+      opacity: 1;
+   }
+
+   fieldset {
+      top: 0 !important;
+      border: 1px solid $pentanaryClr;
+      border-width: 1px !important;
+   }
+
+   &:hover {
+      .MuiOutlinedInput-notchedOutline {
+         border-color: $primaryClr !important;
+         /*outline: 1px solid $primaryClr;*/
+      }
+   }
+}
+
+.Mui-error {
+   color: var(--down) !important;
+
+   input {
+      background-color: var(--surface) !important;
+      border-radius: 5px;
+   }
+
+   &.customSelect {
+      background-color: var(--surface) !important;
+      border-radius: 5px;
+   }
+
+   &.MuiFormHelperText-root {
+      margin: 4px 0 0 0 !important;
+      font-size: 80% !important;
+   }
+}
+
+
+/*Slide bar scroll background color change*/
+#my-scrollbar .scrollbar-track {
+   background: transparent;
+}
+
+/*Csv upload page in kw search input clear option*/
+input[type="search"]:focus::-webkit-search-cancel-button {
+   cursor: pointer;
+}
+
+/*Add project Region select input flag set */
+.inputflag {
+   position: absolute;
+   transform: translateY(60%);
+   margin-left: 10px;
+   z-index: 1;
+}
+
+.customSelect.rgSelect {
+
+   input {
+      /*padding: 12px 15px 12px 50px !important;*/
+      padding: 12px 30px 12px 40px !important;
+   }
+
+   .MuiAutocomplete-endAdornment {
+      line-height: 20px;
+   }
+
+   .MuiAutocomplete-clearIndicator {
+      height: 24px;
+      margin-right: 0px !important;
+      padding-right: 5px !important;
+
+      &:hover {
+         background-color: var(--surface) !important;
+      }
+   }
+}
+
+.customPopOver {
+   z-index: 1;
+}
+
+.MuiModal-root {
+   z-index: 9989 !important;
+}
+
+// Confirmation and form dialogs can open from inside a full-page workspace.
+// They must be the active layer, above both that workspace (9998) and the rail.
+.MuiModal-root.Toggle-Modal {
+   z-index: 10000 !important;
+}
+
+// A full-page modal owns the screen, so it must clear the rail (9995) and the
+// rail toggle (9996) -- otherwise the floating collapse chevron pokes through
+// and overlaps the modal's own header. Scoped to .full-page-modal so ordinary
+// modals keep sitting below the rail as intended.
+.MuiModal-root.full-page-modal {
+   z-index: 9998 !important;
+}
+
+.pro-sidebar.collapsed {
+   z-index: 9995;
+}
+
+.keyInfoBox {
+   position: revert !important;
+   z-index: 9996 !important;
+
+   &>.MuiBackdrop-root {
+      opacity: 0 !important;
+      display: none !important;
+   }
+
+   .MuiPopover-paper {
+      min-width: 210px;
+      max-width: 210px;
+      border-radius: 5px;
+      margin-left: 15px;
+      z-index: 9996 !important;
+
+      .header {
+         background-color: var(--surface);
+         padding: 15px;
+         display: flex;
+         gap: 0 10px;
+      }
+
+      .MuiList-root {
+         padding: 0 !important;
+      }
+
+      .profileImage {
+         width: 45px;
+         height: 45px;
+         flex: 0 0 auto;
+
+         img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50px;
+         }
+      }
+
+      .primaryTag {
+         font-size: 10px;
+         background-color: $primaryClr;
+         color: var(--surface);
+         padding: 2px 5px;
+         border-radius: 3px;
+      }
+
+      .pro-menu-item {
+         padding: 15px;
+
+         .pro-icon-wrapper {
+            margin-right: 15px;
+         }
+
+         &.active {
+            background: var(--accent-weak) !important;
+         }
+      }
+
+      .bottom {
+         border-top: 1px solid #ececef;
+         margin: 0 15px;
+      }
+
+      .pro-inner-item {
+         position: relative;
+
+         img {
+            left: 0 !important;
+            transform: translate(0, -50%) !important;
+         }
+      }
+   }
+}
+
+.profiltInfoBox {
+   position: revert !important;
+   z-index: 9996 !important;
+
+   &>.MuiBackdrop-root {
+      opacity: 0 !important;
+      display: none !important;
+   }
+
+   .MuiPopover-paper {
+      min-width: 235px;
+      max-width: 235px;
+      border-radius: 5px;
+      margin-left: 15px;
+      z-index: 9996 !important;
+
+      .header {
+         /* background-color: #e9edff; */
+         background-color: var(--surface);
+         padding: 15px;
+         display: flex;
+         gap: 0 10px;
+      }
+
+      .MuiList-root {
+         padding: 0 !important;
+      }
+
+      .profileImage {
+         width: 45px;
+         height: 45px;
+         flex: 0 0 auto;
+
+         img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50px;
+         }
+      }
+
+      .primaryTag {
+         font-size: 10px;
+         background-color: $primaryClr;
+         color: var(--surface);
+         padding: 2px 5px;
+         border-radius: 3px;
+      }
+
+      .pro-menu-item {
+         padding: 15px;
+
+         .pro-icon-wrapper {
+            margin-right: 15px;
+         }
+
+         &.active {
+            background: var(--accent-weak) !important;
+         }
+      }
+
+      .bottom {
+         border-top: 1px solid #ececef;
+         margin: 0 15px;
+      }
+
+      .pro-inner-item {
+         position: relative;
+
+         img {
+            left: 0 !important;
+            transform: translate(0, -50%) !important;
+         }
+      }
+   }
+}
+
+.Tltpsmall.MuiTooltip-tooltip {
+   margin-bottom: 12px;
+   padding: 8px;
+   font-size: 12px;
+   box-shadow: 2px 2px 15px #00000029;
+}
+
+:root {
+   --toastify-color-info: var(--accent) !important;
+   --toastify-color-success: var(--accent) !important;
+   --toastify-color-warning: #CF7343 !important;
+   --toastify-color-error: var(--down) !important;
+}
+
+.Toastify {
+
+   .Toastify__toast-container--top-right {
+      top: 100px;
+   }
+
+   .Toastify__toast {
+      /*min-height: 42px;*/
+      min-height: 68px;
+   }
+
+   .Toastify__toast-body {
+      .Toastify__toast-icon {
+         margin-inline-end: 12px;
+      }
+
+      line-height: 24px;
+      font-size: 14px;
+      font-family: "Regular";
+   }
+
+   .Toastify__toast--info {
+      background: $lightPrimaryClr;
+      color: var(--ink);
+      /*border: 1px solid var(--ink-3);*/
+   }
+
+   .Toastify__toast--success {
+      background: var(--surface);
+      color: var(--ink);
+      /*border: 1px solid var(--accent);*/
+   }
+
+   .Toastify__toast--warning {
+      background: var(--surface);
+      color: var(--ink);
+      /*border: 1px solid #CF7343;*/
+   }
+
+   .Toastify__toast--error {
+      background: #FEF6F6;
+      color: var(--ink);
+      /*border: 1px solid var(--down);*/
+   }
+
+   .Toastify__progress-bar {
+      height: 2px
+   }
+}
+
+::-webkit-input-placeholder {
+   /* WebKit, Blink, Edge */
+   color: $darkgrayClr;
+   opacity: 1;
+}
+
+:-moz-placeholder {
+   /* Mozilla Firefox 4 to 18 */
+   color: $darkgrayClr;
+   opacity: 1;
+}
+
+::-moz-placeholder {
+   /* Mozilla Firefox 19+ */
+   color: $darkgrayClr;
+   opacity: 1;
+}
+
+:-ms-input-placeholder {
+   /* Internet Explorer 10-11 */
+   color: $darkgrayClr;
+   opacity: 1;
+}
+
+::-ms-input-placeholder {
+   /* Microsoft Edge */
+   color: $darkgrayClr;
+   opacity: 1;
+}
+
+::placeholder {
+   /* Most modern browsers support this now. */
+   color: $darkgrayClr;
+   opacity: 1;
+}
+
+.darkgray {
+   color: $darkgrayClr !important;
+}
+
+.lightgray {
+   color: $lightgrayClr !important;
+}
+
+.bgPrimaryClr {
+   background-color: $primaryClr !important;
+   color: var(--surface) !important;
+}
+
+.PentanaryClr {
+   color: $pentanaryClr !important;
+
+   path {
+      fill: $pentanaryClr !important;
+   }
+}
+
+.yellowClr {
+   color: $yellow !important;
+}
+
+.yellowhvrClr:hover {
+   color: $yellow !important;
+}
+
+.bgPentanaryClr {
+   background-color: $pentanaryClr !important;
+}
+
+.primaryClr {
+   color: $primaryClr !important;
+}
+
+.pipeClr {
+   color: var(--ink-4) !important;
+}
+
+.primaryActive {
+   background-color: var(--accent-weak) !important;
+   color: $primaryClr !important;
+
+   path {
+      fill: $primaryClr !important;
+   }
+}
+
+.projectFavIcon {
+   border: 1px solid $pentanaryClr;
+   border-radius: 5px;
+   background: var(--surface);
+   height: 52px;
+   padding: 6px;
+
+   .img-br {
+      height: 40px;
+      width: 40px;
+      border: 1px solid transparent;
+      border-radius: 5px;
+   }
+}
+
+.redIcon path {
+   fill: $redClr !important;
+}
+
+.darkhover {
+   text-decoration: none;
+   background-color: rgb(95, 62, 144);
+   /*box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);*/
+}
+
+.lighthover {
+   box-shadow: none !important;
+   background-color: var(--surface-2) !important;
+   color: var(--accent) !important;
+}
+
+.tooltip-design {
+   background: $whiteClr !important;
+   // box-shadow: 0px 1px 4px #00001199 !important;
+   box-shadow: 2px 2px 15px #00000029 !important;
+}
+
+.f-semi {
+   font-family: "SemiBold" !important;
+}
+
+.secondaryClr {
+   color: var(--ink-3) !important;
+}
+
+.text-underline {
+   text-decoration: underline !important;
+}
+
+.hvr-text-underline:hover {
+   text-decoration: underline !important;
+}
+
+.hvr-underline {
+   position: relative;
+   text-decoration: none;
+
+   &:hover {
+      color: $primaryClr;
+      /*text-decoration: underline !important;*/
+   }
+
+   &::before {
+      content: "";
+      position: absolute;
+      display: block;
+      width: 100%;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: $primaryClr;
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+   }
+
+   &:hover::before {
+      transform: scaleX(1);
+   }
+}
+
+.d-content {
+   display: contents !important;
+}
+
+.text-center {
+   text-align: center !important;
+}
+
+.text-left {
+   text-align: left !important;
+}
+
+.text-right {
+   text-align: right !important;
+}
+
+.text-justify {
+   text-align: justify !important;
+}
+
+.text-capital {
+   text-transform: capitalize !important;
+}
+
+.f10x {
+   font-size: 10px !important;
+}
+
+.f12x {
+   font-size: 12px !important;
+}
+
+.f13x {
+   font-size: 13px !important;
+}
+
+.f14x {
+   font-size: 14px !important;
+}
+
+.f15x {
+   font-size: 15px !important;
+}
+
+.f16x {
+   font-size: 16px !important;
+}
+
+.f18px {
+   font-size: 18px !important;
+}
+
+.f18x {
+   font-size: 18px !important;
+}
+
+.f20x {
+   font-size: 20px !important;
+}
+
+.f24x {
+   font-size: 24px !important;
+}
+
+.f26x {
+   font-size: 26px !important;
+}
+
+.f40x {
+   font-size: 40px !important;
+}
+
+.cursorP {
+   cursor: pointer !important;
+}
+
+.cursorD {
+   cursor: default !important;
+}
+
+.lh14x {
+   line-height: 14px !important;
+}
+
+.lh18x {
+   line-height: 18px !important;
+}
+
+.lh20x {
+   line-height: 20px !important;
+}
+
+.lh21x {
+   line-height: 21px !important;
+}
+
+.lh22x {
+   line-height: 22px !important;
+}
+
+.lh24x {
+   line-height: 24px !important;
+}
+
+.lh28x {
+   line-height: 28px !important;
+}
+
+.lh30x {
+   line-height: 30px !important;
+}
+
+.lh32x {
+   line-height: 32px !important;
+}
+
+.lh40x {
+   line-height: 40px !important;
+}
+
+.lh42x {
+   line-height: 42px !important;
+}
+
+.w15x {
+   width: 15px !important;
+}
+
+.w10pg {
+   width: 10% !important;
+}
+
+.w20pg {
+   width: 20% !important;
+}
+
+.w25pg {
+   width: 25% !important;
+}
+
+.w30pg {
+   width: 30% !important;
+}
+
+.w40pg {
+   width: 40% !important;
+}
+
+.w55pg {
+   width: 55% !important;
+}
+
+.w60pg {
+   width: 60% !important;
+}
+
+.w70pg {
+   width: 70% !important;
+}
+
+.w80pg {
+   width: 80% !important;
+}
+
+.h14x {
+   height: 14px !important;
+}
+
+.h20x {
+   height: 20px !important;
+}
+
+.h23x {
+   height: 23px !important;
+}
+
+.h24x {
+   height: 24px !important;
+}
+
+.h28x {
+   height: 28px !important;
+}
+
+.h30x {
+   height: 30px !important;
+}
+
+.h34x {
+   height: 34px !important;
+}
+
+.h38x {
+   height: 38px !important;
+}
+
+.h43x {
+   height: 43px !important;
+}
+
+.h300x {
+   height: 300px !important;
+}
+
+.h60vh {
+   height: 60vh !important;
+}
+
+.h80vh {
+   height: 80vh !important;
+}
+
+.h100vh {
+   height: 100vh !important;
+}
+
+.minH28x {
+   min-height: 28px !important;
+}
+
+.minH118x {
+   min-height: 118px !important;
+}
+
+.minH240x {
+   min-height: 240px !important;
+}
+
+.minH275x {
+   min-height: 275px !important;
+}
+
+.minW150x {
+   min-width: 150px !important;
+}
+
+.minW180x {
+   min-width: 180px !important;
+}
+
+.maxW75pg {
+   max-width: 75% !important;
+}
+
+.maxW80pg {
+   max-width: 80% !important;
+}
+
+.maxW85pg {
+   max-width: 85% !important;
+}
+
+.maxW90pg {
+   max-width: 90% !important;
+}
+
+.maxW100pg {
+   max-width: 100% !important;
+}
+
+.maxh140x {
+   max-height: 140px !important;
+}
+
+.maxh200x {
+   max-height: 200px !important;
+}
+
+.maxh220x {
+   max-height: 220px !important;
+}
+
+.maxh320x {
+   max-height: 320px !important;
+}
+
+.maxh268x {
+   max-height: 268px !important;
+}
+
+.overflow-y-auto {
+   overflow-y: auto !important;
+}
+
+.no-outline {
+   outline: none !important;
+}
+
+.lightscroll .scrollbar-thumb {
+   background: rgba(0, 0, 0, .05) !important;
+}
+
+.scroll-y-trnspnt .scrollbar-track-y {
+   background: transparent !important;
+}
+
+.p20x {
+   padding: 20px !important;
+}
+
+.p-l24x {
+   padding-left: 24px !important;
+}
+
+.m-t3 {
+   margin-top: 3px !important;
+}
+
+.m-l8 {
+   margin-left: 8px !important;
+}
+
+.m-b8 {
+   margin-bottom: 8px !important;
+}
+
+.m-r3 {
+   margin-right: 3px !important;
+}
+
+.borderLigClr {
+   border: 1px solid $pentanaryClr;
+}
+
+.bdr-3x {
+   border-radius: 3px !important;
+}
+
+.bdr-4x {
+   border-radius: 4px !important;
+}
+
+.bdr-5x {
+   border-radius: 5px !important;
+}
+
+.fw600 {
+   font-weight: 600 !important;
+}
+
+.truncate-threeline {
+   display: block;
+   display: -webkit-box;
+   -webkit-line-clamp: 3;
+   -webkit-box-orient: vertical;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+
+
+
+
+/* All Project Toggle- Starts */
+.project-toggleSelect {
+   &.sm {
+      height: 43px;
+      background-color: var(--surface);
+      border: 1px solid var(--line) !important;
+
+      .MuiSelect-select {
+         padding-right: 30px !important;
+         padding-left: 10px !important;
+         line-height: 43px !important;
+         color: var(--ink) !important;
+
+         span.text-truncate {
+            color: var(--ink) !important;
+            font-size: 14px !important;
+            text-transform: capitalize !important;
+            font-family: 'SemiBold' !important;
+         }
+      }
+
+      .downArrow {
+         position: absolute;
+         right: 10px;
+         cursor: default;
+      }
+
+      fieldset {
+         height: 43px !important;
+         top: 0px !important;
+         border: none !important;
+      }
+
+   }
+}
+
+.project-gridButtons {
+   display: flex;
+   text-align: center !important;
+   justify-content: space-around;
+   margin: 0;
+   box-shadow: none !important;
+   padding: 0px !important;
+   position: sticky;
+   bottom: 0;
+   width: 100%;
+   background-color: white;
+   border-top: 1px solid $pentanaryClr;
+   height: 40px !important;
+
+   .addbtn,
+   a {
+      line-height: 40px !important;
+      text-transform: capitalize;
+      font-size: 12px !important;
+      cursor: pointer !important;
+      width: 50% !important;
+
+      &.textClr {
+         color: var(--ink) !important;
+      }
+   }
+
+   .project-divider {
+      height: 38px !important;
+      color: $pentanaryClr !important;
+   }
+}
+
+.project-dropList {
+   &::-webkit-scrollbar {
+      width: 3px;
+      height: 5px;
+   }
+
+   &::-webkit-scrollbar-thumb {
+      background-color: var(--accent);
+      border-radius: 20px;
+   }
+
+   /*&::-webkit-scrollbar-track {
+      background: #e9edff;  
+   }*/
+
+   ul {
+      padding: 0px !important;
+
+      li {
+         height: 54px !important;
+         color: var(--ink) !important;
+         padding: 5px 10px !important;
+
+         &:hover {
+            background-color: var(--surface-2) !important;
+            // border-radius: 5px; 
+         }
+
+         &.Mui-selected {
+            background-color: var(--accent-weak) !important;
+            // border-radius: 5px;
+         }
+      }
+   }
+}
+
+/* All Project Toggle- Ends */
+
+/* ACTION TOGGLE STARTS (THREE DOTS) */
+.actionToggleIcon {
+   position: relative !important;
+   appearance: none;
+   border: 0;
+   background: transparent;
+   color: inherit;
+   font: inherit;
+   padding: 0;
+   cursor: pointer !important;
+}
+
+.MenuIconlist {
+   right: 20px;
+   top: 0;
+   max-width: 160px;
+   margin-top: 10px;
+}
+
+.normalToggleList {
+   position: absolute;
+   background-color: var(--surface);
+   border: none;
+   border-radius: 5px;
+   box-shadow: 0px 2px 4px #00000029;
+   min-width: 80px;
+   cursor: default;
+   z-index: 1;
+}
+
+.table-header-list {
+   /*.MuiCheckbox-root{
+      color: var(--ink-4);
+   }*/
+
+   .MuiFormControlLabel-root {
+      height: 36px;
+
+      .MuiTypography-root {
+         font-size: 14px;
+         font-weight: unset;
+      }
+   }
+}
+
+.actionToggleList {
+   position: absolute;
+   /*bottom: 5px;*/
+   top: unset;
+   background-color: var(--surface);
+   border: none;
+   border-radius: 5px;
+   box-shadow: 0px 2px 4px #00000029;
+   min-width: 80px;
+   cursor: default;
+   z-index: 1;
+
+   ul {
+      padding: 10px !important;
+      border: none;
+      border-radius: 5px;
+      cursor: default !important;
+
+      li {
+         padding: 5px 10px;
+         line-height: 18px !important;
+         font-size: 14px !important;
+         font-family: 'Regular';
+         color: var(--ink);
+         text-transform: capitalize;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer !important;
+
+         &:hover {
+            background-color: var(--surface-2) !important;
+            color: var(--accent) !important;
+         }
+      }
+
+      li+li {
+         margin-top: 5px !important;
+      }
+   }
+
+}
+
+/* ACTION TOGGLE ENDS (THREE DOTS) */
+
+// Responsive Modal-Box
+@media (max-width:440px) and (min-width:320px) {
+
+   .Toggle-Modal {
+
+      .modal-box {
+         border-radius: 5px;
+         height: 60% !important;
+         width: 80% !important;
+      }
+   }
+
+   .Property-Toggle-Modal {
+
+      .modal-box {
+         border-radius: 5px;
+         height: 60% !important;
+         width: 80% !important;
+      }
+   }
+}
+
+@media (max-width:658px) and (min-width:440px) {
+
+   .Toggle-Modal {
+
+      .modal-box {
+         border-radius: 5px;
+         height: 60% !important;
+         width: 60% !important;
+      }
+   }
+
+   .Property-Toggle-Modal {
+
+      .modal-box {
+         border-radius: 5px;
+         height: 60% !important;
+         width: 60% !important;
+      }
+   }
+}
+
+//Sidebar submenu
+.submenuIcon {
+   .hover {
+      position: absolute;
+      display: none;
+   }
+}
+
+.submenuIcon {
+   .item {
+      padding-left: 16px !important;
+   }
+}
+
+.submenuIcon {
+   &:hover {
+      .hover {
+         position: absolute;
+         display: block;
+      }
+   }
+}
+
+//Tooltip modal
+
+.z9999 {
+   z-index: 9999 !important;
+}
+
+.newlightTxtClr {
+   color: #C9C8C8 !important;
+}
+
+//Box-shadow effect
+.css-m838pp-MuiTooltip-tooltip {
+   box-shadow: 2px 2px 15px #00000029 !important;
+}
+
+//@at-root
+.progressCard,
+.projectCard {
+   background-color: var(--surface-2);
+   padding: 20px;
+   border-radius: 5px;
+}
+
+.projectCard:hover {
+   outline: 2px solid var(--accent);
+   transition: all .1s ease-in-out 0s;
+}
+
+//Sidebar heading pointer sensitivity
+.pro-sidebar-header {
+   cursor: pointer;
+}
+
+.wd-title {
+   font-size: 22px !important;
+   line-height: 24px !important;
+   margin-bottom: 5px !important;
+}
+
+.wd-subTitle {
+   font-size: 14px !important;
+   line-height: 20px !important;
+   color: var(--ink-3) !important;
+   // color: #868080 !important; 
+}
+
+// .customSelectPdng{
+//    margin-top: 5px !important;
+// }
+// .css-1poimk-MuiPaper-root-MuiMenu-paper-MuiPaper-root-MuiPopover-paper{
+//    margin-top: 5px !important;
+// }
+
+
+
+//addbutton
+.wd-btn-add {
+   &:hover {
+      -webkit-text-decoration: none !important;
+      text-decoration: none !important;
+      background-color: rgb(95, 62, 144) !important;
+      box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12) !important;
+      color: var(--surface) !important;
+   }
+}
+
+.complable {
+   padding: 2px var(--sp-2);
+   background: var(--surface-2);
+   line-height: 16px;
+   box-shadow: none;
+   border: none;
+   border-radius: var(--r-pill);
+   font-size: 11px;
+   color: var(--ink-3);
+   font-weight: 600;
+   letter-spacing: 0.08em;
+   text-transform: uppercase;
+}
+
+.lnkcomplable {
+   display: flex;
+   align-items: center;
+}
+
+.compAi {
+   position: absolute !important;
+   margin-left: 22px;
+   margin-bottom: 20px;
+
+   .BaseBadge-badge {
+      height: 6px !important;
+      min-width: 6px !important;
+      /* the "new" marker is accent -- red is reserved for a declining rank */
+      background-color: var(--accent) !important;
+   }
+}
+
+.pro-sidebar {
+   &:hover {
+      .compAi {
+         visibility: hidden !important;
+      }
+   }
+}
+
+.linkColor {
+   color: #868080;
+}
+
+.linknvrColor:hover {
+   color: var(--accent) !important;
+
+   path {
+      fill: var(--accent) !important;
+   }
+}
+
+.topCompSearch {
+   input {
+      width: 280px !important;
+   }
+}
+
+.chart_long_yaxis .apexcharts-yaxis {
+   transform: translate(40px, 0);
+}
+
+
+//Region Dropdown
+.noOptn {
+   display: flex;
+   justify-content: center;
+   color: var(--ink-3) !important;
+   margin: 5px 0px !important;
+}
+
+.rgnName {
+   word-wrap: break-word;
+   white-space: normal;
+}
+
+.rgnSelect .downArrow {
+   margin-top: 10px !important;
+}
+
+.rgrndrName img {
+   margin-right: 10px !important;
+}
+
+//Region Dropdown

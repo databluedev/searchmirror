@@ -1,0 +1,1823 @@
+// ---------------------------------------------------------------------------
+// shell layer -- see docs/DESIGN.md
+//
+// The application chrome: page canvas, left rail, page header, avatar and the
+// loading states. Imported after _modern.scss so it is the last word on the
+// shell without editing style.scss or dev_style.scss, both of which are shared
+// with the pages other agents own.
+//
+// Tokens only. If a value is not in _tokens.scss it does not belong here.
+// ---------------------------------------------------------------------------
+
+// ---- shell metrics ------------------------------------------------------
+// The rail is `position: fixed`, so nothing downstream of it can measure its
+// width through the DOM. sidebar.js puts a single class on <body> and every
+// box that has to sit clear of the rail -- the page canvas, the collapse
+// control -- reads --rail-w from here instead of repeating 60px in three
+// stylesheets.
+//
+// --page-max replaces style.scss's `@media (min-width: 1600px) { .layout > div
+// { width: 80% } }`. A percentage keeps widening the measure, so on a 27"
+// display a table row ran past 2000px and stopped being readable.
+//
+// These are shell *metrics*, not design tokens -- they describe this app's
+// chrome, and client-app's chrome is a different shape. --elev-1 / --elev-2
+// are the opposite: they are tokens, they belong to both apps, and they live
+// in _tokens.scss. This file defined them briefly, before _tokens.scss had
+// them; because _shell.scss imports last that duplicate silently won, and app/
+// and client-app ended up drawing the same card with two different shadows.
+// Deleted -- one definition, in the file whose job it is.
+//
+// --shell-head-h is the one number that squares the shell's grid. The rail's
+// logo block and the top bar are both exactly this tall and both end on the
+// same hairline, so the seam runs unbroken across the top of the app instead
+// of the two blocks ending wherever their own padding put them. It is also
+// what the canvas clears and what the collapse control centres on -- four
+// consumers, one number, stated once.
+:root {
+  --rail-expanded: 248px;
+  --rail-collapsed: 68px;
+  --rail-w: var(--rail-expanded);
+  --rail-inset: 14px;
+  --page-max: 1400px;
+  --shell-head-h: 64px;
+  --shell-gutter: var(--sp-6);
+}
+
+body.railCollapsed {
+  --rail-w: var(--rail-collapsed);
+}
+
+// Below 576px the drawer replaces the rail, so the rail costs no width. Set on
+// <body> rather than :root because `body.railCollapsed` above sets it on body
+// too, and a declaration on the closer element wins the inheritance chain no
+// matter which media query it came from. Sidebar unmounts at this breakpoint
+// and its cleanup drops .railCollapsed, so without this the variable would
+// spring back to the 248px default with no rail on screen to justify it.
+@media (max-width: 575.98px) {
+  body,
+  body.railCollapsed {
+    --rail-w: 0px;
+  }
+}
+
+// ---- canvas -------------------------------------------------------------
+// Page ground is --paper; content sits on --surface cards.
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+}
+
+// One page shell for every screen: the same gutter, the same measure, the same
+// rhythm between blocks. It is enforced from here rather than asked of each
+// page, because asking is what produced 20px of padding on one screen and 10px
+// on the next.
+//
+// Deliberate deviation: `margin-left` is transitioned, which docs/DESIGN.md
+// forbids for offsets. The rail already carries the same accepted deviation on
+// `width` (style.scss, `transition: all .15s`); letting the canvas snap while
+// the rail slides is worse than either. Under prefers-reduced-motion --dur is
+// ~0 and both stop.
+.layout {
+  background-color: var(--paper);
+  margin-left: var(--rail-w);
+  max-width: 100%;
+  overflow-x: hidden;   // wide tables scroll in their own box, never the page
+  // Top padding clears the fixed .appBar and then adds the page's own head
+  // room, so the first block starts a fixed distance below the bar's hairline
+  // at every width rather than a distance that depends on the bar's height.
+  padding: calc(var(--shell-head-h) + var(--sp-5)) var(--shell-gutter) var(--sp-7);
+  transition: margin-left var(--dur) var(--ease);
+
+  // Every top-level block shares one measure and one centre line, so the page
+  // header, the stat row and the table start and end on the same axis.
+  > * {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: var(--page-max);
+    min-width: 0;
+  }
+
+  // Section rhythm -- 32px, docs/PRODUCT-DESIGN.md section 4.
+  > * + * {
+    margin-top: var(--sp-6);
+  }
+
+  // The page header carries its own gap below it; the block under it must not
+  // add a second one.
+  > header + *,
+  > .page-head + *,
+  > .wd-head + *,
+  > .ls-head + *,
+  > .SR-head + * {
+    margin-top: 0;
+  }
+}
+
+// style.scss stretches every direct child to 80% of the viewport above 1600px.
+// Same specificity, later import, so this is the one that lands: the measure is
+// --page-max at any viewport and the page centres inside the remaining room.
+@media (min-width: 1600px) {
+  .layout > div {
+    margin-left: auto;
+    margin-right: auto;
+    width: auto;
+  }
+}
+
+// One gutter drives the canvas and the top bar, so narrowing it here moves
+// both and the left axis stays one line.
+@media (max-width: 1199px) {
+  :root {
+    --shell-gutter: var(--sp-5);
+  }
+
+  .layout {
+    padding-bottom: var(--sp-6);
+    padding-top: calc(var(--shell-head-h) + var(--sp-4));
+  }
+}
+
+@media (max-width: 575.98px) {
+  .layout {
+    margin-left: 0;
+    // 70px of head room clears the fixed .mobileHeader.
+    padding: 70px var(--sp-4) var(--sp-5);
+  }
+}
+
+// ---- other things that clear the rail -----------------------------------
+// `.layout` is not the only box that starts where the rail ends. These two are
+// `position: fixed` bars declared in dev_style.scss against `left: 60px` -- the
+// old permanently-collapsed rail. With the rail at 248px they were sliding
+// 188px underneath it. Corrected here rather than in dev_style.scss so that
+// every offset from the rail is stated in one file, and so the mobile case
+// falls out of --rail-w instead of needing a reset per consumer.
+//
+// .reFreshing also carried `width: 96%`, which was a stand-in for `right: 0`
+// that only held while the rail was 60px (4% of a 1440px viewport is ~58px).
+// It has a real `right: 0`, so `width: auto` lets the pair govern at any width.
+// Its own `@media (max-width: 575.98px)` block keeps !important on both, so the
+// phone layout is unchanged.
+// The refresh progress indicator. It was a full-width, 12vh slab pinned across
+// the bottom of the canvas -- a lot of chrome for "ranking in progress", and it
+// floated awkwardly over the last rows. A compact card in the bottom-right
+// corner reads as a toast: present, dismissible-looking, out of the content's
+// way. Offsets clear the rail on the left and the viewport edge on the right.
+.reFreshing {
+  left: auto;
+  right: var(--sp-5);
+  bottom: var(--sp-5);
+  width: 340px;
+  max-width: calc(100vw - var(--rail-w) - var(--sp-6));
+  height: auto !important;
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--elev-2);
+  justify-content: flex-start;
+
+  .refreshProgressContent {
+    width: 100%;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .reFreshing {
+    left: var(--sp-3) !important;
+    right: var(--sp-3) !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+}
+
+.Managetag .footer {
+  left: var(--rail-w);
+}
+
+// ---- left rail ----------------------------------------------------------
+// docs/DESIGN.md, "Nav (left rail)": --surface ground, right hairline, items
+// 40x40 at --r-sm, active --accent-weak fill with an --accent icon, hover
+// --surface-2.
+//
+// Behaviour changed here. The rail used to be permanently `collapsed` and grow
+// to 250px on :hover, so it opened whenever the pointer crossed it on the way
+// to something else, and it never told you where you were. It is now a
+// persistent panel with an explicit toggle (`.railToggle`), remembered per
+// user -- the convention the parent product already follows. Width comes from
+// --rail-w, which follows the React state, so :hover and .active no longer
+// touch it.
+.pro-sidebar {
+  // one hairline, on the inner panel -- _modern.scss puts one on both
+  border-right: 0;
+
+  // react-pro-sidebar sizes the rail at 100vh, which on Windows Chrome at 125%
+  // rounds taller than the visible window and pushed the avatar card at the
+  // bottom off-screen. Track the real viewport instead, like the shell.
+  height: 100vh;
+  height: 100dvh;
+  .pro-sidebar-inner { height: 100vh; height: 100dvh; }
+
+  // style.scss and dev_style.scss both grow the rail on :hover and on .active
+  // with !important, and react-pro-sidebar writes the width inline. This is
+  // the later import, so it is the one that lands.
+  //
+  // The rail sizes itself from its own `.collapsed` class rather than from
+  // --rail-w: the class is on the element React re-renders, so the two can
+  // never disagree, not even for the frame before the <body> class catches up.
+  // --rail-w carries the same number outward, to the canvas and the toggle.
+  &,
+  &:hover,
+  &.active {
+    min-width: var(--rail-expanded) !important;
+    width: var(--rail-expanded) !important;
+  }
+
+  &.collapsed,
+  &.collapsed:hover,
+  &.collapsed.active {
+    min-width: var(--rail-collapsed) !important;
+    width: var(--rail-collapsed) !important;
+  }
+
+  // The rail is part of the page now, not something that floats over it, so it
+  // is held by its hairline alone. `.active` (a rail popover is open) and
+  // :hover are shadowed in style.scss / dev_style.scss; both are cancelled.
+  &,
+  &.collapsed,
+  &:hover,
+  &.active {
+    box-shadow: none !important;
+  }
+
+  .pro-sidebar-inner {
+    background-color: var(--surface) !important;
+    border-right: 1px solid var(--line);
+    color: var(--ink-2);
+  }
+
+  // The nav column is the flexible one: header and footer take their content
+  // height and the scroller gets the rest. It used to be pinned to
+  // `calc(100vh - 125px)`, a number that stopped being true the moment the
+  // header or footer changed.
+  // The nav column is the flexible one, and it is also the one box in the rail
+  // that scrolls: header, project switcher and footer are all pinned, so the
+  // overflow lives here and they stay put. react-pro-sidebar's own overflow is
+  // on the whole `.pro-sidebar-layout`, which scrolls the header and footer with
+  // the nav and paints the platform's heavy default scrollbar down the rail's
+  // edge; owning the scroll here keeps the chrome still and lets the bar be
+  // slimmed to a hairline -- thin, theme-aware, and unobtrusive without being
+  // hidden, so overflowing sections can still be reached.
+  .pro-sidebar-inner #my-scrollbar {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--line);
+      border-radius: var(--r-pill);
+    }
+
+    &:hover::-webkit-scrollbar-thumb {
+      background-color: var(--ink-4);
+    }
+  }
+
+  // The logo block is one of the two halves of the shell's top seam: it is
+  // --shell-head-h tall and its hairline is the same hairline the top bar
+  // ends on, so the two meet as one line across the app. It used to take its
+  // height from 15px of padding around a 36px mark, which put its edge a few
+  // pixels off from anything it could have lined up with.
+  // `flex: 0 0 auto` because the nav column is the only one that may give.
+  // Measured in Chrome: with every section opened past the viewport, the flex
+  // column shrank all three children and the logo block came out 46px tall --
+  // the seam broke at exactly the moment the user could see it break.
+  .pro-sidebar-header {
+    align-items: center;
+    border-bottom: 1px solid var(--line) !important;
+    box-sizing: border-box;
+    display: flex;
+    flex: 0 0 auto;
+    height: var(--shell-head-h);
+    margin-bottom: var(--sp-2);
+    padding: 0 var(--rail-inset);
+
+    a {
+      text-decoration: none;
+    }
+
+    .logotext {
+      align-items: center;
+      display: flex;
+      gap: 0 var(--sp-3);
+    }
+
+    // 40 wide so the mark centres on the same axis as the rail icons
+    .imgLayer {
+      align-items: center;
+      border-radius: var(--r-sm);
+      min-width: 40px !important;
+      min-height: 40px !important;
+    }
+
+    // The SearchMirror logotype. Its own class rather than the .fsL font-size
+    // utility, which carries `!important: 26px` and was overriding the intended
+    // size. Space Grotesk, one confident weight, tight tracking; a subtle
+    // weight/tone drop on "Search" makes it read as a designed mark rather than
+    // a heading. Blue stays reserved for links/focus.
+    .brandWord {
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      white-space: nowrap;
+
+      .brandWord__s {
+        color: var(--ink-3);
+        font-weight: 500;
+      }
+    }
+  }
+
+  // ---- project switcher -------------------------------------------------
+  // The active project, under the brand and above the nav: a bordered box
+  // (icon + name + up/down chevron) with a manage gear beside it, the way the
+  // reference tool shows it. Furniture, not slack -- content height, the
+  // scroller keeps the rest.
+  .railSwitcher {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--rail-inset) 0;
+
+    &--loading {
+      min-height: 44px;
+      padding-left: calc(var(--rail-inset) + var(--sp-2));
+    }
+
+    &__skeleton {
+      background-color: var(--surface-2);
+      border-radius: var(--r-sm);
+      flex: 1 1 auto;
+      height: 12px;
+      max-width: 120px;
+    }
+  }
+
+  // The switcher box (active trigger) and the empty-state add link share chrome.
+  .railSwitcher__box,
+  .railSwitcher__btn {
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    flex: 1 1 auto;
+    gap: var(--sp-2);
+    min-width: 0;
+    padding: var(--sp-2) var(--sp-3);
+    text-align: left;
+    text-decoration: none;
+    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+
+    &:hover {
+      background-color: var(--surface-2);
+      border-color: var(--ink-4);
+    }
+  }
+
+  .railSwitcher__mark,
+  .railSwitcher__addMark {
+    border-radius: var(--r-sm);
+    flex: 0 0 auto;
+    height: 20px;
+    width: 20px;
+  }
+
+  .railSwitcher__mark--skeleton {
+    background-color: var(--surface-2);
+    display: block;
+  }
+
+  .railSwitcher__addMark {
+    align-items: center;
+    background-color: var(--surface-2);
+    color: var(--ink-3);
+    display: flex;
+    font-size: 16px;
+    font-weight: 600;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .railSwitcher__meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .railSwitcher__name {
+    color: var(--ink);
+    flex: 1 1 auto;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.2;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .railSwitcher__domain {
+    color: var(--ink-3);
+    font-size: 11.5px;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .railSwitcher__chevron {
+    color: var(--ink-4);
+    flex: 0 0 auto;
+    height: 15px;
+    margin-left: auto;
+    width: 15px;
+  }
+
+  // Collapsed to 68px: hide the gear, drop the box chrome to a centred icon.
+  &.collapsed .railSwitcher {
+    justify-content: center;
+    padding: var(--sp-2) 0 0;
+
+    &--loading { padding-left: 0; }
+
+    .railSwitcher__skeleton { display: none; }
+  }
+
+  &.collapsed .railSwitcher__box,
+  &.collapsed .railSwitcher__btn {
+    background: transparent;
+    border-color: transparent;
+    flex: 0 0 auto;
+    gap: 0;
+    justify-content: center;
+    margin: 0 auto;
+    padding: var(--sp-1) 0;
+    width: 40px;
+
+    &:hover {
+      background-color: var(--surface-2);
+      border-color: transparent;
+    }
+  }
+
+  &.collapsed .railSwitcher__name,
+  &.collapsed .railSwitcher__meta,
+  &.collapsed .railSwitcher__chevron { display: none; }
+
+  // ---- group headings --------------------------------------------------
+  // docs/DESIGN.md micro-label. Thirteen flat entries gave the eye nothing to
+  // land on; named sections do. The heading is now the disclosure that opens
+  // its section as well -- thirteen items, four headings and an account row do
+  // not fit a 768px laptop, and the rail is the one piece of chrome that has
+  // to be legible without being read through a scrolling window.
+  //
+  // Collapsed to 68px there is no room for the word, so the heading becomes
+  // the hairline that separates the sections -- same element, same place in
+  // the flow, no layout shift when the rail reopens. It stays a real 20px
+  // click target with the hairline drawn through its middle, because a 1px
+  // target is not a control.
+  .railGroup {
+    align-items: center;
+    color: var(--ink-3);
+    display: flex;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    margin: var(--sp-5) 0 var(--sp-2);
+    min-height: 14px;
+    overflow: hidden;
+    padding: 0 var(--sp-4) 0 calc(var(--rail-inset) + var(--sp-1));
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    > span {
+      opacity: 1;
+      transition: opacity var(--dur) var(--ease);
+    }
+
+    &--first {
+      margin-top: var(--sp-2);
+    }
+  }
+
+  // The button form: same type and colour, sized and inset like a rail item so
+  // the sections and the destinations sit on one column.
+  .railGroup--btn {
+    background: transparent;
+    border: 0;
+    border-radius: var(--r-sm);
+    cursor: pointer;
+    height: 30px;
+    justify-content: space-between;
+    margin: var(--sp-1) var(--rail-inset);
+    min-height: 30px;
+    padding: 0 var(--sp-2) 0 var(--sp-1);
+    text-align: left;
+    transition: background-color var(--dur) var(--ease),
+                color var(--dur) var(--ease);
+    width: calc(100% - var(--rail-inset) - var(--rail-inset));
+
+    &:hover {
+      background-color: var(--surface-2);
+      color: var(--ink-2);
+    }
+
+    // Points right when the section is shut, down when it is open -- the same
+    // grammar the account and keyword disclosures already use.
+    .railGroup__chevron {
+      color: var(--ink-4);
+      flex: 0 0 auto;
+      transition: transform var(--dur) var(--ease);
+    }
+
+    &[aria-expanded="true"] .railGroup__chevron {
+      transform: rotate(90deg);
+    }
+  }
+
+  &.collapsed .railGroup {
+    border-top: 1px solid var(--line);
+    height: 0;
+    margin: var(--sp-3) var(--rail-inset);
+    min-height: 0;
+    padding: 0;
+
+    > span {
+      opacity: 0;
+    }
+
+    // the header already draws a hairline directly above this one
+    &--first {
+      border-top: 0;
+      margin-top: var(--sp-1);
+    }
+  }
+
+  // The collapsed button keeps a 20px target with the hairline through its
+  // centre: `height` is the box, the border is the mark, and the 10px margins
+  // above and below hold the same rhythm the static heading had.
+  &.collapsed .railGroup--btn {
+    background-image: linear-gradient(var(--line), var(--line));
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+    border-top: 0;
+    height: 20px;
+    margin: var(--sp-2) var(--rail-inset);
+    min-height: 20px;
+    padding: 0;
+    width: calc(100% - var(--rail-inset) - var(--rail-inset));
+
+    &:hover {
+      background-color: var(--surface-2);
+    }
+
+    .railGroup__chevron {
+      display: none;
+    }
+
+    // the header already draws a hairline directly above this one
+    &.railGroup--first {
+      background-image: none;
+      margin-top: var(--sp-1);
+    }
+  }
+
+  // ---- sections ---------------------------------------------------------
+  // A shut section is out of the flow entirely; `hidden` would be read the
+  // same way but a page stylesheet's `display` on .pro-menu would beat it.
+  .railSection:not(.is-open) {
+    display: none;
+  }
+
+  // Settings is the rail's tail, not a section: one item under a heading is a
+  // disclosure that earns nothing. Its own hairline joins it to the account
+  // row underneath rather than to the sections above.
+  .pro-menu.railTail {
+    border-top: 1px solid var(--line);
+    margin: var(--sp-3) var(--rail-inset) 0;
+    padding-top: var(--sp-2) !important;
+
+    .pro-menu-item {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+
+  // --- the row's link ---------------------------------------------------
+  // The rail and the drawer draw their rows from one component now (NAV_ITEMS
+  // / NavLinks in sidebar.js), and it puts the <Link> around the item rather
+  // than inside it, so the anchor is the block the row sits in.
+  //
+  // react-pro-sidebar lays an inset, absolutely positioned ::before over every
+  // anchor in a .pro-menu as a click catcher, and it assumed the anchor was
+  // inside the item. Around the item the anchor is static, so that pseudo-
+  // element resolves against the rail itself and covers all of it -- the last
+  // one painted was swallowing every click in the rail and sending it to
+  // Settings. The row is the link; it needs no catcher laid over it.
+  .pro-menu a {
+    color: inherit;
+    display: block;
+    text-decoration: none;
+
+    &::before {
+      content: none !important;
+    }
+  }
+
+  // --- item box ---------------------------------------------------------
+  // A 40x40 square inside the 68px collapsed rail: --rail-inset either side
+  // leaves 40px of item, centred on the icon. Expanded, the same inset gives a
+  // 220px item -- long enough for "Enterprise Keyword Navigator" to truncate
+  // rather than wrap.
+  .pro-menu .pro-menu-item {
+    border-radius: var(--r-sm);
+    color: var(--ink-2);
+    margin: var(--sp-1) var(--rail-inset);
+    overflow: hidden;
+    position: relative;
+    transition: background-color var(--dur) var(--ease),
+                color var(--dur) var(--ease);
+
+    // react-pro-sidebar lays a click-catching pseudo-element over collapsed
+    // items. It swallows the pointer, so the link underneath never gets hover
+    // and its tooltip never appears. The link already fills the box.
+    &::before {
+      content: none !important;
+    }
+
+    > .pro-inner-item {
+      color: inherit !important;
+      min-height: 40px;
+      padding: 0 !important;
+
+      > .pro-item-content {
+        align-items: center;
+        display: flex;
+        min-height: 40px;
+        width: 100%;
+      }
+    }
+
+    .item {
+      color: inherit;
+      font-size: 14px;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    // trailing affordance (the Keyword Research disclosure) sits at the far
+    // edge instead of at a hardcoded 35px, which only lined up at one width
+    .railTrail {
+      margin-left: auto;
+      padding-right: var(--sp-3);
+    }
+
+    &:hover {
+      background-color: var(--surface-2);
+      color: var(--ink);
+
+      .item {
+        background: transparent !important;
+        color: inherit;
+      }
+    }
+
+    // The fill alone was easy to miss at a glance -- it is a pale tint on a
+    // white rail. A 3px bar on the leading edge is the thing the eye finds
+    // first, and it survives being scanned peripherally in either state.
+    &.active {
+      background-color: var(--nav-accent-weak, var(--accent-weak)) !important;
+      color: var(--nav-accent, var(--accent)) !important;
+
+      .item {
+        background: transparent !important;
+        color: var(--nav-accent, var(--accent));
+        font-weight: 600;
+      }
+
+      // ::before is neutralised above (react-pro-sidebar's click catcher), so
+      // the indicator rides ::after.
+      &::after {
+        background-color: var(--nav-accent, var(--accent));
+        border-radius: 0 var(--r-pill) var(--r-pill) 0;
+        content: "";
+        height: 20px;
+        left: 0;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+      }
+    }
+  }
+
+  // Collapsed there is only the 40px square, so the disclosure chevron would
+  // land on top of the icon.
+  &.collapsed .pro-menu .pro-menu-item .railTrail {
+    display: none;
+  }
+
+  // --- label ------------------------------------------------------------
+  // Collapsed, the rail is 68px and the item box 40px, and the label starts
+  // 40px into that box (_icons.scss `.item { padding-left: 40px }`) -- so a
+  // 112px label had no room and react-pro-sidebar's overflow:hidden cut it to
+  // a single character: the column of "A", "D", "K", "C", "B" the user saw.
+  // Hide the label rather than clip it, and fade it back with the width.
+  //
+  // Opacity, not display: the label arrives *with* the width instead of
+  // popping in after it, which is what the accepted `transition: all`
+  // deviation needs. Under prefers-reduced-motion --dur is already ~0.
+  //
+  // Nothing accessible is lost -- every rail item carries title + aria-label,
+  // so both the tooltip and the accessible name are unchanged. The label is
+  // still in the DOM and still read; only paint changes.
+  //
+  // The :hover and .active reveals that used to sit here are gone with the
+  // hover-expand: the rail no longer changes width on either, so fading the
+  // labels in over a 68px column would just print them on top of the icons.
+  &.collapsed .pro-menu .pro-menu-item .item,
+  &.collapsed .pro-sidebar-header .brandWord {
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+  }
+
+  // The Keyword Research item is wrapped in a SidebarFooter inside the menu.
+  // Reset the footer chrome so it reads as one more rail item.
+  .pro-menu .pro-sidebar-footer {
+    background: transparent !important;
+    border: 0 !important;
+    margin: 0;
+    padding: 0 !important;
+  }
+
+  // --- icons ------------------------------------------------------------
+  // One family, inheriting the item's colour. Centred on the 40x40 box so the
+  // collapsed rail reads as a single column of squares. Offset is measured
+  // from .pro-inner-item, which starts 10px in from the rail edge.
+  .railIcon {
+    color: inherit;
+    flex: 0 0 auto;
+    height: 18px;
+    left: 20px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+  }
+
+  .railIcon.submenuChevron {
+    color: var(--ink-3);
+    height: 14px;
+    position: static;
+    transform: none;
+    width: 14px;
+  }
+
+  // --- "new" marker -----------------------------------------------------
+  // Was a MUI <Badge variant="dot" className="compAi">, and it did not work.
+  // dev_style.scss caps that dot at 6px through `.compAi .BaseBadge-badge`,
+  // but @mui/material 5.11.16 builds Badge's slot classes with
+  // getBadgeUtilityClass('MuiBadge'), so the element only ever carries
+  // `MuiBadge-badge` -- the cap matched nothing and the dot kept whatever
+  // emotion gave it. The colour override landed only because it also names
+  // `.MuiBadge-badge`. On top of that, `.compAi`'s absolute anchor in
+  // dev_style.scss was measured against the old 60px hover-expand rail.
+  //
+  // The rail no longer uses MuiBadge at all: this is a plain span, so its size
+  // and position are stated here and nothing in a library upgrade can move it.
+  // `.compAi` stays in dev_style.scss untouched -- progresscard.js still uses
+  // it, and that is not this file's call.
+  //
+  // Expanded there is a label, so the dot follows the words, which is what it
+  // is actually annotating. Collapsed there is no label, so it falls back to
+  // the icon's top-right corner with a --surface ring to hold it off the
+  // glyph. Accent, not the old red: red means a declining rank.
+  .railNew {
+    background-color: var(--nav-accent, var(--accent));
+    border-radius: var(--r-pill);
+    flex: 0 0 auto;
+    height: 6px;
+    margin-left: var(--sp-1);
+    width: 6px;
+  }
+
+  // 10px box, 2px ring, 6px of visible dot (box-sizing is border-box app-wide).
+  // The 40x40 item box centres its 18px icon on (20, 20), so the glyph ends at
+  // (29, 11); the dot sits across that corner and the ring separates the two.
+  &.collapsed .pro-menu .pro-menu-item .railNew {
+    border: 2px solid var(--surface);
+    height: 10px;
+    left: 25px;
+    margin-left: 0;
+    position: absolute;
+    top: 5px;
+    width: 10px;
+  }
+
+  // "Beta" tag: no rule here. The source rule (dev_style.scss) is the DESIGN.md
+  // micro-label -- 11px / 600 / 0.08em / uppercase / --ink-3 -- so the rail and
+  // the 12 sites outside it agree on one number instead of two.
+
+  // --- footer / avatar row ----------------------------------------------
+  > .pro-sidebar-inner > .pro-sidebar-layout > .pro-sidebar-footer,
+  .pro-sidebar-layout > .pro-sidebar-footer {
+    border-top: 1px solid var(--line) !important;
+    flex: 0 0 auto;   // furniture, not slack -- see .pro-sidebar-header
+    margin-bottom: 0;
+    // Extra bottom padding lifts the avatar card off the viewport edge. The
+    // shell is height:100vh and on Windows at 125% scaling 100vh can round a
+    // few px taller than the visible window, which sheared the bottom off the
+    // card ("Admin" showing, "View my profile" cut). The padding absorbs that
+    // overflow instead of the card content.
+    padding: var(--sp-2) 0 var(--sp-4);
+
+    &.active {
+      background: transparent !important;
+    }
+  }
+
+  .pro-sidebar-footer .profileButton {
+    border-radius: var(--r-sm);
+    margin: 0 var(--sp-2);
+    min-width: 40px;
+    padding: var(--sp-1) 0 !important;
+    transition: background-color var(--dur) var(--ease);
+    width: calc(100% - var(--sp-4));
+
+    &:hover {
+      background-color: var(--surface-2) !important;
+    }
+  }
+
+  .pro-sidebar-footer .profileName {
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .pro-sidebar-footer .profile p {
+    color: var(--ink-3);
+    font-size: 12.5px;
+  }
+}
+
+// ---- collapse control ---------------------------------------------------
+// A sibling of the rail, not a child of it: fixed off --rail-w, so it tracks
+// the rail's edge without depending on react-pro-sidebar's overflow, and it is
+// reachable in both states. It rides the boundary between rail and canvas,
+// which is the one place it means the same thing open or shut.
+//
+// `left` is a constant and the movement is a transform, so the offset animates
+// without transitioning a layout property -- docs/DESIGN.md, Motion.
+.railToggle {
+  align-items: center;
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  box-shadow: var(--elev-1);
+  color: var(--ink-3);
+  cursor: pointer;
+  display: flex;
+  height: 26px;
+  justify-content: center;
+  left: -13px;
+  padding: 0;
+  position: fixed;
+  // centred on the head band, so it rides the one seam it belongs to instead
+  // of straddling the boundary between the logo block and the first item
+  top: calc((var(--shell-head-h) - 26px) / 2);
+  transform: translateX(var(--rail-w));
+  transition: transform var(--dur) var(--ease),
+              background-color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              color var(--dur) var(--ease);
+  width: 26px;
+  z-index: 9996;   // dev_style.scss puts the collapsed rail on 9995
+
+  &:hover {
+    background-color: var(--surface-2);
+    color: var(--ink);
+  }
+
+  .railIcon {
+    height: 14px;
+    left: auto;
+    position: static;
+    top: auto;
+    transform: none;
+    transition: transform var(--dur) var(--ease);
+    width: 14px;
+  }
+
+  // Chevron points the way the rail will move: left to shut, right to open.
+  &[aria-expanded="true"] .railIcon {
+    transform: rotate(180deg);
+  }
+}
+
+// Below 576px the drawer replaces the rail entirely and there is nothing to
+// collapse.
+@media (max-width: 575.98px) {
+  .railToggle {
+    display: none;
+  }
+}
+
+// ---- top bar ------------------------------------------------------------
+// The other half of the shell's top seam. It is --shell-head-h tall and ends
+// on the same hairline as the rail's logo block, so the two read as one line
+// across the app rather than as two independently-padded boxes.
+//
+// Fixed rather than sticky: it is a sibling of .layout, and a sticky element
+// only sticks while an ancestor without `overflow` scrolls past it. Fixed
+// costs the canvas a stated amount of head room, and .layout's padding-top is
+// computed from the same variable, so the two cannot drift.
+//
+// Its inner box carries the canvas gutter and --page-max, which is what puts
+// the greeting on the same left axis as every page title underneath it.
+//
+// `left` is transitioned, the same accepted deviation .layout already carries
+// on `margin-left`: the bar and the canvas share one edge, and letting one of
+// them snap while the other slides is worse than either. --dur is ~0 under
+// prefers-reduced-motion, so both stop together.
+// `margin` and `padding` are reset explicitly: _common.scss styles every bare
+// <header> as a sticky page header with 10px 5px of padding and a 20px gap
+// below it, and inheriting that here would inset the bar's contents by five
+// pixels off the axis they exist to line up with.
+.appBar {
+  background-color: var(--paper);
+  border-bottom: 1px solid var(--line);
+  height: var(--shell-head-h);
+  left: var(--rail-w);
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  transition: left var(--dur) var(--ease);
+  z-index: 1000;   // under the rail (9995) and its toggle, over the canvas
+}
+
+.appBar__inner {
+  align-items: center;
+  display: flex;
+  gap: var(--sp-4);
+  height: 100%;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: var(--page-max);
+  padding: 0 var(--shell-gutter);
+}
+
+.appBar__hello {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// The cookie stores whatever the user typed at sign-up, so the capital is
+// applied here rather than assumed of the data.
+.appBar__name {
+  text-transform: capitalize;
+}
+
+// docs/DESIGN.md micro-label. It is the date, not a metric -- it earns its
+// place by giving the bar a right-hand anchor and nothing more, so it is the
+// quietest type on the screen and it is the first thing to go on a phone.
+.appBar__date {
+  color: var(--ink-3);
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .appBar__date {
+    display: none;
+  }
+}
+
+// The mobile header carries the mark and the drawer trigger; a second bar
+// under it would be two rows of chrome on the smallest screen.
+@media (max-width: 575.98px) {
+  .appBar {
+    display: none;
+  }
+}
+
+// --- popover menus (account, keyword research) ---------------------------
+// Rendered through a portal, so they sit outside .pro-sidebar.
+.profiltInfoBox,
+.keyInfoBox {
+  .MuiPopover-paper {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    box-shadow: 0 2px 4px var(--line-2), 0 16px 40px var(--line);
+  }
+
+  .header {
+    background-color: var(--surface) !important;
+    border-bottom: 1px solid var(--line);
+    padding: var(--sp-4) !important;
+  }
+
+  .bottom {
+    border-top: 1px solid var(--line) !important;
+  }
+
+  // uppercase chip = the DESIGN.md micro-label, same as .complable. Currently
+  // only used by a parked "UPGRADE" badge, so fix the numbers now rather than
+  // hand the next person a non-spec chip when they uncomment it.
+  .primaryTag {
+    background-color: var(--surface-2) !important;
+    border-radius: var(--r-pill);
+    color: var(--ink-3) !important;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 16px;
+    padding: 2px var(--sp-2);
+    text-transform: uppercase;
+  }
+
+  .pro-menu-item {
+    border-radius: var(--r-sm);
+    color: var(--ink-2);
+    margin: 2px var(--sp-2);
+    padding: var(--sp-2) var(--sp-3) !important;
+    transition: background-color var(--dur) var(--ease),
+                color var(--dur) var(--ease);
+
+    .railIcon {
+      color: inherit;
+      flex: 0 0 auto;
+    }
+
+    .item {
+      color: inherit;
+      font-size: 13.5px;
+      padding-left: var(--sp-3) !important;
+    }
+
+    &:hover {
+      background-color: var(--surface-2);
+      color: var(--ink);
+    }
+
+    &.active {
+      background-color: var(--nav-accent-weak, var(--accent-weak)) !important;
+      color: var(--nav-accent, var(--accent)) !important;
+    }
+  }
+
+  a {
+    text-decoration: none;
+  }
+}
+
+// --- project switcher menu -----------------------------------------------
+// Rendered through a portal, so it sits outside .pro-sidebar. Same card chrome
+// as the account and keyword popovers: --surface paper, hairline, layered
+// shadow. A fixed 248px matches the expanded rail so the menu reads as an
+// extension of the switcher it drops from.
+.railSwitcherMenu {
+  .MuiPopover-paper {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    box-shadow: 0 2px 4px var(--line-2), 0 16px 40px var(--line);
+    margin-top: var(--sp-1);
+    min-width: 248px;
+    overflow: hidden;
+  }
+
+  .railSwitcherMenu__list {
+    max-height: 320px;
+    overflow-y: auto;
+    padding: var(--sp-2);
+  }
+
+  .railSwitcherMenu__item {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: var(--r-sm);
+    color: var(--ink-2);
+    cursor: pointer;
+    display: flex;
+    gap: var(--sp-3);
+    padding: var(--sp-2) var(--sp-3);
+    text-align: left;
+    transition: background-color var(--dur) var(--ease),
+                color var(--dur) var(--ease);
+    width: 100%;
+
+    &:hover {
+      background-color: var(--surface-2);
+      color: var(--ink);
+    }
+
+    &.is-active {
+      color: var(--ink);
+      font-weight: 600;
+    }
+  }
+
+  .railSwitcherMenu__mark {
+    border-radius: var(--r-sm);
+    flex: 0 0 auto;
+    height: 24px;
+    width: 24px;
+  }
+
+  .railSwitcherMenu__name {
+    flex: 1 1 auto;
+    font-size: 13.5px;
+    min-width: 0;
+  }
+
+  .railSwitcherMenu__check {
+    color: var(--nav-accent, var(--accent));
+    flex: 0 0 auto;
+  }
+
+  .railSwitcherMenu__footer {
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    padding: var(--sp-2);
+  }
+
+  .railSwitcherMenu__action {
+    align-items: center;
+    border-radius: var(--r-sm);
+    color: var(--ink-2);
+    display: flex;
+    font-size: 13.5px;
+    font-weight: 600;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3);
+    text-decoration: none;
+    transition: background-color var(--dur) var(--ease),
+                color var(--dur) var(--ease);
+
+    &:hover {
+      background-color: var(--surface-2);
+      color: var(--ink);
+    }
+  }
+
+  .railSwitcherMenu__actionMark {
+    color: var(--nav-accent, var(--accent));
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1;
+  }
+}
+
+// --- mobile drawer -------------------------------------------------------
+// The mobile header is `position: fixed` over scrolling content, so it is one
+// of the things that genuinely floats and earns --elev-1.
+.mobileHeader {
+  background-color: var(--surface) !important;
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--elev-1);
+}
+
+.mobileHeader,
+.mobileDrawerHeader {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  min-height: 64px;
+  padding: var(--sp-3) var(--sp-4);
+}
+
+.mobileDrawerHeader {
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.mobileBrand {
+  align-items: center;
+  color: var(--ink);
+  display: inline-flex;
+  flex: 0 1 auto;
+  gap: var(--sp-3);
+  min-width: 0;
+  text-decoration: none;
+
+  &__word {
+    font-family: "SemiBold", var(--font);
+    font-size: 18px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.mobileHeader__actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--sp-2);
+}
+
+.mobileProfileButton.MuiButton-root {
+  border-radius: var(--r-pill);
+  min-width: 36px;
+  padding: 0;
+
+  .profileImage {
+    height: 36px;
+    width: 36px;
+  }
+}
+
+.mobileAccountPopover {
+  .MuiPopover-paper {
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    box-shadow: var(--elev-2);
+    margin-top: var(--sp-2);
+    min-width: 248px;
+  }
+}
+
+.mobileAccountMenu {
+  padding: var(--sp-3);
+
+  .header {
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    gap: var(--sp-3);
+    padding: var(--sp-2) var(--sp-2) var(--sp-3);
+  }
+
+  .profileImage {
+    flex: 0 0 auto;
+    height: 40px;
+    width: 40px;
+  }
+
+  &__identity {
+    min-width: 0;
+  }
+
+  .MuiMenu-list {
+    padding: var(--sp-2) 0 0;
+  }
+
+  .MuiMenuItem-root {
+    border-radius: var(--r-sm);
+    gap: var(--sp-3);
+    min-height: 40px;
+    padding: var(--sp-2);
+  }
+}
+
+.mobSidebar {
+  background-color: var(--surface);
+
+  .railSwitcher {
+    display: flex;
+    padding: var(--sp-3) var(--sp-4) var(--sp-2);
+  }
+
+  .railSwitcher__box,
+  .railSwitcher__btn {
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    color: var(--ink);
+    display: flex;
+    gap: var(--sp-2);
+    min-height: 40px;
+    min-width: 0;
+    padding: var(--sp-2) var(--sp-3);
+    text-align: left;
+    width: 100%;
+  }
+
+  .railSwitcher__mark,
+  .railSwitcher__addMark {
+    border-radius: var(--r-sm);
+    flex: 0 0 auto;
+    height: 20px;
+    width: 20px;
+  }
+
+  .railSwitcher__addMark {
+    align-items: center;
+    background: var(--surface-2);
+    display: flex;
+    justify-content: center;
+  }
+
+  .railSwitcher__meta {
+    min-width: 0;
+  }
+
+  .railSwitcher__name {
+    flex: 1 1 auto;
+    font-size: 13.5px;
+    font-weight: 600;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .railSwitcher__chevron {
+    color: var(--ink-4);
+    flex: 0 0 auto;
+    height: 15px;
+    margin-left: auto;
+    width: 15px;
+  }
+
+  .pro-menu .pro-menu-item {
+    border-radius: var(--r-sm);
+    color: var(--ink-2);
+    margin: 2px var(--sp-2);
+    padding: var(--sp-3) !important;
+
+    .railIcon {
+      color: inherit;
+      flex: 0 0 auto;
+      margin-right: var(--sp-3);
+    }
+
+    .item {
+      color: inherit;
+      padding-left: 0 !important;
+    }
+
+    &:hover {
+      background-color: var(--surface-2);
+      color: var(--ink);
+
+      .item {
+        background: transparent !important;
+        color: inherit;
+      }
+    }
+
+    &.active {
+      background-color: var(--nav-accent-weak, var(--accent-weak)) !important;
+      color: var(--nav-accent, var(--accent)) !important;
+
+      .item {
+        background: transparent !important;
+        color: var(--nav-accent, var(--accent));
+      }
+    }
+  }
+
+  // Same five sections as the rail, so the drawer is the same map at a
+  // different width. There is always room for the word here, so no collapsed
+  // variant.
+  .railGroup {
+    color: var(--ink-3);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    margin: var(--sp-5) 0 var(--sp-2);
+    padding: 0 var(--sp-4);
+    text-transform: uppercase;
+
+    &--first {
+      margin-top: var(--sp-3);
+    }
+  }
+
+  // Signing out is not one more destination; it gets its own hairline instead
+  // of the stray <div class="brdBottom"> that used to sit inside the <ul>.
+  .logOutMenu {
+    border-top: 1px solid var(--line);
+    border-radius: 0 !important;
+    margin-top: var(--sp-3) !important;
+    padding-top: var(--sp-4) !important;
+  }
+
+  .brdBottom {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .pro-sidebar-footer {
+    border-top: 1px solid var(--line);
+  }
+
+  a {
+    text-decoration: none;
+  }
+}
+
+// ---- avatar -------------------------------------------------------------
+// docs/DESIGN.md, "Avatar": initials on --ink, white 600, --r-pill. Built from
+// the signed-in user's own name -- no avatar service, no imported illustration.
+.profileImage .img {
+  background-color: var(--ink);
+  border: 0;
+  border-radius: var(--r-pill);
+  color: var(--surface);
+  font-family: "SemiBold", var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  height: 100%;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  width: 100%;
+
+  &.f26x {
+    font-size: 16px;
+  }
+}
+
+.pro-sidebar .pro-sidebar-footer .profileImage,
+.mobSidebar .pro-sidebar-footer .profileImage {
+  height: 32px;
+  width: 32px;
+}
+
+// ---- page header --------------------------------------------------------
+// docs/DESIGN.md, "Card" header row applied at page level: title left, actions
+// right, hairline under it. Every screen gets the same anchor. The .wd-head /
+// .ls-head / .SR-head / .page-head hooks resolve here too.
+//
+// No `display` is set here on purpose. Most pages put a single
+// `d-flex justify-content-between` row inside the <header>; making the header
+// itself a flex column would shrink that row to its content width and the
+// right-hand actions would stop being right-hand actions.
+.layout > header,
+.layout > div > header,
+.page-head,
+.wd-head,
+.ls-head,
+.SR-head {
+  align-items: flex-start;
+  background-color: var(--paper);
+  border-bottom: 1px solid var(--line);
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-6);
+  padding: 0 0 var(--sp-5);
+}
+
+// docs/PRODUCT-DESIGN.md section 4: 26px read as timid beside the parent
+// product's 36px. 32px at the desktop measure, stepping down twice so it never
+// wraps a two-word title on a phone. dev_style.scss says 22px/24px; this is the
+// later import and wins.
+.wd-title {
+  color: var(--ink);
+  font-size: 32px !important;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15 !important;
+  margin-bottom: var(--sp-2) !important;
+}
+
+.wd-subTitle {
+  color: var(--ink-3) !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  margin-bottom: 0 !important;
+}
+
+@media (max-width: 1199px) {
+  .wd-title {
+    font-size: 28px !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .wd-title {
+    font-size: 24px !important;
+  }
+}
+
+// ---- empty state --------------------------------------------------------
+// docs/DESIGN.md, "Empty state": micro-label, one sentence of body, one
+// primary action. No art -- the line-art panels these replace (DataEmpty,
+// DataEmptyIcon, not-found.svg) told the user nothing the sentence does not,
+// and left them with no way out of the screen.
+//
+// One block, used by every empty state that has been converted, so the fourth
+// one to arrive inherits the spacing instead of inventing it. The action is a
+// plain .btn.btn-primary -- the pill defined in _controls.scss.
+.emptyState {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 440px;
+  padding: var(--sp-7) var(--sp-5);
+  text-align: center;
+}
+
+.emptyState__label {
+  color: var(--ink-3);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+// Only the 404 carries a headline: it is a page, not a panel inside one, so it
+// tracks .wd-title rather than setting its own size.
+.emptyState__title {
+  color: var(--ink);
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin: var(--sp-3) 0 0;
+}
+
+.emptyState__body {
+  color: var(--ink-3);
+  font-size: 14px;
+  line-height: 1.55;
+  margin: var(--sp-3) 0 0;
+  max-width: 38ch;
+}
+
+.emptyState__action {
+  margin-top: var(--sp-5);
+}
+
+// The 404 / API-error page (pages/404.js) is the same block, centred in the
+// viewport. style.scss pins .notFound to 375px and forces its child into a
+// 10px-gap grid; the panel owns its own rhythm now, so take both back. Later
+// import, equal specificity on .notFound, and .notFound > .emptyState (0,2,0)
+// out-points .notFound > div (0,1,1).
+.notFound {
+  width: 100%;
+
+  > .emptyState {
+    display: flex;
+    gap: 0;
+  }
+}
+
+// ---- focus --------------------------------------------------------------
+// docs/DESIGN.md, "Non-negotiable" #3.
+// The toggle is a pill, so it keeps its own radius rather than picking up the
+// --r-sm the block below applies.
+.railToggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.pro-sidebar a:focus-visible,
+.pro-sidebar .pro-menu-item:focus-visible,
+.pro-sidebar .profileButton:focus-visible,
+.pro-sidebar .railSwitcher__btn:focus-visible,
+.railSwitcherMenu .railSwitcherMenu__item:focus-visible,
+.railSwitcherMenu .railSwitcherMenu__action:focus-visible,
+.mobSidebar a:focus-visible,
+.profiltInfoBox .pro-menu-item:focus-visible,
+.keyInfoBox .pro-menu-item:focus-visible,
+.layout > header a:focus-visible,
+.layout > header button:focus-visible {
+  border-radius: var(--r-sm);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+// ---- loading ------------------------------------------------------------
+// docs/DESIGN.md, "Loading": a --surface-2 skeleton in the shape of the content
+// it replaces. No coloured dots.
+//
+// `.loading` is used in ~40 places across pages other agents own, so it is
+// redefined rather than removed: a slim --surface-2 track with an --accent
+// indicator, held back 400ms so a short wait never flashes a control at all.
+// The three bouncing #a783db dots it replaces were declared in style.scss.
+.loading,
+.loading:before,
+.loading:after {
+  animation: none !important;
+  border-radius: 0;
+  box-shadow: none !important;
+  height: auto;
+  top: auto;
+  width: auto;
+}
+
+.loading {
+  background-color: var(--surface-2);
+  border-radius: var(--r-pill);
+  color: transparent;
+  display: block;
+  font-size: inherit;
+  height: 3px;
+  margin: var(--sp-3) auto;
+  overflow: hidden;
+  position: relative;
+  text-indent: -9999em;
+  transform: none;
+  width: 120px;
+
+  &:before {
+    animation: shellIndeterminate 1.1s var(--ease) 400ms infinite !important;
+    background-color: var(--accent);
+    border-radius: var(--r-pill);
+    content: "";
+    display: block;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    transform: translateX(-100%);
+    width: 40%;
+  }
+
+  &:after {
+    content: none;
+  }
+}
+
+// The same indeterminate track at control scale, for a busy state that lives
+// INSIDE a control rather than on the page: an icon button, a menu row. Those
+// sites used to hold a 14-20px MUI CircularProgress, which was a second loading
+// idiom and painted MUI's palette rather than a token. An icon button has no
+// room for the 120px page-level track, so only the measurements change.
+.loading--inline {
+  height: 2px;
+  margin: 0;
+  width: 20px;
+}
+
+@keyframes shellIndeterminate {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+// --- skeletons ----------------------------------------------------------
+.skeleton {
+  animation: shellSkeleton 1.6s var(--ease) infinite;
+  background-color: var(--surface-2);
+  border-radius: var(--r-sm);
+  display: block;
+}
+
+@keyframes shellSkeleton {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+.pageSkeleton {
+  display: grid;
+  gap: var(--sp-6);
+  padding-top: 0;
+
+  &__head {
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    gap: var(--sp-4);
+    justify-content: space-between;
+    padding-bottom: var(--sp-5);
+  }
+
+  // The title and the subtitle under it. Every page header in the app is two
+  // lines, so a skeleton head of one line lands ~30px short and the whole page
+  // slides up when the data arrives.
+  &__title {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+
+  &__stats {
+    display: grid;
+    gap: var(--sp-4);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  // The search box and its icon buttons above a list table.
+  &__search {
+    align-items: center;
+    display: flex;
+    gap: var(--sp-3);
+  }
+
+  // Shaped like the card it replaces, elevation included -- a skeleton that is
+  // flat where the real card is raised reads as a second, different object.
+  &__table {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    box-shadow: var(--elev-1);
+    display: grid;
+    gap: var(--sp-3);
+    overflow: hidden;
+    padding: var(--sp-4);
+  }
+}
+
+.skeleton--title    { border-radius: var(--r-sm);   height: 32px; width: 260px; }
+.skeleton--action   { border-radius: var(--r-pill); height: 38px; width: 150px; }
+.skeleton--stat     { border-radius: var(--r-md);   height: 92px; }
+.skeleton--row      { height: 34px; }
+.skeleton--row-head { height: 40px; }
+
+@media (max-width: 991px) {
+  .pageSkeleton__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 575.98px) {
+  .pageSkeleton__stats { grid-template-columns: minmax(0, 1fr); }
+  .skeleton--title     { width: 60%; }
+  .skeleton--action    { width: 110px; }
+}
+
+// prefers-reduced-motion already collapses --dur to ~0; these two loops are
+// infinite, so they have to be stopped outright rather than shortened.
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+
+  .loading:before {
+    animation: none !important;
+    opacity: 0.35;
+    transform: none;
+    width: 100%;
+  }
+}
+
+// The top progress bar is the one indeterminate control the page may show.
+.toploader {
+  background-color: var(--accent) !important;
+}
+
+// ---- MUI grid overflow guard -----------------------------------------------
+// `<Grid container spacing={n}>` renders as width: calc(100% + n) with a
+// negative margin to match, on the assumption the parent has at least n of
+// padding to absorb it. Where it does not, the row hangs past the right edge --
+// and because body sets overflow:hidden, that shows as a CLIPPED card with no
+// scrollbar rather than a scrollable row. 159 of these containers exist across
+// 49 files, so the guard belongs here rather than in each of them.
+//
+// This stops the overflow; it does not make a fixed lg={3} row wrap. Pages that
+// need to reflow use a real CSS grid instead -- see .planUsageGrid and
+// .aiKeyGrid.
+.layout {
+  .MuiGrid-container {
+    max-width: 100%;
+  }
+}

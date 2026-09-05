@@ -1,0 +1,36 @@
+   {% extends "email/base/layout.html" %}  
+   {% block content %} 
+      <tr>
+         <td style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';max-width:100vw;padding:30px">
+            <h1 style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';color:#3d4852;font-size:18px;font-weight:bold;margin-top:0;text-align:left">
+               Refferal Website Verfication
+            </h1> 
+
+            <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:15px;line-height:1.5em;margin-top:20px;color: #718096;text-align:left;">
+               <b style="color: #718096;">User Id :</b> {{userid}}
+            </p> 
+
+            <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:15px;line-height:1.5em;margin-top:20px;color: #718096;text-align:left;">
+               <b style="color: #718096;">User name :</b> {{username}}
+            </p>
+
+            <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:15px;line-height:1.5em;margin-top:20px;color: #718096;text-align:left;">
+               <b style="color: #718096;">Email Adrress :</b> {{refemail}}
+            </p> 
+
+            <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:15px;line-height:1.5em;margin-top:20px;color: #718096;text-align:left;">
+               <b style="color: #718096;">Website :</b> {{refwebsite}} 
+            </p> 
+
+            <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:15px;line-height:1.5em;margin-top:20px;color: #718096;text-align:left;">
+               <b style="color: #718096;">Phone Number:</b> {{refphone}} 
+            </p> 
+
+            <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:14px;line-height:1.5em;margin:40px 0px 0px;text-align:left; color: #718096;">
+               We like to be used. So, let's grow organically! 
+               <div style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:14px; font-weight: 600; line-height:1.5em; margin-top:0px; text-align:left; color: #718096;">The SearchMirror Team</div> 
+            </p> 
+            
+         </td>
+      </tr> 
+   {% endblock %} 

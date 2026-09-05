@@ -1,0 +1,104 @@
+{
+ "general": {
+  "support_mailid": "support@tracker.example",
+  "sorry": "Sorry!",
+  "name": "Name",
+  "email": "E-mail",
+  "password": "Password",
+  "new_password": "New password",
+  "confirm_password": "Confirm password",
+  "signup": "Sign up",
+  "signin": "Sign in",
+  "login": "Log in",
+  "forgt_yr_pwd": "Forgot your password?",
+  "check_yr_email": "Check your E-mail",
+  "back_to_login": "Back to Log in",
+  "back_to_singup": "Back to Sign up",
+  "resetpwd": "Reset password",
+  "designation": "Designation",
+  "select_yr_designation": "Select your designation",
+  "copy": "",
+  "last": "",
+  "old_password": "Old Password",
+  "reEnter_password": "Re-enter Password"
+ },
+ "login": {
+  "subtitle1": "Rank tracking on your own API key",
+  "subtitle2": "Bring a DataBlue key and track as many keywords as your own plan allows. No seat limits, no upsell — your key, your quota.",
+  "title": "Sign in",
+  "subject1": "Welcome back.",
+  "subject2": "New here?",
+  "last": ""
+ },
+ "signup": {
+  "subtitle1": "Your key. Your data. Your quota.",
+  "subtitle2": "SearchMirror runs every rank check through your own DataBlue account, so you see the usage and the invoice directly from them. Nothing is marked up here.",
+  "title": "Create your account",
+  "subject1": "Free, and it stays free.",
+  "subject2": "Already have one?",
+  "mail_sent_msg1": "A confirmation e-mail with an activation link has been sent. ",
+  "mail_sent_msg2": "Kindly check your inbox to activate your account.",
+  "last": ""
+ },
+ "forgetpwd": {
+  "subtitle1": "Your Data is Safe with Us ",
+  "subtitle2": "We have adopted the most secure technology to host data and your data will be handled & process with the most care.",
+  "title": "Reset your password",
+  "subject1": "Submit your registered email address to receive the password reset link in your inbox. ",
+  "mail_sent_msg1": "Password reset link has been sent to your register email. ",
+  "mail_sent_msg2": "Check your email id to reset password.",
+  "last": ""
+ },
+ "resetpwd": {
+  "subtitle1": "Available to Help & Support",
+  "subtitle2": "Get personalized support regardless of any plans you may have subscribed to. Reach the live chat widget or contact our support team at ",
+  "title": "Reset your password",
+  "subject1": "Make sure your new password is different from your previous one.",
+  "mail_sent_title": "Password Reset Successful",
+  "mail_sent_msg1": "Kindly use the new password while logging in to access your account.",
+  "url_expire_msg1": "Looks like your password reset link has expired. ",
+  "url_expire_msg2": "Click on the button below to reset it again. ",
+  "btn_restagn": "Reset again",
+  "last": ""
+ },
+ "registerpg": {
+  "subtitle1": "Right Tool for Your SERP Performance ",
+  "subtitle2": "Analyzing, tracking and monitoring keyword positions can be done in minutes with SearchMirror. Just like brewing a coffee.",
+  "yr_good_name": "Your good name",
+  "title": "Account registration",
+  "subject1": "Create your SearchMirror account and start tracking with your own DataBlue key. ",
+  "subject2": "Already have an account?",
+  "mail_expire_msg1": "URL link is expired ",
+  "mail_expire_msg2": "Your registration verification link has been expired. Please try again. ",
+  "last": ""
+ },
+ "profile": {
+  "country": "Country",
+  "select_yr_country": "Select your Country",
+  "address": "Address",
+  "address1": "Line 1",
+  "address2": "Line 2   (optional)",
+  "company": "Company",
+  "company_name": "Company name",
+  "state": "State / Province / County",
+  "update_yr_state": "Ex:  BA or CE",
+  "city": "City / District / Town",
+  "update_yr_city": "Ex:  Dublin  or  Vancouver",
+  "zipcode": "ZIP / Postal code",
+  "update_yr_zipcode": "Ex:  V1X 1X1  or  97712",
+  "billing_info": "Billing Info",
+  "same_as_contact": "Same as contact information"
+ },
+ "account": {
+  "delete_yr_account": "Delete your account",
+  "delete_account": "Delete Account"
+ },
+ "kResearch": {
+  "title": "Keyword Research",
+  "para": "Discover the right keywords to use. More Accurate Research in Less Time.",
+  "notes": "Profound research on keywords in few clicks, exactly as using your Google Keyword Planner.",
+  "bgraph": "Create keyword groups based on the search intent to shoot up your organic presence.",
+  "gsearch": "Identify potential keywords with analyzed data from Google's autocomplete predictions.",
+  "snotes": "Get the complete list of related keywords.  No-more scrolling to the bottom of the SERP."
+ }
+}

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SearchMirror — an open-source rank tracker you host yourself</title>
+    <meta
+      name="description"
+      content="SearchMirror is a self-hostable SEO rank tracker and AI-visibility monitor. Every check runs on your own DataBlue API key, so you pay DataBlue's price and nothing on top of it."
+    />
+    <meta name="color-scheme" content="light" />
+    <!-- Must track --paper in src/index.css. Was #f4f4f2, a sand ground that
+         docs/DESIGN.md reported but _tokens.scss never had; the page is white. -->
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- The mark. Served from public/, not a third-party favicon service
+         (docs/DESIGN.md rule 7). Source of truth: brand/logo-tile.svg. -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+
+    <!-- Self-hosted, so the first paint does not wait on a network round trip. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/SpaceGrotesk-latin.woff2"
+      crossorigin
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

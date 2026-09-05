@@ -1,0 +1,13 @@
+# What the test suite needs ON THE HOST (or CI runner), not in the containers.
+#
+# Most tests are HTTP clients and need only pytest + requests. A few import
+# backend modules directly to check pure functions -- tests/test_ai_completions.py
+# imports account.completions, which reaches contentmanager.sanitizer and its
+# BeautifulSoup dependency. That import is satisfied inside the backend image by
+# backend/requirements.txt; on the host it has to be declared here.
+#
+# CI installs this file. If a test starts importing something new from backend/,
+# add it here or CI fails with ModuleNotFoundError -- which is the point.
+pytest
+requests
+beautifulsoup4

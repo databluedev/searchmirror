@@ -1,0 +1,9 @@
+# Only the frontend production build uses the repo root as its context; keep it
+# from shipping the whole tree to the daemon.
+.git
+**/node_modules
+**/build
+backend
+engine
+landing
+docs

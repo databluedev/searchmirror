@@ -1,0 +1,150 @@
+/* Landing-page design tokens, scoped to .landing-page.
+
+   The marketing page came from a standalone app whose components use both
+   Tailwind classes (compiled to hex by the app's tailwind.config) and raw
+   `hsl(var(--x))` / `var(--line-strong)` in SVG fills and gradients. The raw
+   ones need the HSL-triple form of the tokens -- but the product uses the SAME
+   token names as opaque hex/rgba globally (var(--ink) === #0f0f10), so these
+   triples are scoped to .landing-page and never touch the rest of the app.
+   Same colours either way; only the syntax the landing's SVGs need differs. */
+
+.landing-page {
+   --ink: 240 3.2% 6.1%;
+   --ink-2: 225 6.2% 25.5%;
+   --ink-3: 223.6 4.9% 44.1%;
+   --ink-4: 214.3 7.4% 63.1%;
+   --paper: 0 0% 100%;
+   --surface: 0 0% 100%;
+   --surface-2: 240 5.3% 96.3%;
+   --line: rgba(15, 15, 16, 0.12);
+   --line-2: rgba(15, 15, 16, 0.06);
+   --line-strong: rgba(15, 15, 16, 0.2);
+   --up: 152 82.1% 39.4%;
+   --down: 4.2 74.3% 48.8%;
+   --flat: 217.8 15.1% 64.9%;
+   --background: var(--paper);
+   --foreground: var(--ink);
+   --card: var(--surface);
+   --card-foreground: var(--ink);
+   --popover: var(--surface);
+   --popover-foreground: var(--ink);
+   --primary: var(--ink);
+   --primary-foreground: 0 0% 100%;
+   --secondary: var(--surface-2);
+   --secondary-foreground: var(--ink);
+   --muted: var(--surface-2);
+   --muted-foreground: var(--ink-3);
+   --accent: 231.1 100% 55.1%;
+   --accent-foreground: 0 0% 100%;
+   --destructive: var(--down);
+   --destructive-foreground: 0 0% 100%;
+   --border: 0 0% 88.6%;
+   --input: 0 0% 88.6%;
+   --ring: 231.1 100% 55.1%;
+   --r-sm: 8px;
+   --r-md: 14px;
+   --r-lg: 20px;
+   --r-pill: 999px;
+   --dur: 160ms;
+   --ease: cubic-bezier(0.2, 0, 0, 1);
+
+   /* base look, from the landing's body rule */
+   background-color: hsl(var(--paper));
+   color: hsl(var(--ink));
+   font-family: "Space Grotesk", system-ui, sans-serif;
+   -webkit-font-smoothing: antialiased;
+   text-rendering: optimizeLegibility;
+
+   /* The app shell (.App) is height:100dvh; overflow:hidden -- every page is
+      expected to scroll inside its own container, the way .layout does for the
+      product pages. The landing renders outside .layout, so it must be its own
+      scroll container or it is clipped with no way to scroll. */
+   height: 100dvh;
+   overflow-y: auto;
+   overflow-x: hidden;
+}
+
+.landing-page :focus-visible {
+   outline: 2px solid hsl(var(--ring));
+   outline-offset: 2px;
+   border-radius: 4px;
+}
+
+.landing-page ::selection {
+   background: hsl(var(--ink));
+   color: #fff;
+}
+
+/* Scoped preflight. The app disables Tailwind's reset (tailwind.config.js:
+   MUI owns the baseline), but these components were authored against a build
+   where it was on, so they set only the margins and paddings that differ from
+   zero. Without it the nav <ul> kept its user-agent disc markers and 40px
+   indent, and every heading and <p> carried a UA margin the utilities never
+   clear -- which is why this page did not match the standalone build.
+
+   Every selector is wrapped in :where() so the whole block weighs zero, the
+   way Tailwind's own preflight does by living in @layer base. Written as a
+   plain descendant selector it would score (0,1,1) and beat the single-class
+   utilities it exists to make room for -- `.landing-page p { margin: 0 }`
+   outranks `mt-7`, which collapsed the hero. Confined to .landing-page, so
+   nothing in the product moves. */
+:where(.landing-page) :where(h1, h2, h3, h4, p, dl, dd, ol, ul, figure, blockquote) {
+   margin: 0;
+}
+:where(.landing-page) :where(ol, ul) {
+   list-style: none;
+   padding: 0;
+}
+:where(.landing-page) :where(h1, h2, h3, h4) {
+   font-size: inherit;
+   font-weight: inherit;
+}
+:where(.landing-page) :where(table) {
+   border-collapse: collapse;
+   border-color: inherit;
+   text-indent: 0;
+}
+:where(.landing-page) :where(svg) {
+   display: block;
+   vertical-align: middle;
+}
+
+/* Custom utilities the landing components reference. */
+.landing-page .num {
+   font-variant-numeric: tabular-nums;
+}
+.landing-page .hairline {
+   border: 1px solid var(--line);
+}
+/* Bracketed uppercase micro-label. Only the bracket glyphs used to be here;
+   the type half lived in the standalone sheet's @apply, which this build has
+   no equivalent of, so the label rendered as plain body text. Values mirror
+   `text-micro font-semibold uppercase text-ink-3` from tailwind.config.js. */
+.landing-page .micro {
+   display: inline-flex;
+   align-items: center;
+   gap: 0.5rem;
+   color: hsl(var(--ink-3));
+   font-size: 0.6875rem;
+   font-weight: 600;
+   letter-spacing: 0.09em;
+   line-height: 1;
+   text-transform: uppercase;
+}
+.landing-page .micro::before {
+   content: "[";
+}
+.landing-page .micro::after {
+   content: "]";
+}
+
+/* The frozen state of the flickering grid, shown under reduced motion. */
+.landing-page .static-grid {
+   background-color: hsl(var(--ink) / 0.09);
+   -webkit-mask-image: linear-gradient(to right, #000 4px, transparent 4px),
+      linear-gradient(to bottom, #000 4px, transparent 4px);
+   mask-image: linear-gradient(to right, #000 4px, transparent 4px),
+      linear-gradient(to bottom, #000 4px, transparent 4px);
+   -webkit-mask-size: 10px 10px;
+   mask-size: 10px 10px;
+}

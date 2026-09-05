@@ -1,0 +1,49 @@
+name: Feature request
+description: Propose a change to what the product does
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Some modules were removed on purpose — billing, keyword research, search
+        volume, page audit and content gap. See
+        [docs/SHIPPED-SURFACE.md](../blob/main/docs/SHIPPED-SURFACE.md) before
+        proposing one of them back.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What you are trying to do and where the product gets in the way. Not the solution yet.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would like to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you have tried or considered instead
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Projects and keywords
+        - Rank dashboard and history
+        - Competitors
+        - Geo Citations
+        - Content Planner
+        - Reports
+        - Account, team, or permissions
+        - Deployment and operations
+        - Documentation
+        - Something else
+    validations:
+      required: true

@@ -1,0 +1,6 @@
+<svg id="Component_47_6" data-name="Component 47 – 6" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <path id="Path_392" data-name="Path 392" d="M34,2A32,32,0,1,0,66,34,32,32,0,0,0,34,2Z" transform="translate(-2 -2)" fill="#cf4343"/>
+  <g id="Component_69_52" data-name="Component 69 – 52" transform="translate(23 23)">
+    <path id="Path_410" data-name="Path 410" d="M14.575,13l7.087-7.088a1.114,1.114,0,1,0-1.575-1.575L13,11.425,5.912,4.337A1.114,1.114,0,0,0,4.337,5.912L11.425,13,4.337,20.087A1.021,1.021,0,0,0,4,20.875,1.063,1.063,0,0,0,5.125,22a1.021,1.021,0,0,0,.787-.338L13,14.575l7.087,7.087a1.087,1.087,0,0,0,1.575,0,1.087,1.087,0,0,0,0-1.575Z" transform="translate(-4 -4)" fill="#fff" stroke="#fff" stroke-width="3"/>
+  </g>
+</svg>

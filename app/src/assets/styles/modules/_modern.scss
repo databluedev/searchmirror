@@ -1,0 +1,36 @@
+// Layout classes that have no other home.
+//
+// This file used to be the whole modernisation layer, written before the design
+// system existed. Everything else it carried is now owned properly --
+// canvas and type in _tokens.scss, controls in _controls.scss, cards in
+// _surfaces.scss, the data table in _data.scss, the rail and page header in
+// _shell.scss -- and its `!important` rules on bare element selectors were
+// actively overriding those layers (a global `h1 { font-size: 24px !important }`
+// flattened every heading in the app, including the auth headline).
+//
+// What remains is structural, not decorative: two grids that fix real overflow
+// bugs. No colours, no !important.
+
+// The project card header was `d-flex flex-wrap justify-content-between`, so a
+// long project name pushed the score block onto a second row while a short one
+// kept it inline -- two cards side by side ended up different heights with
+// different internal alignment.
+.projectCardHead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--sp-4);
+
+  > *:first-child { min-width: 0; }   // let the name truncate rather than push
+}
+
+// Equal-height cards in a row, so footers line up across the row.
+.projectSection > .MuiGrid-item { display: flex; }
+
+.projectCard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  > *:last-child { margin-top: auto; }
+}

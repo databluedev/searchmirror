@@ -1,0 +1,333 @@
+.txtClr {
+  color: $txtClr !important;
+}
+.lightTxtClr {
+  color: $lightTxtClr !important;
+}
+.greenClr {
+  color: $greenClr;
+}
+.redClr {
+  color: $redClr;
+}
+.smallTitle {
+  font-size: 14px;
+  font-family: "Bold";
+}
+.lineHTen {
+  line-height: 10px;
+}
+.lineHAuto {
+  line-height: initial !important;
+}
+.opacity-0 {
+  opacity: 0;
+}
+.flexoAuto{
+  flex: 0 0 auto;
+}
+.shadowBtn {
+  border: none !important;
+  box-shadow: 0px 3px 6px #00000029 !important;
+}
+.borderBtn {
+  border: 1px solid var(--line) !important;
+  &:hover {
+    box-shadow: none !important;
+    border: 1px solid $primaryClr !important;
+    color: $primaryClr !important;
+    svg path {
+      fill: $primaryClr;
+    }
+  }
+  &.sm{
+    font-family: 'regular';
+    background-color: transparent;
+    height: 36px;
+  }
+}
+.cursorPointer {
+  cursor: pointer;
+}
+.brdBottom {
+  border-bottom: 1px solid #ececef;
+}
+.border-right-0 {
+  border-right: 0 !important;
+}
+.red{
+   path{
+    fill: var(--down);
+  }
+}
+.smallButton{
+  button{
+    min-width: auto;
+    width: auto;
+    height: 30px;
+  }
+}
+.secondaryBtn{
+  color: $primaryClr !important;
+  background-color: var(--surface-2) !important;
+}
+header {
+  background-color: var(--paper);
+  z-index: 11;
+  position: sticky;
+  // Sticky offsets are measured from the scrollport's PADDING edge, and .layout
+  // pads its top by calc(--shell-head-h + --sp-5). So top:0 would pin the header
+  // --sp-5 BELOW the fixed .appBar and page content scrolled through the strip
+  // between them -- on the dashboard a chart line and its axis label showed
+  // above the title. Cancel exactly that padding to sit flush under the bar.
+  top: calc(-1 * var(--sp-5));
+  padding: 10px 5px;
+  margin-bottom: 20px;
+}
+.MuiAutocomplete-root {
+  .MuiButtonBase-root {
+    border: none !important;
+    width: auto;
+    height: auto;
+    padding: 0;
+  }
+}
+.customSelect {
+  .MuiOutlinedInput-root {
+    padding: 0 !important;
+  }
+  input {
+    padding: 12px 15px !important;
+  }
+}
+.MuiAutocomplete-clearIndicator {
+  margin-right: 5px !important;
+  border: none !important;
+  outline: none !important;
+}
+.MuiAutocomplete-popper{
+  margin-top: 10px !important;
+  // box-shadow: 0px 2px 4px #00000029 !important;
+  >div{
+    box-shadow: 0px 2px 4px #00000029 !important;
+  }
+}
+.customAlert {
+  .MuiAlert-icon {
+    padding: 0;
+  }
+  .MuiAlert-message {
+    padding: 0;
+  }
+  align-items: center;
+  height: 40px;
+  font-size: 12px !important;
+  color: var(--ink);
+  padding: 5px 10px !important;
+  .iconBg {
+    width: 18px;
+    height: 18px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  &.primary {
+    background-color: var(--surface);
+    border: 1px solid $primaryClr;
+    .iconBg {
+      background-color: $primaryClr;
+    }
+  }
+  &.danger{
+    background-color: #FEF6F6;
+    border: 1px solid var(--down);
+    .iconBg {
+    background-color: var(--down);
+  }
+  }
+}
+.customAlertPosition {
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 11;
+}
+.platformSelect {
+  .labl {
+    display: block;
+  }
+  .labl > input {
+    visibility: hidden;
+    position: absolute;
+  }
+  .labl > input + div {
+    cursor: pointer;
+    color: $lightTxtClr;
+    text-align: center;
+    // border: 2px solid transparent;
+  }
+  .labl > input:checked + div {
+    color: $txtClr;
+    .icon {
+      border: 2px solid $primaryClr;
+    }
+  }
+
+  .labl {
+    .icon {
+      border: 1px solid #ececef;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      background-color: var(--surface);
+    }
+  }
+}
+
+.MuiSwitch-root {
+  width: 45px !important;
+  height: 25px !important;
+  border-radius: 50px !important;
+  /*.MuiSwitch-thumb {
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 50px !important;
+  }*/
+}
+.MuiSwitch-switchBase {
+  top: 2px !important;
+  left: 3px !important;
+  &.Mui-checked {
+    transform: translateX(19px) !important;
+  }
+}
+.MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
+  background-color: $primaryClr !important;
+}
+/*.MuiButton-containedPrimary:hover{
+  box-shadow: none !important;
+  background-color: #e9edff !important;
+  color: var(--accent) !important;
+}*/
+#country-select-demo::placeholder {
+  background-image: url("@/assets/images/search.svg");
+  background-position: 0;
+  background-repeat: no-repeat;
+  background-size: 14px;
+  padding-left: 25px;
+  // width: 16px;
+  // height: 16px;
+}
+
+.customRadio {
+  .labl {
+    display: block;
+  }
+  .labl > input {
+    visibility: hidden;
+    position: absolute;
+  }
+
+  .labl > input + div {
+    display: grid;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    grid-template-columns: 20px auto;
+    gap: 5px;
+    cursor: pointer;
+  }
+  span.border {
+    border: 2px solid var(--line) !important;
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+    display: block;
+  }
+  .labl > input:checked + div span.border {
+    background-color: $primaryClr;
+    border: 2px solid var(--surface) !important;
+    outline: 2px solid $primaryClr;
+  }
+}
+.customSelect{
+  .labl {
+    display : block;
+}
+.labl > input{ /* HIDE RADIO */
+    visibility: hidden; /* Makes input not-clickable */
+    position: absolute; /* Remove input from document flow */
+}
+.labl > input + div{ /* DIV STYLES */
+    cursor:pointer;
+    border:1px solid var(--line);
+    padding: 8px 15px;
+    border-radius: 5px;
+}
+.labl > input:checked + div{ /* (RADIO CHECKED) DIV STYLES */
+    background-color: $primaryClr;
+    color: var(--surface);
+}
+}
+.viewLink {
+  color: $primaryClr !important;
+  font-family: "SemiBold" !important;
+  margin-bottom: 0 !important;
+  display: grid;
+  grid-template-columns: auto 15px;
+  justify-content: end;
+  align-items: center;
+  gap: 10px;
+  .arrow {
+    width: 20px;
+    height: 20px;
+    background: var(--surface-2);
+    border-radius: 29px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+.linkButtons{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-items: center;
+  margin: 10px 0;
+  box-shadow: 0 -2px 3px #00000029;
+  padding-top: 10px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: white;
+  a:nth-child(1):after{
+    content: "";
+    border-right: 1px solid var(--line);
+    width: 1px;
+    height: 40px;
+    padding-right: 9px;
+  }
+}
+.bgGrey{
+  background-color: var(--surface-2);
+}
+.whiteCard .comparisionTable {
+  td {
+    padding: 10px 0 !important;
+  }
+}
+@media (max-width: 767px) {
+  .addProject{
+    .customRadio {
+      .labl > input + div {
+        grid-template-columns: 100%;
+      }
+    }
+  }
+
+}

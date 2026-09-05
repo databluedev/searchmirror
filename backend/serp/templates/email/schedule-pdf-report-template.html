@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Project Report</title>
+  <style>
+	table, p {
+	  font-family: arial, sans-serif; 
+	  border-collapse: collapse;
+	  width: 100%;
+	}
+	th{
+		background-color: #6d73ef;
+		color: #fff;
+	}
+	td, th {
+	  border: 1px solid #dddddd;
+	  text-align: left;
+	  padding: 8px;
+	}
+	tr:nth-child(even) {
+	  background-color: #dddddd;
+	}
+	span.uparrow {
+		display: inline-block;
+	}
+	span.downarrow {
+		display: inline-block;
+	}
+	.f-semi-color {
+		color: #8a8a8a;
+	}	
+	@page {
+	   size: 15in 9.25in;
+	   margin: 15mm 2mm 15mm 2mm; 
+	}
+
+	.favicon{
+		border: 1px solid #e4e5f8;
+	    margin: 0;
+	    padding: 4px;
+	    width: 40px;
+	    height: 40px;
+	    display: inline-block;
+	    line-height: 5px;
+	    border-radius: 5px;
+	    background-color: #ffffff;
+	}
+
+	.up_downIcon{
+		width:10px;
+		height:12px;
+		padding-top: 0.5rem;
+	} 
+
+  </style>
+</head>
+
+<body>
+
+	{% with i_logo=serivceurl|add:"static/uploads/Logo_color.png" i_up=serivceurl|add:"static/uploads/up.png" i_down=serivceurl|add:"static/uploads/down.png" %} 
+		<div style="text-align:center;margin-bottom:60px;"> 
+			<a href="{{siteurl}}">
+				{% if clientUrl != None %}
+					{% if height > 80 %}
+					<img style="height:80px" src="{{clientUrl}}" alt="SearchMirror">
+					{% else %}
+					<img src="{{clientUrl}}" alt="SearchMirror"/>
+					{% endif %}
+				{% else %}
+				<img src="{{i_logo}}" alt="SearchMirror"> 
+				{% endif %}
+			</a>  
+		</div>
+		  
+		<div style="display: flex;justify-content: space-between;margin-bottom:20px; ">
+		  	<div style="display: flex; width: 1100px;" >
+		  		<div style="margin-top: 10px;" >
+		  			<a target="_blank" href="{{domainname}}">
+						<img class="favicon" style="" alt="embedded" src="https://www.google.com/s2/favicons?sz=64&domain_url={{domainname}}/" />
+					</a>
+				</div>
+				<div style="margin-left: 1rem;">			
+		  		<p style="height: 8px;"><b>Project : </b> {{projectname}} </p>
+		  		<p style="height: 8px;"><b>Domain  : </b> {{domainname}} </p>
+		  		</div>
+		  	</div>
+		  	<div style="text-align:right;">
+		  		<p> <b>Date : </b>{{reportdate}} </p> 
+		  	</div>
+		</div>
+
+		<table>
+		  	<tr>
+			    <th style="text-align: center;">#</th>
+			    <th>Keyword</th>
+			    	<th style="text-align: center;">Rank</th>
+				{% if gsc_status %}
+					{% if "CLS" in fieldSort %}	
+						<th style="text-align: center;">CLKS</th>
+					{% endif %}
+					{% if "IMP" in fieldSort %}	
+						<th style="text-align: center;">IMPS</th>
+					{% endif %}
+				{% endif %}	
+				{% if "BR" in fieldSort %}
+			    	<th style="text-align: center;">Best Rank</th>
+				{% endif %}
+				{% if "1D" in fieldSort %}
+			    	<th style="text-align: center; width: 50px;">1D</th>
+				{% endif %}
+				{% if "7D" in fieldSort %}
+			    	<th style="text-align: center; width: 50px;">7D</th>
+				{% endif %}
+				{% if "15D" in fieldSort %}
+			    	<th style="text-align: center; width: 50px;">15D</th>
+				{% endif %}
+				{% if "VL" in fieldSort %}
+			    	<th style="text-align: center;">Volume</th>
+				{% endif %}
+				{% if "CP" in fieldSort %}
+			    	<th style="text-align: center;">Comp</th> 
+				{% endif %}
+				{% if "URL" in fieldSort %}
+			    	<th>URL</th>
+				{% endif %}
+				{% if "RN" in fieldSort %}
+			    	<th style="text-align: center;">Region</th>
+				{% endif %}
+				{% if "UO" in fieldSort %}
+			    	<th style="text-align: center;">Updated On</th>
+				{% endif %}
+		  	</tr>
+			
+			{% for paragraph in paragraphs %}
+		  		<tr>
+		  			<td style="text-align: center; width: 70px;"> {{ forloop.counter }}</td>
+		    
+		    		<!-- <td style="max-width: 200px;">{{ paragraph.Keyword }}</td> -->
+		    		<td style="max-width: 200px; word-break: break-all; overflow: hidden; text-overflow: ellipsis; ">
+						<div style="max-width: 200px; display: block; word-break: break-all; overflow: hidden; text-overflow: ellipsis; ">
+							{{ paragraph.Keyword }}
+						</div>
+					</td>
+		        
+					{% if paragraph.Rank == ">100" %}
+						<td style="text-align: center; width: 70px;" class="f-semi-color">
+							>100	
+						</td>	
+					{% else %}
+						<td style="text-align: center; width: 70px;">
+							{{ paragraph.Rank }}
+						</td>
+					{% endif %}
+					
+					{% if gsc_status %}
+						{% if "CLS" in fieldSort %}
+							<td style="text-align: center; width: 70px;">{{ paragraph.CLKS }}</td>
+						{% endif %}
+						
+						{% if "IMP" in fieldSort %}
+							<td style="text-align: center; width: 70px;">{{ paragraph.IMPS }}</td>
+						{% endif %}
+					{% endif %}
+
+					{% if "BR" in fieldSort %}
+					<td style="text-align: center; width: 60px;">
+						{% if paragraph.Best > 0 %}
+							{{ paragraph.Best }}
+						{% else %}
+							<span class="f-semi-color"> - </span> 
+						{% endif %}
+					</td>
+					{% endif %}	
+
+					{% if "1D" in fieldSort %}
+				    <td style="text-align: center;">
+				    	<div>
+							{% if paragraph.Dvalue == 0 %}
+								<span class="f-semi-color"> - </span> 	
+							{% else %}
+								{{ paragraph.Dvalue }}
+							{% endif %}
+							
+							{% if 'up' == paragraph.Dmark %}
+								<span class="uparrow">
+									<img alt=" (uparrow) " class="up_downIcon" width="10px" height="18px" src="{{i_up}}" />
+								</span>
+							{% elif 'down' == paragraph.Dmark %}
+								<span class="downarrow">
+									<img alt=" (downarrow) " class="up_downIcon" width="10px" height="18px" src="{{i_down}}" />
+								</span>
+							{% endif %}
+						</div>
+					</td>
+					{% endif %}
+
+					{% if "7D" in fieldSort %}
+				    <td style="text-align: center;">
+				    	<div>
+							{% if paragraph.Wvalue == 0 %}
+								<span class="f-semi-color"> - </span> 	
+							{% else %}
+								{{ paragraph.Wvalue }}
+							{% endif %}
+							
+							{% if 'up' == paragraph.Wmark %}
+								<span class="uparrow">
+									<img alt=" (uparrow) " class="up_downIcon" width="10px" height="18px" src="{{i_up}}" />
+								</span>
+							{% elif 'down' == paragraph.Wmark %}
+								<span class="downarrow">
+									<img alt=" (downarrow) " class="up_downIcon" width="10px" height="18px" src="{{i_down}}" />
+								</span>
+							{% endif %}	
+						</div>
+					</td>
+					{% endif %}
+
+					{% if "15D" in fieldSort %}
+					<td style="text-align: center;">
+				    	<div>
+							{% if paragraph.Hvalue == 0 %}
+								<span class="f-semi-color"> - </span> 	
+							{% else %}
+								{{ paragraph.Hvalue }}
+							{% endif %}
+							
+							{% if 'up' == paragraph.Hmark %}
+								<span class="uparrow">
+									<img alt=" (uparrow) " class="up_downIcon" width="10px" height="18px" src="{{i_up}}" />
+								</span>
+							{% elif 'down' == paragraph.Hmark %}
+								<span class="downarrow">
+									<img alt=" (downarrow) " class="up_downIcon" width="10px" height="18px" src="{{i_down}}" />
+								</span> 
+							{% endif %}
+						</div>
+					</td>
+					{% endif %}
+
+					{% if "VL" in fieldSort %}
+					{% if paragraph.Volume == '-' %}
+						<td class="f-semi-color" style="text-align: center; width: 60px;">
+						(NA)	
+						</td>	
+					{% else %}
+					<td style="text-align: center; width: 80px;">
+						{{ paragraph.Volume }}
+						</td>
+					{% endif %}
+					{% endif %}	
+
+					{% if "CP" in fieldSort %}
+					{% if paragraph.Comp == '-' %}
+						<td class="f-semi-color" style="text-align: center; width: 50px;">
+						(NA)	
+						</td>	
+					{% else %}
+					<td style="text-align: center; width: 60px;">
+						{{ paragraph.Comp }}
+						</td>
+					{% endif %}
+					{% endif %}
+					
+					{% if "URL" in fieldSort %}
+					<td style="max-width: 200px; word-break: break-all; overflow: hidden; text-overflow: ellipsis; ">
+						<div style="max-width: 200px; display: block; word-break: break-all; overflow: hidden; text-overflow: ellipsis; ">
+							<a href="{{ paragraph.URL }}" style="text-decoration:none; color: #763de1; max-width: 200px; word-break: break-all; overflow: hidden; text-overflow: ellipsis; ">
+								{{ paragraph.Slug }}
+							</a> 
+						</div>
+					</td>
+					{% endif %}
+					{% if "RN" in fieldSort %}
+				    <td style="text-align: center; width: 90px;">{{ paragraph.Region }}</td>
+					{% endif %}
+					{% if "UO" in fieldSort %}
+				    <td style="text-align: center; width: 120px;">{{ paragraph.Updated }}</td>
+					{% endif %}
+		  		</tr>
+			{% endfor %} 
+
+		</table>
+	{% endwith %}
+
+</body>
+</html>

@@ -1,0 +1,559 @@
+@import "../../assets/styles/style.scss";
+/*@import "../../assets/styles/modules/color.scss";*/
+
+.keyword {
+  .parent {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 60% 40%;
+  }
+  .box {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    padding: 15px;
+    border-radius: 5px;
+    /*min-height: 106px;*/
+    min-height: 362px;
+    max-height: 362px;
+    overflow-y: auto;
+    margin: 15px 0;
+    /*margin: 0 0 10px 0;*/
+
+
+    .ReactTags__tags{
+      padding-bottom: 5px;
+    }
+
+    .tag {
+      background-color: var(--accent-weak);
+      /*padding: 0 0 0 10px;*/
+      padding: 6px 0 6px 10px;
+      border-radius: 5px;
+      /*height: 30px;*/
+      height: auto;
+      display: flex;
+      align-items: center;
+      .close {
+        font-weight: 600;
+        font-size: 12px;
+        border-left: 1px solid var(--surface);
+        /*height: 30px;*/
+        height: 120%;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        margin-left: 10px;
+        cursor: pointer;
+      }
+      &.extra {
+        padding-right: 10px;
+        background-color: var(--line);
+      }
+      &.new {
+        background-color: $primaryClr;
+        color: var(--surface);
+        .close {
+          .plus {
+            transform: rotate(45deg);
+          }
+        }
+      }
+    }
+  }
+}
+.addtag {
+  /*textarea {*/
+  .ReactTags__tags {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    outline: 0px;
+    padding: 15px;
+    border-radius: 5px;
+    resize: none;
+    width: 100%;
+    min-height: 106px;
+    margin: 15px 0;
+
+    &:focus {
+        border: 1px solid $primaryClr;
+    }
+    &:hover {
+        border: 1px solid $primaryClr;
+    }
+  }
+  .tags-input ul {
+    list-style: none;
+    margin-left: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    li {
+      background-color: var(--accent-weak);
+      padding: 0 0 0 10px;
+      border-radius: 5px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      .close {
+        font-weight: 600;
+        font-size: 12px;
+        border-left: 1px solid var(--surface);
+        height: 30px;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        margin-left: 10px;
+        cursor: pointer;
+      }
+    }
+  }
+}
+.addProject {
+  .footer {
+    /* Keep actions after the form. A sticky footer covers the final controls
+       whenever the viewport is short, even though it remains in the scroll
+       container. */
+    position: static;
+    margin-top: var(--sp-6);
+    padding: var(--sp-4) 0;
+    border-top: 1px solid var(--line);
+    background-color: var(--surface);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--sp-3);
+    /* Cancel then the primary action, sized to their labels rather than a
+       fixed 130/150 grid that cramped them. */
+    > div { flex: 0 0 auto; }
+  }
+  th,
+  td {
+    border: 1px solid var(--line) !important;
+  }
+  .MuiTableContainer-root {
+    max-height: calc(100vh - 180px);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .keyword .parent {
+    grid-template-columns: 100%;
+    gap: 15px;
+  }
+}
+
+.ReactTags__tags{
+    width: 100%;
+    
+    .ReactTags__tagInputField{
+        border: unset;
+        width: 100%;
+        line-height: 26px;
+
+        &:focus {
+            outline: 0px;
+        }
+    }
+}
+
+
+.close.plusIcon svg{
+  transform: rotate(45deg);
+}
+
+.kwmbtn{
+    min-width: 80px;
+    color: var(--accent);
+    border-bottom: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+}
+
+//Region dropdown
+@media (max-width:1100px) and (min-width:991px) {
+  .aprgrndrName{
+     width: 156px;
+  }
+}
+
+@media (max-width:990px) and (min-width:860px) {
+   .aprgrndrName{
+      width: 240px;
+   }
+}
+
+@media (max-width:859px) and (min-width:767px) {
+   .aprgrndrName{
+      width: 200px;
+   }
+}
+
+@media (min-width:1101px) {
+   .aprgrndrName{
+      width: 180px;
+   }
+}
+
+@media (max-width:480px) {
+   .aprgrndrName{
+      width: 240px;
+   }
+}
+
+.rgaddKwd{
+  max-height: 225px;
+  margin-top: 5px;
+  box-shadow: 0px 2px 4px rgba(15, 15, 16, 0.16);
+  width: 280px;
+}
+
+.propertyMdlBxColor{
+  color:var(--accent) !important;
+  .icon{
+    transform: rotate(180deg)
+  }
+  .propertyBrdrColor{
+    border: 1px solid var(--accent) !important;
+  }
+  .propertySpArrow{
+    width: 20px;
+    height: 20px;
+    background: var(--accent-weak);
+    border-radius: 29px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+// .propertyCount{
+//   // transform: translateX(100%);
+//   // transition: transform 0.3s ease-in-out;
+//   transform: translateX(-65%);
+//     transition: transform 0.1s ease-in-out;
+//     position: relative;
+//     right: -372px;
+//     top: 0px;
+// }
+/* =========================================================================
+   ADD PROJECT — docs/DESIGN.md
+   Labels above every field, errors under the control they belong to, one
+   clear primary action in the footer.
+   Scoped to .addProject so nothing here reaches another page.
+   ========================================================================= */
+
+.addProject {
+   .MuiInputLabel-root {
+      color: var(--ink-2);
+      font-family: "SemiBold";
+      font-size: 12.5px;
+      letter-spacing: 0.01em;
+      margin-bottom: var(--sp-1);
+      position: static;
+      transform: none;
+   }
+
+   .smallTitle {
+      color: var(--ink);
+      font-family: "SemiBold";
+      font-size: 15px;
+      letter-spacing: -0.015em;
+      line-height: 1.4;
+   }
+
+   .redClr {
+      color: var(--down) !important;
+   }
+
+   .MuiFormHelperText-root {
+      color: var(--ink-3);
+      font-size: 12.5px;
+      margin-left: 0;
+      margin-top: var(--sp-1);
+   }
+
+   .MuiFormHelperText-root.Mui-error {
+      color: var(--down);
+   }
+
+   .MuiOutlinedInput-root {
+      background-color: var(--surface);
+      border-radius: var(--r-sm);
+      font-size: 14px;
+      min-height: 38px;
+
+      .MuiOutlinedInput-notchedOutline {
+         border-color: var(--line);
+      }
+
+      &:hover .MuiOutlinedInput-notchedOutline {
+         border-color: var(--ink-4);
+      }
+
+      &.Mui-focused .MuiOutlinedInput-notchedOutline {
+         border-color: var(--accent);
+         border-width: 1px;
+         box-shadow: 0 0 0 3px var(--accent-weak);
+      }
+
+      &.Mui-error .MuiOutlinedInput-notchedOutline {
+         border-color: var(--down);
+      }
+
+      input::placeholder {
+         color: var(--ink-4);
+         opacity: 1;
+      }
+   }
+
+   /* -- keyword and tag panels ------------------------------------------ */
+   .keyword .box,
+   .addtag .ReactTags__tags {
+      background-color: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      transition: border-color var(--dur) var(--ease);
+   }
+
+   .addtag .ReactTags__tags {
+      &:focus-within,
+      &:hover {
+         border-color: var(--accent);
+      }
+   }
+
+   .keyword .box .tag {
+      background-color: var(--surface-2);
+      border-radius: var(--r-sm);
+      color: var(--ink);
+      font-size: 13px;
+
+      .close {
+         border-left: 1px solid var(--line);
+      }
+
+      &.extra {
+         background-color: var(--surface-2);
+      }
+
+      &.new {
+         background-color: var(--ink);
+         color: var(--surface);
+
+         .close {
+            border-left-color: var(--line);
+         }
+      }
+   }
+
+   .addtag .tags-input ul li {
+      background-color: var(--surface-2);
+      border-radius: var(--r-sm);
+      color: var(--ink);
+
+      .close {
+         border-left: 1px solid var(--line);
+      }
+   }
+
+   /* -- platform radio cards ---------------------------------------------
+      _common.scss hides the radio with `visibility: hidden`, which also takes
+      it out of the focus order -- the Desktop/Mobile choice could not be
+      reached or changed from the keyboard at all. The clip pattern hides it
+      visually while leaving it focusable, and the focus ring is drawn on the
+      card it controls. */
+   .platformSelect .labl > input {
+      visibility: visible;
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      height: 1px;
+      width: 1px;
+      overflow: hidden;
+      white-space: nowrap;
+   }
+
+   .platformSelect .labl .icon {
+      background-color: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-sm);
+      color: var(--ink-3);
+   }
+
+   .platformSelect .labl > input:checked + div {
+      color: var(--ink);
+
+      .icon {
+         border: 1px solid var(--accent);
+         background-color: var(--accent-weak);
+         color: var(--accent);
+      }
+   }
+
+   .platformSelect .labl > input:focus-visible + div .icon {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+   }
+
+   /* -- footer ------------------------------------------------------------ */
+   .footer {
+      background-color: var(--surface);
+      border-top: 1px solid var(--line);
+      gap: var(--sp-3);
+      padding: var(--sp-3) var(--sp-4);
+   }
+
+   th,
+   td {
+      border: 1px solid var(--line) !important;
+   }
+}
+
+/* Inline field error. Sits under the control it belongs to, in --down. */
+.fieldError {
+   color: var(--down);
+   font-family: "SemiBold";
+   font-size: 12.5px;
+   line-height: 1.5;
+   margin-top: var(--sp-1);
+}
+
+/* The keyword panel picks up the error edge, so the message is not the only
+   thing pointing at the problem. */
+.addProject .keyword .box.boxError {
+   border-color: var(--down);
+}
+
+/* Keyword chips are one control. Legacy global button borders made the remove
+   action look like a second, detached input (especially on branded keywords). */
+.addtag .tags-input ul li {
+   min-height: 32px;
+   height: 32px;
+   padding-left: 12px;
+   border-radius: 999px;
+   border: 1px solid var(--line);
+   overflow: hidden;
+}
+
+.addtag .tags-input ul li > button.close {
+   appearance: none;
+   width: 32px;
+   min-width: 32px;
+   height: 32px;
+   margin: 0 0 0 8px;
+   padding: 0;
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   background: transparent;
+   border: 0;
+   border-left: 1px solid var(--line);
+   color: var(--ink-2);
+   cursor: pointer;
+}
+
+.addtag .tags-input ul li > button.close:hover {
+   background: var(--accent-weak);
+   color: var(--ink);
+}
+
+.addtag .tags-input ul li > button.close:focus-visible {
+   outline: 2px solid var(--accent);
+   outline-offset: -3px;
+}
+
+.addtag .tags-input ul li > button.close svg {
+   width: 10px;
+   height: 10px;
+}
+
+/* -- multi-country add ---------------------------------------------------
+   The second country onwards is opt-in, so the closed state is a text
+   trigger, not a control taking up room in a form that mostly wants one. */
+.moreCountriesOpen {
+   appearance: none;
+   background: transparent;
+   border: 0;
+   padding: 0;
+   margin-top: var(--sp-2);
+   color: var(--accent);
+   font-family: "SemiBold";
+   font-size: 12.5px;
+   line-height: 1.5;
+   cursor: pointer;
+}
+
+.moreCountriesOpen:hover {
+   text-decoration: underline;
+}
+
+.moreCountriesOpen:focus-visible {
+   outline: 2px solid var(--accent);
+   outline-offset: 2px;
+   border-radius: var(--r-sm);
+}
+
+.moreCountries {
+   margin-top: var(--sp-3);
+}
+
+.moreCountries .countryPicker .MuiOutlinedInput-root {
+   background-color: var(--surface);
+   border-radius: var(--r-sm);
+   padding: 4px 8px;
+}
+
+.moreCountries .countryPicker .MuiChip-root {
+   background-color: var(--surface-2);
+   border: 1px solid var(--line);
+   color: var(--ink);
+   border-radius: var(--r-pill);
+   font-size: 12.5px;
+}
+
+.moreCountries .countryPicker .MuiChip-icon {
+   margin-left: 8px;
+}
+
+/* Google domain beside the country name: two rows of the same keyword are
+   told apart by the SERP they were measured on, not by the country label. */
+.countryDomain {
+   margin-left: auto;
+   padding-left: var(--sp-3);
+   color: var(--ink-3);
+   font-size: 12px;
+}
+
+/* -- cost of this add ----------------------------------------------------
+   Leading rule rather than a tinted panel, matching .depthNote: this states a
+   fact about the button below it, and a coloured box would read as an alert
+   even in the ordinary one-country case. */
+.addCost {
+   max-width: 640px;
+   margin: 0 0 var(--sp-5);
+   padding-left: var(--sp-3);
+   border-left: 2px solid var(--line);
+}
+
+.addCostHead {
+   font-family: "SemiBold";
+   font-weight: 600;
+   font-size: 12.5px;
+   line-height: 1.5;
+   color: var(--ink);
+}
+
+.addCostLine {
+   font-size: 12.5px;
+   line-height: 1.6;
+   color: var(--ink-2);
+   margin-top: var(--sp-1);
+}
+
+.addCostFigure {
+   font-family: "SemiBold";
+   font-weight: 600;
+   color: var(--ink);
+}
+
+.addCostWarn {
+   color: var(--warn);
+}

@@ -1,0 +1,22 @@
+/* Tailwind utilities layered on top of MUI, not in place of it.
+   Preflight is off (see tailwind.config.js), so this file adds only the
+   component and utility layers -- it changes nothing that is already styled.
+
+   Two consequences of preflight being off that the shadcn components in
+   src/components/ui/ answer for themselves rather than relying on a reset that
+   is not there:
+
+   - `border-style` keeps the user-agent value, which on a <button> is a 2px
+     `outset` bevel. Tailwind's `border` utility sets width only, so those
+     components state `border-[1px] border-solid` explicitly.
+   - the class named `border` is also a Bootstrap utility, and Bootstrap's is
+     the shorthand `border: 1px solid #dee2e6`. Wherever _bootstrap.scss is
+     emitted after this file -- route-level lazy chunks make that likely -- the
+     shorthand repaints the colour and a `border-line` on the same element
+     cannot outrank it, because both are single-class selectors. Using
+     `border-[1px]` produces a class name Bootstrap does not define, which
+     removes the collision instead of trying to win it on ordering.
+
+   Anything new in the shadcn layer that needs a border follows the same rule. */
+@tailwind components;
+@tailwind utilities;

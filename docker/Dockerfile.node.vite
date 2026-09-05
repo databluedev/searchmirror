@@ -1,0 +1,23 @@
+# Dev container for the Vite frontend (app/). Separate from
+# docker/Dockerfile.node, which pins Node 16 for the CRA toolchain: Vite 6
+# needs Node 18+, and sass-embedded ships a glibc binary, so this is a
+# Debian base rather than Alpine.
+#
+# No python3/make/g++ here -- node-sass is gone, and dart-sass is prebuilt.
+FROM node:20-bookworm-slim
+
+WORKDIR /app
+EXPOSE 3000
+
+# The dev server runs as the image's built-in `node` user (uid 1000), not
+# root: ./app is bind-mounted over /app, so root in the container is root on
+# the host tree.
+#
+# The switch is not `USER node` here, it is `setpriv --reuid=node` in the
+# compose command. /app/node_modules is a named volume, and a named volume
+# mounted over a path that did not exist in the image is created root-owned --
+# including the one an existing stack already has -- so npm install would die
+# with EACCES before it wrote a byte. The compose command chowns the volume as
+# root first, then drops. Creating the directory here means a *fresh* volume
+# inherits node's ownership and the chown is a no-op.
+RUN mkdir -p /app/node_modules && chown -R node:node /app

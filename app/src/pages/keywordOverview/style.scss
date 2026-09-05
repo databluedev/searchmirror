@@ -1,0 +1,1119 @@
+@import "../../assets/styles/style.scss";
+
+// ---------------------------------------------------------------------------
+// Keyword detail -- /keywords/:kwid/:kwname
+//
+// Contract: docs/DESIGN.md. The page ground is --paper, which is #ffffff, so a
+// --surface-2 fill no longer separates anything -- it only draws a grey slab
+// around content that was already legible. Every panel on this screen was one
+// of those, and the SERP preview put a white card inside the grey one, which is
+// the boxes-inside-boxes pattern the projects list dropped.
+//
+// Separation here is hairlines and space. A figure with a label above it gets
+// neither a fill nor a border; a section gets a micro-label header and a rule.
+// ---------------------------------------------------------------------------
+
+.nt-whiteBox {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+}
+
+.kw-notes {
+
+   .notes-datepicker{
+      .MuiButtonBase-root,
+      .MuiIconButton-root{
+         border: none !important;
+      }
+
+      .MuiPickerStaticWrapper-root{
+         border-top-left-radius: var(--r-sm);
+
+         .css-epd502{
+            width: 100% !important;
+         }
+
+         .MuiCalendarPicker-root{
+            width: 100% !important;
+
+            .css-40dz30{
+               color: var(--accent);
+               font-family: 'SemiBold';
+            }
+
+            .MuiCalendarPicker-viewTransitionContainer{
+               .css-1n2mv2k{
+                  justify-content: space-around;
+               }
+
+               .css-mvmu1r{
+                  justify-content: space-around;
+               }
+            }
+         }
+      }
+   }
+
+   .note-box{
+      background: var(--surface-2);
+      padding: 15px;
+      border-radius: var(--r-sm);
+   }
+
+   .add-note{
+      textarea{
+         border: 1px solid var(--line);
+         border-radius: var(--r-sm);
+         padding: 10px 15px;
+         line-height: 18px;
+         outline: 0px;
+
+         &:active{
+            outline: 0px;
+         }
+      }
+   }
+}
+
+.CompList{
+   z-index: 6 !important;
+   right: 0px;
+}
+
+.compbox .compdata{
+   min-height: 176px;
+}
+
+.adsbox .adsdata{
+   min-height: 82px;
+}
+
+.searchVolume-chart{
+   .apexcharts-svg{
+      min-height: 270px;
+   }
+
+   .apexcharts-tooltip.apexcharts-theme-light {
+      border: 1px solid var(--line);
+      background: var(--surface);
+   }
+
+   .apexcharts-tooltip.apexcharts-theme-light .apexcharts-tooltip-title {
+      background: var(--surface);
+      color: var(--accent);
+      font-weight: bold;
+      text-align: center;
+   }
+
+   .apexcharts-xaxistooltip{
+      display: none;
+      background: var(--surface);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      font-weight: bold;
+   }
+}
+
+.compfilterIcon{
+   width: 46px;
+   color: var(--accent);
+   padding: 10px 0px 10px 0px;
+   border-radius: var(--r-sm);
+   text-align: center;
+
+   background-color: var(--surface-2);
+
+   path{
+      fill: var(--accent) !important;
+   }
+}
+
+.logobox{
+   display: flex;
+   background: var(--surface);
+   padding: 0px 10px;
+   border-radius: var(--r-sm);
+   border: 1px solid var(--line);
+   color: var(--ink-3) !important;
+   align-items: center;
+   height: 24px;
+   width: 24px;
+   justify-content: center;
+}
+
+.MuiTabPanel-root{
+   padding: 0px;
+}
+
+.kw-overview {
+  .title {
+    padding: 7px 0;
+    border-bottom: 1px solid var(--line);
+
+    span {
+      margin-right: 40px;
+      padding: 7px 0;
+
+      &.active {
+        border-bottom: 2px solid $primaryClr;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  // Panels that still earn a container -- the competitor and search-ads tables
+  // on the SERP Competitors tab. A card is --surface
+  // behind one --line hairline (docs/DESIGN.md, "Card"), never a grey fill, and
+  // never nested inside another one.
+  .box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: var(--sp-5);
+
+    .whiteBox {
+      background: transparent;
+      padding: 0;
+    }
+
+
+    .status {
+      width: 12px;
+      height: 12px;
+      background-color: var(--up);
+      border-radius: var(--r-pill);
+      margin-bottom: 8px;
+    }
+
+  }
+
+  // Tag chip -- --surface-2 is sanctioned for chips. This was scoped under
+  // .box, and the tags no longer sit inside one.
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 var(--sp-3);
+    border-radius: var(--r-pill);
+    background: var(--surface-2);
+    font-size: 12.5px;
+    color: var(--ink-2);
+  }
+
+  .circleGpageArrow{
+    width: 18px;
+    height: 18px;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--r-pill);
+    margin-right: 0;
+  }
+}
+
+// ---- tab strip ----------------------------------------------------------
+// The pills are already defined once, in the MUI theme (App.js -> MuiTab:
+// --r-pill, 34px tall, --ink-3, selected fills --accent-weak and colours
+// --accent). This stylesheet used to override .MuiTab-root at the top level --
+// 14px "Regular", no radius, --ink, 40px of right margin, indicator restored --
+// which flattened the pills back into plain words on every screen the sheet
+// reached, not only this one. The override is gone; the strip needs spacing and
+// nothing else.
+.kwTabStrip {
+  margin-bottom: var(--sp-5);
+}
+
+// ---- stat band ----------------------------------------------------------
+// Current / Last / Change / Best. Four figures and no containers: micro-label
+// over a tabular numeral, a hairline between the columns and one closing the
+// band. The four --surface-2 tiles that were here read as controls, and each
+// one boxed a single number.
+.kwStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--sp-5);
+}
+
+.kwStat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+  padding: 0 var(--sp-5) var(--sp-5);
+  border-left: 1px solid var(--line-2);
+
+  &:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
+// The four figures are Current / Last / Change / Best -- names a rank tracker
+// user already knows. Four info icons across the strip read as four warnings.
+// The explanation now hangs off the word itself.
+.kwStatLabelHint {
+  cursor: help;
+  text-decoration: underline dotted var(--line);
+  text-underline-offset: 3px;
+}
+
+.kwStatLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-family: "SemiBold";
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.kwStatValue {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 34px;
+  font-family: "SemiBold";
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+
+  // Direction is the arrow's rotation first and its token colour second, so a
+  // change never reads on colour alone (docs/DESIGN.md).
+  .arrow {
+    display: inline-flex;
+  }
+}
+
+// a rank that has no value yet, or sits outside the tracked window
+.kwStatNone {
+  color: var(--ink-3);
+}
+
+// ---- two columns --------------------------------------------------------
+.kwCols {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: var(--sp-6);
+  align-items: start;
+}
+
+.kwPanels {
+  min-width: 0;
+  padding-left: var(--sp-6);
+  border-left: 1px solid var(--line);
+}
+
+// ---- fact list ----------------------------------------------------------
+// URL / Last update / Platform / Search engine / Country / Language / Organic
+// results / Created on. A definition list, not eight cards: every row was an
+// icon inside its own rounded --surface-2 square, and two of those squares
+// carried a pastel tint that encoded nothing.
+//
+// The squares are gone and so are the glyphs that only decorated a word --
+// a magnifier does not tell you more than the word "Organic results", and the
+// same country flag was drawn twice, once for Country and once for Language,
+// where a flag is not a language at all. The marks that carry data stay, and
+// they moved down into the value they describe: the platform glyph, which is
+// the one that changes with the keyword, the country's flag, and Google's own
+// mark. Labels are then pure type and line up down the column.
+.kwFacts {
+  margin: 0;
+  min-width: 0;
+}
+
+.kwFact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--line-2);
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+}
+
+.kwFactLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: "SemiBold";
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+// no backing, no padding, no radius -- the mark alone, at the value's colour
+.kwFactMark {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  color: var(--ink-3);
+}
+
+.kwFactValue {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  min-width: 0;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    min-width: 0;
+    color: var(--accent);
+  }
+}
+
+// "View SERP" beside the engine name -- an action, not part of the value
+.kwFactAction {
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  padding: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: var(--accent);
+  cursor: pointer;
+
+  &:focus-visible {
+    border-radius: var(--r-sm);
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.kwFactAside {
+  color: var(--ink-3);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+// ---- panel sections -----------------------------------------------------
+// Tags, Current SERP, Best SERP. A micro-label header with the section's own
+// action on the right and a hairline under it -- the page-header pattern at
+// section scale, replacing three stacked --surface-2 panels.
+.kwSection {
+  min-width: 0;
+
+  & + & {
+    margin-top: var(--sp-6);
+  }
+}
+
+.kwSectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  min-height: 28px;
+  padding-bottom: var(--sp-2);
+  margin-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--line);
+}
+
+.kwSectionTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-family: "SemiBold";
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.kwTags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 26px;
+}
+
+// ---- empty state --------------------------------------------------------
+// docs/DESIGN.md, "Empty state": one sentence, no art. The two SERP previews
+// rendered "No snippet detail available" centred inside a 118px --surface-2
+// slab, so the heaviest thing on the page was the part with nothing in it.
+.kwEmpty {
+  margin: 0;
+  padding: var(--sp-1) 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-3);
+}
+
+// Says which of the rows above can be changed, and where.
+.kwFactsCol {
+  min-width: 0;
+}
+
+.kwFactsFoot {
+  margin: var(--sp-4) 0 0;
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--line-2);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink-3);
+}
+
+.kwFactsFootLink {
+  color: var(--accent);
+}
+
+// ---- AI Overview --------------------------------------------------------
+// The GEO answer itself, not a count of it. It sits above the feature ladder
+// because "what is Google's AI telling people, and does it credit us" is the
+// question this panel exists to answer; the counts below are context.
+.sfAi {
+  padding-bottom: var(--sp-4);
+  margin-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--line);
+}
+
+.sfAiHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.sfAiTitle {
+  margin: 0;
+  font-family: "SemiBold";
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+// One phrase, never a figure. The count of cited sites is on the list below,
+// where it means something.
+.sfAiState {
+  flex: none;
+  font-family: "SemiBold";
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  padding: 4px var(--sp-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  color: var(--ink-3);
+}
+
+// "You are in it" is the house accent, the same one the keyword table paints
+// a cited row with and the ads/snippet icons use.
+.sfAiState--owned {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.sfAiState--shown {
+  color: var(--ink-2);
+}
+
+.sfAiAnswer {
+  margin: var(--sp-3) 0 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+// A thousand characters must not push the feature ladder off the panel.
+.sfAiAnswer--clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sfAiSources {
+  margin-top: var(--sp-4);
+}
+
+.sfAiSourcesLabel {
+  margin: 0 0 var(--sp-2);
+  font-family: "SemiBold";
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.sfAiSourceList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+// The title wraps onto its own row, so the row gap has to be tighter than the
+// gap between sources or a domain reads as belonging to the title above it.
+.sfAiSource {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: var(--sp-2);
+  row-gap: 2px;
+  min-width: 0;
+}
+
+.sfAiSourceLink {
+  font-family: "SemiBold";
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink);
+  text-decoration: none;
+  word-break: break-word;
+
+  // The global a:hover would repaint this in link blue, which is the colour
+  // this list reserves for "this one is yours". Hover only underlines.
+  &:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+}
+
+// The single most valuable fact on the screen: Google's AI credited you.
+.sfAiSource--owned .sfAiSourceLink {
+  color: var(--accent);
+
+  &:hover {
+    color: var(--accent);
+  }
+}
+
+.sfAiSourceTitle {
+  flex: 1 1 100%;
+  min-width: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+
+// .sfAside carries no top margin because it follows a row in the ladder; here
+// it follows prose and needs the air.
+.sfAi .sfAside {
+  margin-top: var(--sp-3);
+}
+
+// Sits directly under whatever it reveals -- the answer paragraph, or the
+// sources list -- so a tighter top margin than a standalone control would take.
+.sfAiToggle {
+  margin-top: var(--sp-2);
+  padding: 0;
+  background: none;
+  border: 0;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--accent);
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// The sources control is inside the sources block, so it needs separating from
+// the last source row rather than from the section above it.
+.sfAiSources .sfAiToggle {
+  margin-top: var(--sp-3);
+}
+
+// ---- SERP features ------------------------------------------------------
+// A label/value ladder in the .kwFacts language. Only a measured count is ever
+// a number; every other state is a word.
+.sfList {
+  display: grid;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+// The row is now a header plus an optional detail panel, so the flex layout
+// moved onto .sfRowHead and the row itself just stacks the two.
+.sfRow {
+  min-width: 0;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--line-2);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.sfRowHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+// The whole label is the control, so the hit area matches the thing it names
+// rather than being a caret you have to aim at.
+.sfRowToggle {
+  align-items: baseline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  gap: var(--sp-2);
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+
+  &:hover .sfRowLabel {
+    color: var(--ink);
+  }
+}
+
+.sfRowCaret {
+  color: var(--ink-3);
+  flex: none;
+  font-family: "SemiBold";
+  font-size: 12px;
+  line-height: 1.4;
+  width: 10px;
+}
+
+.sfRowDetail {
+  padding: var(--sp-2) 0 var(--sp-1) calc(10px + var(--sp-2));
+}
+
+.sfEntryList {
+  display: grid;
+  gap: var(--sp-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sfEntry {
+  border-left: 2px solid var(--line);
+  min-width: 0;
+  padding-left: var(--sp-3);
+}
+
+// The tracked domain's own entry, marked the same way the AI Overview sources
+// are -- an edge, not a fill.
+.sfEntry--owned {
+  border-left-color: var(--accent);
+}
+
+.sfEntryHead {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.sfEntryLink {
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.sfEntrySub {
+  color: var(--ink-3);
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.sfEntryDesc {
+  color: var(--ink-2);
+  font-size: 12.5px;
+  line-height: 1.5;
+  margin: var(--sp-1) 0 0;
+  overflow-wrap: anywhere;
+}
+
+// Says what is NOT shown. The record is a daily summary capped at ten entries,
+// and a list that silently stopped at ten would read as the whole of it.
+.sfEntryCap {
+  color: var(--ink-3);
+  font-size: 12px;
+  line-height: 1.4;
+  margin: var(--sp-2) 0 0;
+}
+
+.sfRowLabel {
+  min-width: 0;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+
+.sfRowValue {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  min-width: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.sfRowFigure {
+  font-family: "SemiBold";
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+// Absences are quiet; the words carry the difference, not the weight.
+.sfTone-absent .sfRowFigure,
+.sfTone-unknown .sfRowFigure {
+  font-family: "Regular";
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+// The project's own domain holds this block.
+.sfRowOwned {
+  font-family: "SemiBold";
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  padding: 3px var(--sp-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+}
+
+.sfRowNote {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+
+.sfAside {
+  margin: 0;
+  padding: var(--sp-2) 0 var(--sp-2) var(--sp-3);
+  border-left: 2px solid var(--line);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+.sfFoot {
+  margin: var(--sp-3) 0 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+.sfLink {
+  color: var(--accent);
+}
+
+// The inherited Fix/Ignore control was built for a table cell.
+.kwTypoInline {
+  p {
+    margin-bottom: var(--sp-1);
+  }
+}
+
+@media (max-width: 991px) {
+  .kwCols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  // the divider turns from vertical to horizontal; the grid's own row gap is
+  // already the space above it
+  .kwPanels {
+    padding-left: 0;
+    padding-top: var(--sp-6);
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+}
+
+@media (max-width: 767px) {
+  // Two up. The band keeps its own bottom padding because the tiles lose theirs
+  // once they sit on two rows.
+  .kwStats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: var(--sp-5);
+    padding-bottom: var(--sp-5);
+  }
+
+  .kwStat {
+    padding-bottom: 0;
+
+    &:nth-child(odd) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+}
+
+.snippet{
+   font-family: arial,sans-serif;
+   background-color: var(--surface);
+
+   a{
+      color: #1a0dab;
+
+      span {
+         cursor: unset;
+      }
+   }
+
+   h3{
+      font-size: 20px;
+      font-weight: 400;
+      color: #1a0dab;
+   }
+
+   .gpretitle{
+      font-family: arial,sans-serif;
+      color: #5f6368;
+      font-style: normal;
+      line-height: 1.3;
+      font-size: 14px;
+   }
+
+   .gpretitle > span:first-child{
+      color: #202124;
+   }
+
+   .kwgtitle{
+      line-height: 1.3;
+      padding-top: 5px;
+      margin-bottom: 3px;
+   }
+
+   .discription{
+      color: #4d5156;
+      line-height: 1.58;
+   }
+
+   .rating{
+      line-height: 1.58;
+   }
+
+   .imgdiv{
+      position: relative;
+      height: 92px;
+      width: 92px;
+      border-radius: var(--r-sm) !important;
+      overflow: hidden;
+   }
+
+   .img-overlay{
+      background-color: rgba(0,0,0,0.03);
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+   }
+
+   .rtrvw {
+      color: #70757a;
+      line-height: 1.58;
+      font-size: 14px;
+   }
+
+   .MuiRating-decimal{
+      margin-right: 0px !important;
+
+      svg{
+        height: 16px;
+        width: 16px;
+      }
+   }
+}
+
+// The preview renders a real Google result, so its own colours stand
+// (docs/DESIGN.md, "Sanctioned exceptions" #1). What it does not need is a
+// white card drawn inside the grey panel that used to hold it -- the panel is
+// gone and the preview sits directly on the page.
+.kw-overview .snippet {
+  background-color: transparent;
+  padding: 0;
+}
+
+.newlable{
+    padding: 4px;
+    display: block;
+    background: var(--surface-2);
+    line-height: 8px;
+    box-shadow: none;
+    border: none;
+    border-radius: var(--r-sm);
+    font-size: 10px;
+    color: var(--ink-3);
+    -webkit-backface-visibility: hidden
+}
+
+.ovrwUrl{
+   word-break: break-all;
+}
+
+@media (max-width: 827px) and (min-width: 576px) {
+   .kw-overview{
+      .cards{
+         height: 100px !important;
+      }
+   }
+}
+
+.ReactTags__tags{
+   .ReactTags__tagInputField{
+      border: unset;
+      width: 100%;
+      line-height: 26px;
+
+      &:focus {
+         outline: 0px;
+      }
+   }
+}
+
+/* An in-panel empty state: one sentence, at the lightest text weight the
+   contract allows (--ink-3, 4.5:1), centred in the space the data would have
+   filled. It replaces two sentences painted in the hairline colour, which were
+   there and unreadable rather than missing. */
+.kwEmptyPanel {
+   align-items: center;
+   display: flex;
+   justify-content: center;
+   min-height: 120px;
+   padding: var(--sp-5) var(--sp-4);
+}
+
+.kwEmptyPanel__body {
+   color: var(--ink-3);
+   font-size: 13.5px;
+   line-height: 1.55;
+   margin: 0;
+   max-width: 46ch;
+   text-align: center;
+}
+
+
+// A check that produced nothing, said on the keyword rather than only as a
+// count in a project banner -- with the control that clears it. Warn edge, no
+// warn fill: the page is still mostly measured data and this is one fact about
+// it, not an error state for the whole screen.
+.kwFailedNote {
+   align-items: center;
+   background: var(--surface);
+   border: 1px solid var(--line);
+   border-left: 3px solid var(--warn);
+   border-radius: var(--r-md);
+   display: flex;
+   flex-wrap: wrap;
+   gap: var(--sp-3);
+   margin-bottom: var(--sp-4);
+   padding: var(--sp-3) var(--sp-4);
+}
+
+.kwFailedNote__text {
+   color: var(--ink);
+   flex: 1 1 320px;
+   font-size: 14px;
+   line-height: 1.55;
+   margin: 0;
+   min-width: 0;
+}
+
+.kwFailedNote__action {
+   background: var(--surface);
+   border: 1px solid var(--line);
+   border-radius: var(--r-sm);
+   color: var(--ink);
+   cursor: pointer;
+   flex: none;
+   font-size: 13px;
+   font-weight: 500;
+   padding: var(--sp-1) var(--sp-3);
+   white-space: nowrap;
+
+   &:hover {
+      background: var(--surface-2);
+      border-color: var(--ink-3);
+   }
+}
+
+
+// The settings explanation: reachable, not unavoidable. It sat open below the
+// facts list as five lines of running prose, which made the longest thing in
+// the column the part with no measurements in it.
+.kwFactsNote {
+  margin-top: var(--sp-3);
+}
+
+.kwFactsNoteSummary {
+  color: var(--ink-3);
+  cursor: pointer;
+  font-size: 12.5px;
+  line-height: 1.4;
+  list-style: none;
+  padding: var(--sp-1) 0;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::before {
+    content: "+ ";
+    font-family: "SemiBold";
+  }
+
+  &:hover {
+    color: var(--ink-2);
+  }
+}
+
+.kwFactsNote[open] .kwFactsNoteSummary::before {
+  content: "2 ";
+}

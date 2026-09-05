@@ -1,0 +1,185 @@
+// Lite/Advanced control, shared by the DataBlue API Key tab and both add forms.
+
+// Wrapper for the add forms, where the control follows Platform. The legacy
+// m-* classes are used everywhere but defined nowhere, so the gap is set here.
+.depthSelect {
+   margin-top: var(--sp-5);
+}
+
+.depthChoice {
+   display: grid;
+   gap: var(--sp-2);
+   max-width: 520px;
+}
+
+.depthOption {
+   display: flex;
+   align-items: flex-start;
+   gap: var(--sp-3);
+   min-width: 0;
+   margin: 0;
+   padding: var(--sp-3) var(--sp-4);
+   background-color: var(--surface);
+   border: 1px solid var(--line);
+   border-radius: var(--r-md);
+   cursor: pointer;
+
+   // Kept in the a11y tree for arrow-key radiogroup behaviour; only its box goes.
+   > input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      white-space: nowrap;
+   }
+
+   &.isOn {
+      border-color: var(--accent);
+   }
+
+   > input:disabled ~ .depthOptionBody {
+      color: var(--ink-3);
+   }
+
+   > input:disabled {
+      cursor: default;
+   }
+
+   > input:focus-visible ~ .depthOptionMark {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+   }
+}
+
+.depthOptionMark {
+   flex: 0 0 auto;
+   width: 16px;
+   height: 16px;
+   margin-top: 2px;
+   border: 1px solid var(--line);
+   border-radius: 50%;
+   background-color: var(--surface);
+
+   .depthOption.isOn & {
+      border-color: var(--accent);
+      // Ring of ground then fill, so the dot needs no extra element.
+      box-shadow: inset 0 0 0 3px var(--surface), inset 0 0 0 16px var(--accent);
+   }
+}
+
+.depthOptionBody {
+   display: flex;
+   flex-direction: column;
+   gap: var(--sp-1);
+   min-width: 0;
+   color: var(--ink);
+}
+
+.depthOptionName {
+   display: flex;
+   align-items: center;
+   gap: var(--sp-2);
+   font-family: "SemiBold";
+   font-size: 14px;
+   font-weight: 600;
+   line-height: 1.3;
+}
+
+.depthOptionTag {
+   font-family: "SemiBold";
+   font-size: 10px;
+   font-weight: 600;
+   letter-spacing: 0.08em;
+   line-height: 1.2;
+   text-transform: uppercase;
+   color: var(--ink-3);
+   padding: 3px var(--sp-2);
+   border: 1px solid var(--line);
+   border-radius: var(--r-pill);
+}
+
+.depthOptionDesc {
+   font-size: 12.5px;
+   line-height: 1.5;
+   color: var(--ink-3);
+}
+
+// Leading rule, not a tinted panel: facts about the options above them.
+.depthNote,
+.depthScope {
+   max-width: 520px;
+   margin-top: var(--sp-3);
+   padding-left: var(--sp-3);
+   border-left: 2px solid var(--line);
+   font-size: 12.5px;
+   line-height: 1.5;
+   color: var(--ink-2);
+}
+
+.depthScope {
+   color: var(--ink-3);
+}
+
+.depthNoteLead {
+   font-family: "SemiBold";
+   font-weight: 600;
+   color: var(--ink);
+}
+
+.depthLink {
+   color: var(--accent);
+}
+
+// The half of the sentence that must survive a skim.
+.depthScopeStrong {
+   font-family: "SemiBold";
+   font-weight: 600;
+   color: var(--ink-2);
+}
+
+.depthStatic {
+   max-width: 520px;
+   font-size: 13px;
+   line-height: 1.55;
+   color: var(--ink-2);
+}
+
+.depthStaticValue {
+   font-family: "SemiBold";
+   font-weight: 600;
+   color: var(--ink);
+}
+
+// How many keywords in this project set their own value, and the one action
+// that clears them. Without it the project setting could be contradicted by
+// keywords the user had forgotten, with no way to see how many.
+.depthOverrides {
+   margin-top: var(--sp-4);
+   padding-top: var(--sp-3);
+   border-top: 1px solid var(--line-2);
+}
+
+.depthApply {
+   margin-top: var(--sp-2);
+   padding: 0;
+   border: 0;
+   background: none;
+   font-family: inherit;
+   font-size: 12.5px;
+   font-weight: 600;
+   color: var(--accent);
+   cursor: pointer;
+
+   &:disabled {
+      color: var(--ink-4);
+      cursor: default;
+   }
+
+   &:focus-visible {
+      border-radius: var(--r-sm);
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+   }
+}

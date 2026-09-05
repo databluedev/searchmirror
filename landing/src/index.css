@@ -1,0 +1,197 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Space Grotesk — variable, OFL, self-hosted. No third-party font host. */
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("/fonts/SpaceGrotesk-latin.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("/fonts/SpaceGrotesk-latin-ext.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@layer base {
+  :root {
+    /* SearchMirror palette — one palette for the marketing page and the product.
+       The source of truth is app/src/assets/styles/modules/_tokens.scss; these
+       are the same values, converted to the bare HSL triples Tailwind needs
+       for `hsl(var(--x) / <alpha>)`. Every triple round-trips to the app's hex
+       exactly at one decimal place — integer percentages drift by up to 3/255,
+       which is why the decimals are here. Do not "tidy" them away.
+
+         --ink        #0f0f10      --paper        #ffffff
+         --ink-2      #3d3f45      --surface      #ffffff
+         --ink-3      #6b6e76      --surface-2    #f5f5f6
+         --ink-4      #9aa0a8      --accent       #1a3cff
+         --up         #12b76a      --down         #d92d20
+         --flat       #98a2b3
+
+       Declared here is what this page uses. --accent-weak, --warn and the
+       --nav-accent pair stay in _tokens.scss: they are selected rows, quota
+       pressure and navigation state, and a marketing page has none of those.
+
+       --paper was 60 8% 95% (#f3f3f0, a warm sand) and --border was 60 3% 86%
+       (#dcdcda). The app has neither: one white ground, and edges drawn with
+       an alpha-on-ink hairline. A visitor crossing from this page into the
+       product was changing product. */
+    --ink: 240 3.2% 6.1%;
+    --ink-2: 225 6.2% 25.5%;
+    --ink-3: 223.6 4.9% 44.1%;
+    --ink-4: 214.3 7.4% 63.1%;
+    --paper: 0 0% 100%;
+    --surface: 0 0% 100%;
+    --surface-2: 240 5.3% 96.3%;
+    --line: rgba(15, 15, 16, 0.12);
+    --line-2: rgba(15, 15, 16, 0.06);
+    /* Hover-state hairline. Landing-page only: the app has no hover elevation. */
+    --line-strong: rgba(15, 15, 16, 0.2);
+    --up: 152 82.1% 39.4%;
+    --down: 4.2 74.3% 48.8%;
+    --flat: 217.8 15.1% 64.9%;
+
+    /* shadcn/magicui contract, mapped onto the palette above */
+    --background: var(--paper);
+    --foreground: var(--ink);
+    --card: var(--surface);
+    --card-foreground: var(--ink);
+    --popover: var(--surface);
+    --popover-foreground: var(--ink);
+    --primary: var(--ink);
+    --primary-foreground: 0 0% 100%;
+    --secondary: var(--surface-2);
+    --secondary-foreground: var(--ink);
+    --muted: var(--surface-2);
+    --muted-foreground: var(--ink-3);
+    --accent: 231.1 100% 55.1%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: var(--down);
+    --destructive-foreground: 0 0% 100%;
+    /* Tailwind's border-* utilities need an opaque triple, so --border is
+       --line composited on the white ground: rgba(15,15,16,0.12) over #ffffff
+       is #e2e2e2. Same edge as the app, expressed the way this build can use
+       it. `border-line` (the rgba) stays available for anything that sits on a
+       non-white fill. */
+    --border: 0 0% 88.6%;
+    --input: 0 0% 88.6%;
+    --ring: 231.1 100% 55.1%;
+
+    --r-sm: 8px;
+    --r-md: 14px;
+    --r-lg: 20px;
+    --r-pill: 999px;
+
+    --dur: 160ms;
+    --ease: cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  /* Rule 3 — focus is always visible. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: hsl(var(--ink));
+    color: #fff;
+  }
+  .theme {
+    --animate-blink-cursor: blink-cursor 1.2s step-end infinite;
+  }
+}
+
+@layer components {
+  /* Bracketed uppercase micro-label. The bracket glyphs are decoration, so they
+     are drawn with ::before/::after and kept out of the accessibility tree. */
+  .micro {
+    @apply inline-flex items-center gap-2 text-micro font-semibold uppercase text-ink-3;
+  }
+  .micro::before {
+    content: "[";
+  }
+  .micro::after {
+    content: "]";
+  }
+
+  .hairline {
+    border: 1px solid var(--line);
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The frozen state of @magicui/flickering-grid: same 4px square on the same
+     10px pitch, drawn in CSS so no canvas and no rAF loop start at all. Shown
+     instead of the canvas under `prefers-reduced-motion: reduce`. */
+  .static-grid {
+    background-color: hsl(var(--ink) / 0.14);
+    -webkit-mask-image: linear-gradient(to right, #000 4px, transparent 4px),
+      linear-gradient(to bottom, #000 4px, transparent 4px);
+    mask-image: linear-gradient(to right, #000 4px, transparent 4px),
+      linear-gradient(to bottom, #000 4px, transparent 4px);
+    -webkit-mask-size: 10px 10px;
+    mask-size: 10px 10px;
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  /* Fades the hero grid out behind the headline so the type always wins. */
+  .grid-fade {
+    -webkit-mask-image: radial-gradient(
+      120% 85% at 50% 0%,
+      #000 0%,
+      rgba(0, 0, 0, 0.55) 45%,
+      transparent 78%
+    );
+    mask-image: radial-gradient(
+      120% 85% at 50% 0%,
+      #000 0%,
+      rgba(0, 0, 0, 0.55) 45%,
+      transparent 78%
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  /* Rule 5 — collapse durations rather than cancelling animations outright, so
+     entrances that fade in from opacity 0 still end up visible. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

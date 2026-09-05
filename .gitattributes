@@ -1,0 +1,15 @@
+# resolve-url-loader fails with "found orphan CR" when a stylesheet mixes CRLF
+# and LF, which happens as soon as one tool appends LF to a CRLF file. Pin every
+# text format to LF in the working tree so the mix cannot recur.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text eol=lf
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.eot   binary
+*.otf   binary

@@ -1,0 +1,32 @@
+ {
+	"error":{
+		"general_msg1": "Something went wrong please try again",
+		"msg1": "Enter your email",
+		"msg2": "Enter valid email",
+		"msg3": "Enter your password",
+		"msg4": "Enter your confirm password",
+		"msg5": "Invalid credentials",
+		"msg6": "Should contain at least 8 characters in your password",
+		"msg7": "Please enter a same password both fields",
+		"msg8": "Enter your name",
+		"msg9": "Select your designation",
+		"msg10": "Password does not match",
+		"msg11": "Should contain at least 3 characters in your name",
+		"msg12": "Only alphabet and white space allowed for your name",
+		"msg13": "Choose valid email",
+		"msg14": "Google login cookies aren't allowed in your browser (incognito mode)",
+		"last": "",
+		"msg15": "Old password field is required!",
+		"msg16": "New password field is required!",
+		"msg17": "Confirm password field is required!",
+		"msg18": "Your password must be at least 8 characters and one number and one special character!",
+		"msg19": "Select your country",
+		"msg20": "Please accept the payment terms and conditions"
+
+
+	},
+	"success":{
+		"msg1": "Enter your email"
+	}
+
+}

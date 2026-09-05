@@ -1,0 +1,86 @@
+# SearchMirror — production overlay.
+#
+# Layered ON TOP of docker-compose.yml, never used on its own:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile prod up -d --build
+#
+# Requires Docker Compose 2.24+ for the `!override` / `!reset` merge tags.
+# Read docs/DEPLOYMENT.md before using this — the overlay changes how the
+# processes run, not whether your host is safe to run them on. TLS, secrets,
+# backups and log rotation are still yours.
+#
+# What it changes, and why:
+#   * both Django services run under gunicorn instead of `manage.py
+#     runserver`, which Django documents as unfit for production
+#   * nothing is published on a public interface; a reverse proxy in front
+#     terminates TLS and forwards to loopback
+#   * mongo is not published at all
+#   * the Vite dev server never starts; the built static bundle is served by
+#     nginx (app-prod)
+#   * the local demo seed is not run
+
+services:
+  mongo:
+    # Not published on the host at all. The backend and engine reach mongo
+    # over the compose network as `mongo:27017`; anything else is an admin
+    # task for `docker compose exec`.
+    ports: !reset []
+    environment:
+      # No default here on purpose. The dev default is a password printed in
+      # this repository's own README; a deployment that forgets to set one
+      # should fail to start rather than boot with it.
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:?set MONGO_PASSWORD in .env — see .env.production.example}
+
+  backend:
+    # Loopback only. Put nginx/Caddy/Traefik in front on the host and let it
+    # terminate TLS; see docs/DEPLOYMENT.md.
+    ports: !override ["127.0.0.1:8000:8000"]
+    # gunicorn==21.2.0 is already pinned in backend/requirements-prod.txt.
+    # Differences from the dev command: a real WSGI server instead of
+    # runserver, and no seed_local.py — the seeded account's credentials are
+    # published in this repository.
+    #
+    # --worker-class gthread buys availability, not throughput. A sync pool of
+    # N serves exactly N requests at once and the N+1th waits at the socket, so
+    # one PDF export or one provider call consumed a whole slot of three. These
+    # requests are CPU-bound once the connection is reused, so threads cost
+    # ~13% throughput on an idle server; raise GUNICORN_WORKERS for throughput.
+    # Concurrency is workers x threads; set both in .env, not here.
+    # --timeout 120: report generation and PDF rendering are slow and
+    # synchronous; the 30s default kills them mid-request.
+    command: >
+      sh -c "mkdir -p logs files && chown -R app:app logs files &&
+      exec setpriv --reuid=app --regid=app --init-groups --
+      sh -c 'python manage.py migrate --noinput && gunicorn tracker.wsgi:application --bind 0.0.0.0:8000 --worker-class gthread --workers ${GUNICORN_WORKERS:-3} --threads ${GUNICORN_THREADS:-4} --timeout 120 --access-logfile - --error-logfile -'"
+
+  engine:
+    ports: !override ["127.0.0.1:8001:8001"]
+    # gunicorn==21.2.0 is pinned in engine/requirements-prod.txt, which is the
+    # file docker/Dockerfile.engine installs. Rebuild the image after changing
+    # it, or the container still runs without gunicorn.
+    #
+    # --timeout 300: the automation endpoints drive SERP fetches inline and
+    # routinely run for minutes.
+    # --worker-class gthread for the same reason as the backend, and more so:
+    # an engine thread spends nearly all of its life waiting on DataBlue.
+    command: >
+      sh -c "mkdir -p logs project/files && chown -R app:app logs project/files &&
+      exec setpriv --reuid=app --regid=app --init-groups --
+      gunicorn project.wsgi:application --bind 0.0.0.0:8001 --worker-class gthread --workers ${ENGINE_WORKERS:-2} --threads ${ENGINE_THREADS:-8} --timeout 300 --access-logfile - --error-logfile -"
+
+  app:
+    # The Vite dev server has no place in production: it compiles on demand,
+    # serves unminified source and opens an HMR websocket. Moving it behind a
+    # profile the prod command never requests keeps it from starting, while
+    # leaving the base file's dev behaviour untouched.
+    profiles: ["dev"]
+
+  app-prod:
+    build:
+      args:
+        # Vite inlines this at BUILD time, so it must be the URL the browser
+        # will use — your public API origin, not localhost. Changing it means
+        # rebuilding the image, not restarting the container.
+        VITE_API_URL: ${APP_API_URL:?set APP_API_URL to your public API origin, e.g. https://api.example.com}
+    # Loopback only; the same reverse proxy that fronts the API serves this.
+    ports: !override ["127.0.0.1:4001:80"]

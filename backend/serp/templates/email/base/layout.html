@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+   <title>
+
+   </title>
+   <style type="text/css">
+     /* Common Styles Starts */
+     /* Common Styles Ends */
+     a {
+      color: #6f73ef !important;
+      text-decoration: none !important; 
+     }  
+   </style>
+</head>  
+<body style="margin: 0; padding: 0; background: #FFF;">
+   <div width="100%" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';margin:0;padding:0;width:100%;background-color:#edf2f7;color: #718096; cursor: default !important;"> 
+         <div width="100%" cellpadding="0" cellspacing="0" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';background-color:#edf2f7;border-bottom:1px solid #edf2f7;border-top:1px solid #edf2f7;margin:0;padding:50px 0px 0px;width:100%">
+            <table align="center" width="570" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';background-color:#ffffff;border-color:#e8e5ef;border-radius:2px;border-width:1px;margin:0 auto;padding:0;width:570px">
+
+               <tbody>
+                  <tr>
+                     <td style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';padding:30px 30px 0;text-align:center">
+                        <a href="{{siteurl}}" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';color:#3d4852;font-size:19px;font-weight:bold;text-decoration:none;display:inline-block;margin:0 auto;" target="_blank">
+                           {% if clientUrl != None %}
+                           <img src="{{clientUrl}}" height="50px" />
+                           {% else %}
+                           <img src="{{serivceurl}}static/uploads/Logo_color.png" height="70px"/> 
+                           {% endif %}
+                        </a>
+                     </td>
+                  </tr>
+
+                  {% block content %} 
+
+                  {% endblock %}
+
+               </tbody>
+            </table> 
+         </div>
+         
+         <div style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol'">
+            <table align="center" width="570" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';margin:0 auto;padding:0;text-align:center;width:570px">
+               <tbody>
+                  <tr>
+                     <td align="center" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';max-width:100vw;padding:30px">
+                        <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';line-height:1.8em;margin:0;color:#b0adc5;font-size:12px;text-align:center">SearchMirror is open source and self-hosted.</p>
+                        
+                        {% comment %}
+                           HOSTED-SERVICE LINK GOES HERE.
+
+                           A hosted SearchMirror is intended but does not exist yet: there is no
+                           instance and no signup. Until it does, this footer says only what is true
+                           of every install today -- the mail came from the reader's own server.
+                           Pointing it at a service nobody can reach would be the same dead promise
+                           as the dead vendor support address this footer replaced.
+
+                           When the hosted service is real, replace the ONE paragraph below with a
+                           line linking to it. Nothing else in this file needs to change.
+
+                           This is the only place to make that edit for these mails. THREE files
+                           exist at the template name "email/base/layout.html" -- this one,
+                           account/authorization/ and payment/ -- and Django's app-directories
+                           loader resolves all three to THIS file, so it is the layout that every
+                           email extending that name actually renders. The mailend app has its own
+                           "emails/base/layout.html" (plural), which is separate and carries the
+                           same note. Verified 2026-09-02 with
+                           django.template.loader.get_template("email/base/layout.html").origin.
+                        {% endcomment %}
+                        <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';line-height:1.8em;margin:0;color:#b0adc5;font-size:12px;text-align:center">This message was sent by your own instance, not by a vendor.</p>
+                        
+                        <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';line-height:1.5em;margin-top:20px;color:#b0adc5;font-size:12px;text-align:center">SearchMirror — open source, licensed under the AGPL-3.0.</p> 
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+      </div>
+</body>
+</html> 

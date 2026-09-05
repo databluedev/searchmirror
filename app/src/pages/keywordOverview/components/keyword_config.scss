@@ -1,0 +1,211 @@
+// ---------------------------------------------------------------------------
+// Keyword settings dialog -- /keywords/:kwid/:kwname
+//
+// Contract: docs/DESIGN.md. Tokens only; the dialog is a --surface card with
+// hairline groups, no fills and no shadows of its own (ModalBox already
+// floats). Groups are separated by a rule and a micro-label, the same pattern
+// .kwSectionHead uses on the page behind it.
+// ---------------------------------------------------------------------------
+
+.kwCfgModal {
+   // The shared modal is 40% of the viewport, which is too narrow for a form
+   // with two selects and three radio groups, and unusable below a laptop.
+   width: min(560px, calc(100vw - var(--sp-6))) !important;
+   max-height: calc(100vh - var(--sp-7));
+   overflow-y: auto;
+}
+
+.kwCfgBody {
+   padding: 0 var(--sp-4) var(--sp-4);
+}
+
+.kwCfgIntro {
+   margin: 0 0 var(--sp-5);
+   font-size: 12.5px;
+   line-height: 1.55;
+   color: var(--ink-3);
+}
+
+.kwCfgGroup {
+   padding-top: var(--sp-4);
+   border-top: 1px solid var(--line);
+
+   & + & {
+      margin-top: var(--sp-5);
+   }
+}
+
+.kwCfgGroupTitle {
+   margin-bottom: var(--sp-4);
+   font-family: "SemiBold";
+   font-size: 11px;
+   font-weight: 600;
+   letter-spacing: 0.08em;
+   line-height: 1.2;
+   text-transform: uppercase;
+   color: var(--ink-3);
+}
+
+.kwCfgField {
+   & + & {
+      margin-top: var(--sp-4);
+   }
+}
+
+.kwCfgFieldLabel {
+   margin-bottom: var(--sp-2);
+   font-size: 12.5px;
+   font-weight: 600;
+   color: var(--ink-2);
+}
+
+.kwCfgHelp {
+   margin-top: var(--sp-2);
+   font-size: 12.5px;
+   line-height: 1.55;
+   color: var(--ink-3);
+}
+
+.kwCfgLink {
+   color: var(--accent);
+}
+
+// Amber, not red: a change that needs weighing is not a failure.
+.kwCfgWarn {
+   margin-top: var(--sp-4);
+   padding: var(--sp-3);
+   border: 1px solid var(--line);
+   border-radius: var(--r-sm);
+   font-size: 12.5px;
+   line-height: 1.55;
+   color: var(--warn);
+}
+
+.kwCfgError {
+   margin-top: var(--sp-4);
+   font-size: 12.5px;
+   line-height: 1.55;
+   color: var(--down);
+}
+
+// ---- radio groups -------------------------------------------------------
+// The native input is hidden but still focusable; the ring is drawn on the
+// label so the focused option is visible without an outline: none anywhere.
+.kwCfgOptions {
+   display: grid;
+   gap: var(--sp-2);
+}
+
+.kwCfgOption {
+   display: flex;
+   align-items: flex-start;
+   gap: var(--sp-3);
+   margin: 0;
+   padding: var(--sp-3);
+   border: 1px solid var(--line);
+   border-radius: var(--r-sm);
+   cursor: pointer;
+   transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+
+   &:hover {
+      background: var(--surface-2);
+   }
+
+   &.isOn {
+      border-color: var(--accent);
+   }
+
+   &:focus-within {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+   }
+
+   input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+   }
+}
+
+.kwCfgOptionMark {
+   flex: 0 0 auto;
+   width: 16px;
+   height: 16px;
+   margin-top: 2px;
+   border: 1px solid var(--line);
+   border-radius: var(--r-pill);
+   background: var(--surface);
+
+   .kwCfgOption.isOn & {
+      border: 5px solid var(--accent);
+   }
+}
+
+.kwCfgOptionBody {
+   display: grid;
+   gap: 2px;
+   min-width: 0;
+}
+
+.kwCfgOptionName {
+   font-size: 13.5px;
+   font-weight: 600;
+   color: var(--ink);
+}
+
+.kwCfgOptionDesc {
+   font-size: 12.5px;
+   line-height: 1.5;
+   color: var(--ink-3);
+}
+
+.kwCfgActions {
+   display: flex;
+   justify-content: flex-end;
+   gap: var(--sp-2);
+   margin-top: var(--sp-5);
+   padding-top: var(--sp-4);
+   border-top: 1px solid var(--line);
+}
+
+// ---- the tier badge on the facts list -----------------------------------
+// Reads as a caption at rest and gains a border only when it is an override,
+// because "this one is different" is the only state worth finding by eye.
+.kwCfgSource {
+   font-size: 11px;
+   font-weight: 600;
+   letter-spacing: 0.04em;
+   text-transform: uppercase;
+   color: var(--ink-3);
+
+   &.isOverride {
+      padding: 2px var(--sp-2);
+      border: 1px solid var(--accent);
+      border-radius: var(--r-pill);
+      color: var(--accent);
+   }
+}
+
+// Flag + name on one baseline, in the select and in each of its options.
+.kwCfgFlagRow {
+   display: inline-flex;
+   align-items: center;
+   gap: var(--sp-2);
+   min-width: 0;
+
+   img {
+      flex: 0 0 auto;
+      border-radius: 3px;
+   }
+}
+
+// A select menu opened inside a dialog. dev_style.scss:944 pins every
+// .MuiModal-root to 9989 !important and :949 lifts .Toggle-Modal to 10000, so
+// the menu -- also a .MuiModal-root -- lands underneath the dialog that owns
+// it. Two classes outrank the one-class rule, so this wins regardless of the
+// order the two sheets load in.
+.kwCfgMenu.MuiPopover-root {
+   z-index: 10001 !important;
+}

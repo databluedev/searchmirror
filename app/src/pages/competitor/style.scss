@@ -1,0 +1,1027 @@
+// Colours here come from _tokens.scss. This file used to carry var(--surface-2) (a
+// pale yellow highlight), rgb(137,89,207) (a violet that is not the accent)
+// and var(--down) (a red that is not --down) -- all inherited from the product
+// this was adapted from, and all visibly off-system next to the rest of the
+// app.
+.cp-robo {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.sandalBtn {
+   background: var(--surface-2) !important;
+   color: var(--ink) !important;
+   font-family: "Bold" !important;
+   height: 80px !important;
+   font-size: 16px !important;
+}
+
+.pinkBtn {
+   background: var(--surface-2) !important;
+   color: var(--ink) !important;
+   font-family: "Bold" !important;
+   height: 80px !important;
+   font-size: 16px !important;
+}
+
+.lgreenBtn {
+   background: var(--surface-2) !important;
+   color: var(--ink) !important;
+   font-family: "Bold" !important;
+   height: 80px !important;
+   font-size: 16px !important;
+}
+
+.lorangeBtn {
+   background: var(--surface-2) !important;
+   color: var(--ink) !important;
+   font-family: "Bold" !important;
+   height: 80px !important;
+   font-size: 16px !important;
+}
+
+.progressbar {
+   background: var(--surface-2);
+   justify-content: flex-start;
+   border-radius: 100px;
+   align-items: center;
+   position: relative;
+   display: flex;
+   height: 6px !important;
+   width: 100%;
+   bottom: 4px;
+}
+
+.progress-value {
+   border-radius: 100px;
+   background: var(--accent);
+   height: 6px;
+   width: 0;
+   animation: progressbar-countdown;
+   animation-duration: 40s;
+   animation-iteration-count: 1;
+   animation-fill-mode: forwards;
+   animation-play-state: paused;
+   animation-timing-function: linear;
+}
+
+@keyframes progressbar-countdown {
+   0% {
+      width: 0;
+   }
+
+   100% {
+      width: 100%;
+   }
+}
+
+.progress-full {
+   border-radius: 100px;
+   background: var(--accent);
+   height: 6px;
+   width: 100%;
+}
+
+.startAnalysisBtn {
+   width: 140px;
+   margin: 14px auto 0px auto;
+}
+
+//Top Competitor page
+
+.layout header .twoButton .compLottieIcon {
+   background: var(--surface) !important;
+   border-radius: 5px;
+   padding: 0 !important;
+   height: 43px;
+   width: 43px;
+   display: flex;
+   align-items: center;
+}
+
+@media (max-width:621px) {
+   .dashboard {
+      width: 100%;
+      flex-wrap: wrap;
+   }
+}
+
+.smallwhiteBox {
+   background: var(--surface);
+   padding: 15px 15px;
+   border: 1px solid var(--line);
+   border-radius: 5px;
+
+   &.another {
+      background: var(--surface-2);
+   }
+}
+
+.smallBtn {
+   width: 65px !important;
+   flex: 0 0 auto;
+   height: 33px !important;
+
+   &.danger {
+      background-color: var(--down);
+
+      &:hover {
+         background-color: var(--down);
+      }
+   }
+}
+
+.topCompeti {
+   .footer {
+      height: 76px;
+      background-color: var(--surface);
+      overflow: hidden !important;
+      position: fixed;
+      bottom: 0;
+      // Track the real rail width (248px expanded / 68px collapsed / 0 on
+      // mobile) instead of a hardcoded 60px, which sat the footer's left edge
+      // under the expanded rail and clipped "You can add not more than…".
+      left: var(--rail-w);
+      right: 0;
+      border-top: 1px solid var(--line);
+      padding: 15px 20px;
+      grid-template-columns: 150px 150px;
+      gap: 40px;
+   }
+}
+
+.whiteBorderBtn {
+   border: 1px solid var(--line) !important;
+   color: var(--ink) !important;
+   background: var(--surface);
+   padding: 10px 12px;
+   border-radius: 5px;
+}
+
+.primaryButton {
+   background-color: var(--accent) !important;
+   color: var(--surface) !important;
+   padding: 10px 12px;
+   border-radius: 5px;
+
+   svg path {
+      fill: var(--surface);
+   }
+}
+
+.m-l8 {
+   margin-left: 8px !important;
+}
+
+.m-b2 {
+   margin-bottom: 2px !important;
+}
+
+@media (max-width:574px) {
+   .footer {
+      left: 0px !important;
+   }
+}
+
+.compProj {
+   .projectCard {
+      padding: 15px !important;
+
+      .whiteBox {
+         background: var(--surface);
+         border: none;
+         padding: 15px;
+         margin-top: 15px;
+         border-radius: 5px;
+         height: 73px;
+      }
+   }
+
+}
+
+.positionTooltip {
+   padding: 8px 12px !important;
+   font-size: 12px !important;
+   color: var(--ink) !important;
+   line-height: 18px !important;
+   margin-bottom: 8px !important;
+   box-shadow: 2px 2px 15px #00000029 !important;
+   font-family: "Regular" !important;
+   max-width: 250px !important;
+   left: 10px !important;
+
+   .MuiTooltip-arrow {
+      color: var(--surface) !important;
+
+      &:before {
+         box-shadow: 1px 0px 4px rgba(0, 0, 0, 0.12) !important;
+      }
+   }
+
+   .wd-pos-block {
+      line-height: 18px !important;
+      font-size: 12px !important;
+   }
+}
+
+.deleteComp {
+   cursor: pointer;
+}
+
+.projectCard .status {
+   background: var(--surface);
+   padding: 15px 0 0 0;
+   border-radius: 5px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+
+   /* Improved / Declined / First Position each get a third of the card. On a
+      phone that is ~110px, and the labels ran into each other with "First
+      Position" overlapping "Declined" -- .lineHTen pins the line box at 10px so
+      a wrapped label had nowhere to go. Let them wrap and centre at that width. */
+   @media (max-width: 575px) {
+      padding: 12px 2px 0;
+
+      .lineHTen {
+         display: block;
+         font-size: 11px;
+         line-height: 1.25;
+         text-align: center;
+         white-space: normal;
+      }
+   }
+}
+
+//Competitor Comparison
+.vs {
+   margin-left: 15px !important;
+}
+
+.compBest {
+   // position: absolute;
+   // left: 108px;
+}
+
+.compPie {
+   // position: absolute;
+   // left: 180px;
+}
+
+.totalkeyword {
+   .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+
+      .left {
+         display: grid;
+         // grid-template-columns: 1fr 45px 100px;
+         grid-template-columns: 1fr 100px;
+         gap: 15px;
+      }
+   }
+}
+
+@media (max-width:449px) {
+   .lineH13 {
+      line-height: 13px !important;
+   }
+}
+
+//Top comp list search
+/*.header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   flex-wrap: wrap;
+   gap: 15px;
+   .left {
+      grid-template-columns: 1fr 100px;
+      gap: 15px;
+   }
+   .right {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      grid-gap: 15px;
+      gap: 15px;
+   }
+}
+
+@media (max-width:900px) {
+   .header{
+       .right {
+           margin-bottom: 10px;
+       }
+   }
+}*/
+
+
+
+
+/*Start Keyword table & history graph design*/
+
+.SR-flagTooltip {
+   padding: 8px !important;
+   font-size: 12px !important;
+   color: var(--ink) !important;
+   line-height: 18px !important;
+   margin-bottom: 8px !important;
+   /*box-shadow: 0px 2px 4px #00000018 !important;  */
+   font-family: "Regular" !important;
+   max-width: 250px !important;
+   /*right: 10px !important; */
+
+   .MuiTooltip-arrow {
+      color: var(--surface) !important;
+      /*left: 10px !important; */
+
+      &:before {
+         box-shadow: -2px 1px 4px var(--ink)99 !important;
+         /*box-shadow: 1px 0px 4px rgba(0,0,0,0.12) !important; */
+      }
+   }
+
+   .wd-flag-block {
+      padding: 0px 8px !important;
+   }
+
+   .wd-flag-header {
+      line-height: 22px !important;
+   }
+
+   .wd-flag-content {
+      margin-left: 5px !important;
+   }
+
+}
+
+.volumeTooltip {
+   padding: 12px !important;
+   font-size: 12px !important;
+   color: var(--ink) !important;
+   background: var(--surface) !important;
+   line-height: 18px !important;
+   margin-bottom: 8px !important;
+   // box-shadow: 0px 2px 4px #00000018 !important;  
+   box-shadow: 2px 2px 15px #00000029 !important;
+   font-family: "Regular" !important;
+   max-width: 280px !important;
+
+   .MuiTooltip-arrow {
+      color: var(--surface) !important;
+
+      &:before {
+         box-shadow: 1px 0px 4px rgba(0, 0, 0, 0.12) !important;
+      }
+   }
+}
+
+.positionTooltip {
+   padding: 8px 12px !important;
+   font-size: 12px !important;
+   color: var(--ink) !important;
+   line-height: 18px !important;
+   margin-bottom: 8px !important;
+   // box-shadow: 0px 2px 4px #00000018 !important;  
+   box-shadow: 2px 2px 15px #00000029 !important;
+   font-family: "Regular" !important;
+   max-width: 250px !important;
+   left: 10px !important;
+
+   .MuiTooltip-arrow {
+      color: var(--surface) !important;
+
+      &:before {
+         box-shadow: 1px 0px 4px rgba(0, 0, 0, 0.12) !important;
+      }
+   }
+
+   .wd-pos-block {
+      line-height: 18px !important;
+      font-size: 12px !important;
+
+   }
+}
+
+.gLoaderLabel {
+   .apexcharts-tooltip.apexcharts-theme-light {
+      background: var(--surface) !important;
+      box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12) !important;
+      border: none !important;
+      border-radius: 5px !important;
+      z-index: 10 !important;
+      padding: 15px !important;
+
+      .apexcharts-tooltip-title {
+         font-size: 12px !important;
+         line-height: 18px !important;
+         font-family: "Bold" !important;
+         /*margin-bottom: 10px; */
+         margin-bottom: 0px;
+         text-align: center;
+         color: var(--accent) !important;
+         border: none !important;
+         background: transparent !important;
+      }
+
+      .apexcharts-tooltip-series-group {
+         padding: 5px 0px !important;
+
+         .apexcharts-tooltip-marker {
+            height: 12px !important;
+            width: 12px !important;
+            border-radius: 3px !important;
+            border: none !important;
+            margin-right: 10px !important;
+         }
+
+         .apexcharts-tooltip-text {
+            font-size: 12px !important;
+            line-height: 18px !important;
+            font-family: "SemiBold" !important;
+
+            .apexcharts-tooltip-y-group {
+               padding: 0px !important;
+
+               .apexcharts-tooltip-text-y-value {
+                  font-family: "Bold" !important;
+                  margin-left: 5px !important;
+               }
+            }
+
+         }
+      }
+
+      .custom-tooltip {
+         ul {
+            padding: 0px !important;
+            list-style: none !important;
+
+            .tt-date {
+               font-size: 12px !important;
+               line-height: 18px !important;
+               font-family: "Bold";
+               margin-bottom: 10px;
+               text-align: center;
+               color: var(--accent) !important;
+            }
+
+            .tt-content+.tt-content {
+               margin-top: 5px !important;
+            }
+
+            .tt-content+.tt-content.tt-last {
+               margin-top: 10px !important;
+            }
+
+            .tt-content {
+               font-size: 12px !important;
+               line-height: 18px !important;
+               font-family: "SemiBold" !important;
+
+               .barCount {
+                  font-family: "Bold" !important;
+                  margin-left: 5px !important;
+               }
+
+               .barIndex {
+                  height: 12px !important;
+                  width: 12px !important;
+                  border-radius: 3px !important;
+                  border: none !important;
+                  margin-right: 10px !important;
+               }
+            }
+         }
+      }
+
+   }
+}
+
+.charttoday {
+   .apexcharts-tooltip.apexcharts-theme-light {
+      background: var(--surface) !important;
+      box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12) !important;
+      border: none !important;
+      border-radius: 5px !important;
+      z-index: 10 !important;
+
+      .custom-tooltip {
+         ul {
+            padding: 15px !important;
+            list-style: none !important;
+
+            .tt-date {
+               font-size: 12px !important;
+               line-height: 18px !important;
+               font-family: "Bold";
+               margin-bottom: 10px;
+               text-align: center;
+               color: var(--accent) !important;
+            }
+
+            .tt-content+.tt-content {
+               margin-top: 5px !important;
+            }
+
+            .tt-content+.tt-content.tt-last {
+               margin-top: 10px !important;
+            }
+
+            .tt-content {
+               font-size: 12px !important;
+               line-height: 18px !important;
+               font-family: "SemiBold" !important;
+
+               .barCount {
+                  font-family: "Bold" !important;
+                  margin-left: 5px !important;
+               }
+
+               .barIndex {
+                  height: 12px !important;
+                  width: 12px !important;
+                  border-radius: 3px !important;
+                  border: none !important;
+                  margin-right: 10px !important;
+               }
+            }
+         }
+      }
+   }
+}
+
+.apexcharts-legend {
+   .apexcharts-legend-series {
+      display: flex !important;
+      align-items: center !important;
+   }
+}
+
+.charttoday.topcharttooltip {
+   .apexcharts-legend-series+.apexcharts-legend-series {
+      margin-top: 5px !important;
+   }
+}
+
+/* APEX CHART ENDS */
+
+/* MODAL HISTORY */
+.wd-graph-modal {
+   .MuiBackdrop-root {
+      background-color: var(--surface) !important;
+   }
+}
+
+.wd-modal-box {
+   max-height: calc(100vh - 0px) !important;
+   overflow-y: scroll !important;
+   overflow-x: hidden !important;
+}
+
+.wd-history-header {
+   padding: 20px !important;
+   margin-bottom: 0px !important;
+   top: 0px !important;
+   z-index: 13 !important;
+
+   .wd-CloseButton {
+      &:hover {
+         background-color: var(--surface-2) !important;
+      }
+   }
+}
+
+.wd-history-title {
+   font-size: 22px !important;
+   line-height: 28px !important;
+   margin: 0px;
+   display: flex;
+   color: var(--ink) !important;
+
+   .toolTipIcon {
+      margin-left: 5px !important;
+   }
+}
+
+.wd-history-sub-title {
+   margin-top: 5px !important;
+   font-size: 16px !important;
+   line-height: 20px !important;
+   color: var(--ink-3) !important;
+}
+
+.wd-history-modal {
+   padding: 20px !important;
+
+   .wd-history-duration-filter {
+      display: grid;
+      grid-template-columns: 88% 11%;
+      gap: 1%;
+   }
+}
+
+.wd-filterLabel>input {
+   visibility: hidden;
+   position: absolute;
+}
+
+.wd-filterLabel.active {
+
+   .wd-filterOption {
+      background-color: var(--accent);
+      color: var(--surface);
+
+      &:hover {
+         background-color: var(--accent);
+         color: var(--surface) !important;
+      }
+
+   }
+}
+
+.wd-filterOption {
+   cursor: pointer;
+   border: 1px solid var(--line);
+   height: 36px !important;
+   padding: 8px 15px;
+   border-radius: 5px;
+   margin-right: 10px;
+   line-height: 18px;
+   font-size: 14px;
+   color: var(--ink);
+
+   &:hover {
+      border: 1px solid var(--accent) !important;
+      color: var(--accent) !important;
+
+   }
+}
+
+.wd-DwnButton {
+   height: 36px !important;
+   padding: 8px 15px;
+   border-radius: 5px;
+   font-size: 14px;
+   color: var(--surface) !important;
+   cursor: pointer;
+
+}
+
+.wd-GraphDesc {
+   margin: 30px auto 30px !important;
+}
+
+
+.graghFilter {
+   border: 1px solid var(--line) !important;
+   font-family: "regular";
+   background-color: transparent;
+   height: 36px;
+   margin-bottom: 0px !important;
+   box-shadow: None !important;
+
+   &:hover {
+      border: 1px solid var(--accent) !important;
+      color: var(--accent) !important;
+
+   }
+
+   &.active {
+      background-color: var(--accent) !important;
+      color: var(--surface) !important;
+   }
+}
+
+.graphFilterPopOver {
+   .primaryHover.active {
+      background-color: var(--accent-weak);
+      border-radius: 5px;
+      color: var(--accent);
+   }
+}
+
+.grphloader {
+   position: absolute;
+   background-color: rgba(255, 255, 255, 0.8) !important;
+   opacity: 0.9;
+   max-height: 415px;
+   height: 100%;
+   z-index: 9 !important;
+   border-radius: 12px !important;
+   border: none !important;
+}
+
+.gLoaderLabel {
+   position: relative !important;
+}
+
+.charthistory {
+   .apexcharts-canvas {
+      background-image: url(../../assets/logo/tracker_light_logo.png) !important;
+      background-repeat: no-repeat !important;
+      background-position: center;
+      height: 315px !important;
+      backdrop-filter: opacity(0.8);
+   }
+}
+
+
+.kwchart .apexcharts-grid .apexcharts-gridlines-horizontal line:first-child {
+   stroke: transparent;
+}
+
+.kwchart .apexcharts-series-markers.apexcharts-series-line .apexcharts-marker,
+.kwchart .apexcharts-series-markers.apexcharts-series-scatter .apexcharts-marker {
+   cursor: pointer;
+}
+
+/*End Keyword table & history graph design*/
+
+// Competitor search
+.noComp {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   -ms-transform: translateX(-50%) translateY(-50%);
+   -webkit-transform: translate(-50%, -50%);
+   transform: translate(-50%, -50%);
+}
+
+.m-l44 {
+   margin-left: 44px;
+}
+
+.m-l94 {
+   margin-left: 94px;
+}
+
+
+
+/*Keyword List table*/
+.CPKW-Listtable {
+
+   /*.rdt_TableHeadRow .rdt_TableCol:first-child,
+  .rdt_TableRow .rdt_TableCell:first-child{
+     flex: 0 0 32px;
+     min-width: 32px;
+  }*/
+
+   .rdt_TableHeadRow {
+      min-height: 40px;
+      background-color: var(--paper);
+      /*z-index: 5;*/
+   }
+
+   .rdt_TableRow {
+      border: 1px solid var(--line);
+      border-top: 0px;
+      font-size: 14px;
+   }
+
+   .rdt_TableCol,
+   .rdt_TableCell {
+      padding: 0px;
+   }
+
+   .rdt_Pagination {
+      border-top-width: 0px;
+   }
+
+   .dataTable {
+
+      /*border: 1px solid var(--line);*/
+      tbody tr td:first-child {
+         padding: 10px 15px;
+      }
+   }
+
+   thead th:nth-child(2) {
+      text-align: left;
+      min-width: 300px;
+   }
+
+   span.__rdt_custom_sort_icon__ svg {
+      height: 14px !important;
+   }
+
+   .flag {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+
+      &.md {
+         width: 30px;
+         height: 30px;
+      }
+   }
+
+}
+
+/*Keyword List table*/
+
+
+.kr_vt10Button-block-snp,
+.kr_vt10Button-block {
+   font-size: 14px !important;
+   line-height: 18px !important;
+   display: flex !important;
+   align-items: center !important;
+   justify-content: flex-end !important;
+
+   .kr_vt10Button {
+      color: var(--accent) !important;
+      font-family: "SemiBold" !important;
+      margin-bottom: 0 !important;
+      display: grid;
+      grid-template-columns: auto 25px;
+      justify-content: flex-end;
+      align-items: center;
+      grid-gap: 5px;
+      display: flex !important;
+      cursor: pointer !important;
+
+      .arrow {
+         width: 20px;
+         height: 20px;
+         background: var(--surface-2);
+         border-radius: 29px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+      }
+   }
+}
+
+@media (max-width: 575.98px) {
+   .mng-modal-box {
+      padding-left: 0px !important;
+   }
+}
+
+@media (max-width: 990px) {
+   .vs {
+      text-align: center !important;
+      margin: 15px 0px !important;
+   }
+}
+
+@media (max-width: 640px) {
+   .compSrch {
+      display: none;
+   }
+
+   .newCompSrch {
+      display: block;
+   }
+}
+
+@media (min-width: 641px) {
+   .compSrch {
+      display: block;
+   }
+
+   .newCompSrch {
+      display: none;
+   }
+}
+
+@media (max-width: 430px) {
+   .cfbtns {
+      flex-wrap: wrap !important;
+   }
+
+   .topCompeti {
+      .footer {
+         height: 110px !important;
+      }
+   }
+}
+
+.nflag {
+   height: 25px;
+   width: 25px;
+   border-radius: 20px;
+   overflow: hidden;
+   border: 1px solid transparent;
+
+   .md {
+      transform: scale(1.1);
+   }
+}
+
+.mW-180 {
+   max-width: 180px !important;
+}
+
+/* Competitor card header: mark, name, score, overflow menu on one row.
+   The name column was additionally pinned to .w-75 of an already narrow flex
+   child, so "Brightdata.com" rendered as "Brightd..." -- a measured 121px of
+   text inside a 79px box -- while the score column took whatever width its
+   longest string wanted. Decide the split here instead: the score column is
+   fixed, the name column takes the rest and is allowed to shrink. */
+.compProj .projectCard {
+   .compName {
+      min-width: 0;
+
+      /* The domain sits in a flex anchor whose default min-width:auto refuses
+         to shrink below its content, so .text-truncate never got a box to
+         truncate against and "www.scrapingbee.com" ran out of the card with no
+         ellipsis instead of being cut cleanly. */
+      .goLink {
+         max-width: 100%;
+         min-width: 0;
+      }
+   }
+
+   .compScore {
+      flex: 0 0 116px;
+      width: 116px;
+   }
+}
+
+/* Neutral visibility dial. commonComponents/pie.js hardcodes blue/red/green by
+   direction of change; on a competitor that reads as praise for a rival gaining
+   and alarm for one losing. Tokens only, and no hue carries meaning here --
+   .compTrend says the direction in words. */
+.compDial {
+   display: inline-block;
+
+   &__track {
+      stroke: var(--line);
+   }
+
+   &__value {
+      stroke: var(--ink-3);
+   }
+
+   &__label {
+      fill: var(--ink);
+      font-family: var(--font);
+      font-size: 20px;
+      font-weight: 600;
+   }
+
+   /* The score averages over the shared keywords only, never the whole project,
+      so the denominator travels with the number. */
+   &__scope {
+      color: var(--ink-3);
+      font-size: 11px;
+      line-height: 1.3;
+      margin-top: 4px;
+   }
+}
+
+.compTrend {
+   color: var(--ink-3);
+   font-size: 11px;
+   line-height: 1.4;
+
+   &--none {
+      color: var(--ink-4);
+   }
+
+   /* Reserved for the reader's own direction. A competitor's movement stays in
+      plain ink: their climb is not the reader's good news. */
+   &__mark {
+      border-radius: 50%;
+      display: inline-block;
+      height: 5px;
+      margin-right: 5px;
+      vertical-align: middle;
+      width: 5px;
+
+      &.is-up {
+         background: var(--up);
+      }
+
+      &.is-down {
+         background: var(--down);
+      }
+   }
+}
+
+/* The fixed-height footer bar has room for one line. The count is the part
+   that has to survive; the hint after it wraps to four lines on a phone and
+   collides with the buttons, so it drops out below the tablet breakpoint. */
+.compFooterNote {
+   color: var(--ink);
+   font-size: 13px;
+   line-height: 1.4;
+   min-width: 0;
+
+   @media (max-width: 767px) {
+      font-size: 12px;
+
+      .compFooterNote__hint {
+         display: none;
+      }
+   }
+}

@@ -1,0 +1,15 @@
+// Legacy palette aliases. These now resolve to the design tokens in
+// _tokens.scss; they stay only because hundreds of call sites name them.
+$primaryClr:var(--accent);
+$lightPrimaryClr:var(--surface-2);
+$secoundaryClr: var(--accent);
+$whiteClr: var(--surface);
+$LightGreyClr :var(--paper);
+$borderClr : rgba(10,10,10,0.14);
+
+$redClr :var(--down);
+$greenClr :#43CF62;
+
+// Text colors
+$txtClr:var(--ink);
+$lightTxtClr:var(--ink-3);

@@ -1,0 +1,122 @@
+// Design tokens -- the only place a raw colour, size or duration is written.
+// Contract: docs/DESIGN.md. Components read var(--x); they never hardcode.
+//
+// Font FACES are declared in public/fonts.css, deliberately outside the build:
+// several page stylesheets @import the whole global sheet, and webpack then
+// resolves every url() relative to the importing page, which breaks a
+// @font-face that lives in a shared partial. See the note in that file.
+
+:root {
+  /* ink */
+  --ink:        #0f0f10;
+  --ink-2:      #3d3f45;
+  --ink-3:      #6b6e76;
+  --ink-4:      #9aa0a8;
+
+  /* ground */
+  --paper:      #ffffff;
+  --surface:    #ffffff;
+  --surface-2:  #f5f5f6;
+
+  /* edges */
+  --line:       rgba(15, 15, 16, 0.12);
+  --line-2:     rgba(15, 15, 16, 0.06);
+
+  /* meaning -- the only colours allowed to appear */
+  --accent:      #1a3cff;
+  --accent-weak: #e8ecff;
+
+  /* Rank-direction and status colours are used as TEXT (a "+4" delta, a
+     "Dropping" label), so DESIGN.md rule 4 applies: 4.5:1 on --surface.
+     The original values failed badly -- --up was 2.62:1 and --flat 2.58:1,
+     which also fails the 3:1 non-text floor, so they were unreadable in the
+     very table people scan. Darkened at the same hue until each cleared 4.5:1;
+     measured, not eyeballed. --down was already 4.83:1 and is unchanged. */
+  --up:          #0d864e;   /* 4.63:1 on --surface */
+  --down:        #d92d20;
+  --flat:        #69778e;   /* 4.54:1 on --surface */
+  --warn:        #be5a03;   /* 4.51:1 on --surface */
+
+  /* navigation -- the "where am I" colour, and nothing else. It exists because
+     --accent was doing three jobs at once (primary action, link, active nav),
+     so an active rail item read as a call to action. --nav-accent takes the
+     third job and the other two stop being ambiguous.
+     One active state, every strip and the rail: --nav-accent-weak fill,
+     --nav-accent label, and a solid --nav-accent mark (the rail's 3px leading
+     bar, the "new" dot). The solid mark is what carries the state at a
+     distance; the wash is only a wash.
+     Generated OKLCH 0.470 / 0.220 / 305 -- deep violet. Hue 305 is the widest
+     gap left: 39.4 deg from --accent (265.7) and 30.2 deg from the chart plum
+     (335.2), its two nearest neighbours, with green, red and amber reserved
+     for rank direction and quota pressure. Measured on #ffffff:
+       --nav-accent on #ffffff .................. 7.73:1  (text 4.5, mark 3.0)
+       #ffffff on --nav-accent .................. 7.73:1  (text 4.5)
+       --nav-accent on --nav-accent-weak ........ 6.55:1  (text 4.5)
+       --nav-accent on --surface-2 .............. 7.09:1  (text 4.5)
+     Separation from --accent in OKLab x100: 18.1 normal, 12.1 deuteranopia,
+     10.8 protanopia, 12.8 tritanopia -- a different colour under all three,
+     not a darker blue.
+     --nav-accent-weak is the same hue at --accent-weak's lightness and chroma
+     (OKLCH 0.946 / 0.026 / 305). Like --accent-weak (1.17:1 on white) it is
+     1.18:1 and cannot signal state on its own -- that is the label and the
+     solid mark's job. Never use it as the only difference between two
+     states. */
+  --nav-accent:      #791fba;
+  --nav-accent-weak: #f1e9fc;
+
+  /* magnitude ramp -- ONE hue stepped light -> dark, for ordinal scales:
+     rank bands, search volume, keyword difficulty. Ordered quantities get a
+     ramp, never a rainbow, and never the reserved rank-direction colours.
+     Mirrored in pages/commonComponents/chart_palette.js, which needs concrete
+     values because ApexCharts runs shading maths and cannot read var().
+     Source of truth is here; re-run scripts/validate_palette.js on a change. */
+  --chart-band-1: #91b0f4;
+  --chart-band-2: #6c94f4;
+  --chart-band-3: #4875f3;
+  --chart-band-4: #2551f3;
+  --chart-band-5: #1738ce;
+  --chart-band-6: #0f299c;
+
+  /* type */
+  --font: "Space Grotesk", "Be Vietnam Pro", -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, sans-serif;
+
+  /* space */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px;
+
+  /* radius */
+  --r-sm: 8px; --r-md: 14px; --r-lg: 20px; --r-pill: 999px;
+
+  /* motion */
+  --dur: 160ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* elevation -- DESIGN.md permits shadow only on things that genuinely sit
+     above the page. --elev-1 is the single card level; menus, dialogs and
+     toasts get theirs from the MUI theme's shadows array. Low alpha on the ink
+     hue so it reads as depth rather than as a grey halo. */
+  --elev-1: 0 1px 2px rgba(15, 15, 16, 0.04), 0 4px 12px rgba(15, 15, 16, 0.05);
+  --elev-2: 0 2px 4px rgba(15, 15, 16, 0.05), 0 8px 24px rgba(15, 15, 16, 0.07);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur: 0.01ms; }
+}
+
+html, body {
+  font-family: var(--font);
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// SCSS mirrors, for partials that need the values at compile time
+$ink: #0f0f10;      $ink-2: #3d3f45;    $ink-3: #6b6e76;   $ink-4: #9aa0a8;
+$paper: #ffffff;    $surface: #ffffff;  $surface-2: #f5f5f6;
+$line: rgba(15, 15, 16, 0.12);          $line-2: rgba(15, 15, 16, 0.06);
+$accent: #1a3cff;   $accent-weak: #e8ecff;
+$up: #12b76a;       $down: #d92d20;     $flat: #98a2b3;   $warn: #dc6803;
+$nav-accent: #791fba;  $nav-accent-weak: #f1e9fc;
+$r-sm: 8px;         $r-md: 14px;        $r-lg: 20px;      $r-pill: 999px;

@@ -1,0 +1,1032 @@
+// ---------------------------------------------------------------------------
+// Surfaces -- the card layer.
+//
+// Imported after _modern / _shell / _controls, so this file is the last word on
+// .whiteCard, .projectCard and .progressCard in the global bundle. Page-level
+// stylesheets that @import the global sheet (pages/dashboard/style.scss) come
+// after this and must not re-declare the card box.
+//
+// Contract: docs/DESIGN.md -> "Card". --surface fill, --r-md, one --line
+// hairline, --sp-5 padding, no shadow; a header row separated from the body by
+// a hairline; cards in one row equal height with their footers aligned.
+// ---------------------------------------------------------------------------
+
+// ---- the card box -------------------------------------------------------
+// Fifteen page stylesheets @import the global sheet, so the app ships that many
+// copies of it as separate <style> tags and "imported last" settles nothing
+// across pages -- pages/liveReport/style.scss re-declares the card box and
+// marks its border !important, and dev_style.scss puts the accent outline back
+// on hover. Specificity is what holds here, so the class is doubled to lift
+// these three rules above every single-class .projectCard rule in the app.
+.whiteCard.whiteCard,
+.projectCard.projectCard,
+.progressCard.progressCard {
+  background-color: var(--surface);
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-md);
+  padding: var(--sp-5);
+  // docs/DESIGN.md says "no shadow"; docs/PRODUCT-DESIGN.md section 4, written
+  // an hour later and titled "Visual direction -- corrected", names that exact
+  // rule as the thing it is overturning. Following the newer of the two, and
+  // --elev-1 is built from --line/--line-2 so no new colour enters. Flagged to
+  // the lead -- DESIGN.md lines 8-9 and 104 still say the opposite.
+  box-shadow: var(--elev-1);
+  color: var(--ink);
+}
+
+// The project card is a link target. It used to answer that with a 2px accent
+// outline, which read as a focus ring on a thing that was not focused. A
+// darkened hairline is the affordance; the accent stays reserved for focus.
+.projectCard.projectCard {
+  transition: border-color var(--dur) var(--ease);
+
+  &:hover {
+    outline: none;
+    border-color: var(--ink-4) !important;
+  }
+}
+
+// Divider inside a card is the lighter of the two hairlines -- the card's own
+// border is --line, everything within it separates at --line-2.
+.whiteCard .brdBottom,
+.projectCard .brdBottom {
+  border-bottom-color: var(--line-2);
+}
+
+// ---- card header --------------------------------------------------------
+// Title left, actions right, hairline under. Replaces the hand-rolled
+// `d-flex justify-content-between align-items-center brdBottom m-b10 p-b10`
+// that every card repeated with a slightly different margin.
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-4);
+  margin-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--line);
+
+  .MuiTypography-root {
+    margin-bottom: 0;
+    font-family: "SemiBold";
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+}
+
+// ---- overview grid ------------------------------------------------------
+// Each card sits in its own Grid item; the item stretches to the tallest card
+// in the row and the card fills it, so headers and footers line up across the
+// row instead of every card ending wherever its content happens to stop.
+.ovCol {
+  display: flex;
+
+  > .whiteCard {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+// ---- overview tables ----------------------------------------------------
+// Comparison (label + today/yesterday/best) and Google Search Ads (label +
+// you/others) used to be a stack of flex rows with a hand-set percentage width
+// on every cell. Comparison's summed to 40 + 30 + 30 + 30 = 130%, so the cells
+// overflowed the card and the header labels ran together as
+// "TODAYYESTERDAYBEST".
+//
+// One grid holds the whole table -- header cells and body cells are all direct
+// children of the same container, so a column is one track and its width is
+// derived from the widest cell in it. Nothing to keep adding up, and the
+// columns line up down the card whatever the card is wide.
+//
+// Row-per-grid would not do: max-content is resolved per grid container, so
+// each row would size its own columns and they would not align.
+//
+// These classes are applied only to the two cards that have this shape. The
+// two-child rows in the Device and SERP Features cards, and the flex layouts in
+// SearchMirror Score and Today's Performance, are left on flex -- a column template
+// is the wrong tool for them.
+.cmpTable,
+.adsTable {
+  display: grid;
+  align-items: center;
+  column-gap: var(--sp-4);
+
+  > * {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    padding: var(--sp-3) 0;
+    border-bottom: 1px solid var(--line-2);
+  }
+}
+
+.cmpTable {
+  grid-template-columns: minmax(0, 1fr) repeat(3, max-content);
+
+  // header band
+  > *:nth-child(-n + 4) {
+    padding-top: 0;
+  }
+
+  // last band -- the card's own padding closes the table off
+  > *:nth-last-child(-n + 4) {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  // every column but the label is a number
+  > *:not(:nth-child(4n + 1)) {
+    justify-content: flex-end;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.adsTable {
+  grid-template-columns: minmax(0, 1fr) repeat(2, max-content);
+
+  > *:nth-child(-n + 3) {
+    padding-top: 0;
+  }
+
+  > *:nth-last-child(-n + 3) {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  > *:not(:nth-child(3n + 1)) {
+    justify-content: flex-end;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// column header -- micro-label, never confusable with the data under it
+.ovHead {
+  font-family: "SemiBold";
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+// A card row with a single value on the right (Device, SERP Features). Two
+// cells, so flex is the right shape -- the grid templates above deliberately do
+// not apply here.
+.ovRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--line-2);
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+}
+
+// the label side of a row -- text, optionally with a leading icon
+.ovLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+// data numeral -- one role for every figure on an overview card, whether it
+// sits in a grid row or in a two-column flex row
+.ovNum {
+  font-family: "SemiBold";
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+// ---- project list -------------------------------------------------------
+// One row per project on a single surface panel, under one header row.
+//
+// The previous pass put a micro-label on every metric in every row -- four
+// uppercase labels x twenty rows, repeating the same eight words down the page
+// and leaving each number a third of its column. The labels are constant, so
+// they are stated once, in a header that shares the rows' column template. What
+// is left in a row is the project and its numbers.
+//
+// Both .prjListHead and .prjRow take grid-template-columns from the same mixin,
+// and the data cells sit inside .prjData, whose tracks are fixed px --
+// content-derived tracks would size per row and the columns would drift.
+.prjList {
+  position: relative;
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--elev-1);
+  // Not overflow:hidden. The kebab menu (.actionToggleList) is absolutely
+  // positioned inside its row and opens downward, so a clipping panel ate the
+  // last row's menu entirely. The panel's radius already clips its own
+  // background; the last row rounds its own corners below.
+}
+
+.prjListHead,
+.prjRow {
+  display: grid;
+  align-items: center;
+  column-gap: var(--sp-5);
+  padding: var(--sp-3) var(--sp-5);
+}
+
+.prjListHead {
+  border-bottom: 1px solid var(--line);
+  // No --surface-2 fill: the panel's light wash supplies the head's tone, and a
+  // flat fill on top of it would cancel the wash out. Deviation from
+  // docs/DESIGN.md "Table", reported to the lead.
+}
+
+.prjHeadCell {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  min-width: 0;
+  overflow: hidden;
+  font-family: "SemiBold";
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+// text-overflow cannot act on a flex container's own text, so the words live in
+// their own element -- a squeezed label truncates, it never spills sideways
+.prjHeadText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// numeric columns are right-aligned, so their headers are too
+.prjHeadNum {
+  justify-content: flex-end;
+}
+
+.prjRow {
+  position: relative;   // relative only, no z-index -- see .prjMenu
+  border-top: 1px solid var(--line-2);
+  cursor: pointer;
+  transition: background-color 90ms var(--ease);
+  // The list settles in as one movement. 8px, one curve, capped at eight steps
+  // so a full page of projects does not spend two seconds arriving.
+  animation: riseIn 300ms var(--ease) both;
+
+  // nth-child, not nth-of-type: .prjListHead is a div too, so an of-type
+  // selector would count it and never match the first row at all.
+  @for $i from 1 through 8 {
+    &:nth-child(#{$i}) { animation-delay: #{($i - 1) * 35}ms; }
+  }
+  &:nth-child(n + 9) { animation-delay: 280ms; }
+
+  // the skeleton list has no header, so its first row opens the panel
+  &:first-child {
+    border-top: 0;
+  }
+
+  // the panel no longer clips, so the last row rounds itself or its hover fill
+  // squares off the panel's bottom corners
+  &:last-child {
+    border-bottom-left-radius: var(--r-md);
+    border-bottom-right-radius: var(--r-md);
+  }
+
+  &:hover {
+    background-color: var(--surface-2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+}
+
+// the header's own bottom hairline is the line above the first row
+.prjListHead + .prjRow {
+  border-top: 0;
+}
+
+.prjFavicon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+// ---- identity -----------------------------------------------------------
+// Name first and loud; everything else about the project on one quiet line
+// under it. The keyword count used to have a column of its own and was the
+// first thing dropped when the viewport narrowed -- as prose it survives every
+// band, including the stacked one.
+.prjIdentity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.prjName {
+  font-family: "SemiBold";
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prjSub {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12.5px;
+  line-height: 1.4;
+  white-space: nowrap;
+  color: var(--ink-3);
+}
+
+// the domain gives way first -- it is the one item on the line that can be
+// inferred from the project name beside it
+.prjSubItem {
+  flex: 0 0 auto;
+}
+
+.prjDot {
+  flex: 0 0 auto;
+  color: var(--ink-4);
+}
+
+.prjDomain {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  flex: 0 1 auto;
+  min-width: 0;
+  color: var(--ink-3);
+
+  &:hover {
+    color: var(--accent);
+  }
+}
+
+// ---- the data cells -----------------------------------------------------
+// Fixed tracks, identical in the head and in every row.
+.prjData {
+  display: grid;
+  align-items: center;
+  column-gap: var(--sp-4);
+}
+
+// A cell's label is in the header, so the row does not repeat it on screen --
+// but a screen reader hears the numbers one after another with nothing to tie
+// them to, and this is a grid of divs, not a table, so nothing associates them.
+// The label is therefore in every row, hidden visually. The stacked band, which
+// has no header, un-hides it.
+.prjSrOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  font-family: "SemiBold";
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.prjMetric {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+.prjMetricValue {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+}
+
+// The arrow keeps a slot whether or not there is an arrow to draw, so the digits
+// end on the same line down the column instead of shifting by the width of an
+// arrow wherever a day happened to be flat.
+.prjTrend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 9px;
+}
+
+.prjNum {
+  font-family: "SemiBold";
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+// ---- trend (7-day net movement) -----------------------------------------
+// Improved minus declined, one bar per day, diverging about a zero line. The
+// three counters beside it are each a series that is usually flat, and the
+// tiles that used to draw them rendered as a 1px rule -- noise shaped like
+// data. Net movement crosses zero, so it has shape; and when it genuinely has
+// none, a day with no bar reads as "nothing moved" rather than as a fake trend.
+.prjSpark {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.prjSpark svg {
+  display: block;
+}
+
+.sparkBase {
+  fill: var(--line);
+}
+
+.sparkUp {
+  fill: var(--up);
+}
+
+.sparkDown {
+  fill: var(--down);
+}
+
+// A day that happened and did not move. It has to be drawn: the first version
+// of this drew nothing for a zero day, and on a project whose whole history is
+// ["0.0|0|0", "0.0|0|0", "0.0|0|0"] that left an SVG containing one faint rule
+// and no marks -- indistinguishable from a component that failed to render.
+// --flat is the token for "no change", which is exactly what this says.
+.sparkFlat {
+  fill: var(--flat);
+}
+
+// A project with no history at all says so in words rather than drawing an
+// empty chart.
+.prjSparkEmpty {
+  font-size: 12.5px;
+  line-height: 1.2;
+  color: var(--ink-4);
+  white-space: nowrap;
+}
+
+// ---- searchmirror score --------------------------------------------------
+// The score is a bounded 0-100 index, which is the one data shape a ring is
+// actually for -- and the ring sits in its own fixed track, so the arcs line up
+// down the list and can be read against each other at a glance. Direction is
+// carried beside it by an arrow and a magnitude, never by the ring's colour:
+// the ring is ink, always.
+.prjScoreCell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+.prjScore {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.prjDelta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-1);
+  font-family: "SemiBold";
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.prjMenu {
+  display: flex;
+  justify-content: flex-end;
+  // .actionToggleList carries z-index:1 and .prjRow deliberately has no
+  // z-index of its own, so an open menu lifts clear of the rows below it.
+}
+
+// the info affordance in the header is not a hit target for anything else
+.prjInfo {
+  display: inline-flex;
+  flex: 0 0 auto;
+  cursor: help;
+}
+
+// ---- empty state --------------------------------------------------------
+// docs/DESIGN.md: micro-label, one sentence, one primary action. The action was
+// missing -- the screen told someone with no projects that they had no projects
+// and left them to go and find the button in the header.
+.prjEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-7) var(--sp-5);
+  text-align: center;
+  color: var(--ink-3);
+}
+
+.prjEmptyAction {
+  width: 160px;
+  margin-top: var(--sp-2);
+}
+
+// ---- responsive bands ---------------------------------------------------
+// The tracks are fixed on purpose -- that is what keeps the numbers in line
+// down the list -- so narrowing means dropping a whole column, and the
+// breakpoint has to know how much width is actually left.
+//
+// .layout pushes rather than overlays (margin-left: var(--rail-w)), so the side
+// rail really does spend viewport: 248px expanded, 68px collapsed, and it
+// defaults to expanded above 1199px (sidebar.js readRailPref(narrowViewport())).
+// A viewport-only breakpoint therefore gets it wrong by 180px in one state or
+// the other, so each band is stated for both rail states.
+//
+// Budget: fixed tracks + gaps + the row's --sp-5 padding + a >=160px name,
+// inside .layout's --sp-6 gutters and this page's .px-2 wrapper.
+//   wide 864px of viewport-content: viewport >= 1176 expanded / 996 collapsed.
+//   mid  760px:                     viewport >= 1072 expanded / 892 collapsed.
+// The name track is minmax(0, 1fr), so missing a floor squeezes the name -- it
+// cannot overflow the row. The bands below all sit above their floor anyway.
+$prj-outer: 32px minmax(0, 1fr) auto 32px;
+
+// trend | improved | declined | first pos | score
+//
+// Every data track is 88px. The trend column was 80px, sized to the 80px SVG
+// inside it, and that ignored the column's own header: "MOVEMENT" at 11px/600
+// with 0.08em tracking is ~66px, and the info icon and its gap take the cell to
+// ~81px, so the header truncated to "MOVEME..." while the cell under it fitted
+// fine. A truncated header is worse than a truncated value -- the reader cannot
+// tell what the column is. The label is now "Trend" (~41px, so ~56px with the
+// icon) AND the track is 88px, which is two independent margins rather than one
+// tight fit.
+$prj-data-wide: 88px 88px 88px 88px 88px;
+$prj-data-mid:  88px 88px 88px 88px;
+
+@mixin prj-wide {
+  .prjListHead { display: grid; grid-template-columns: $prj-outer; }
+  .prjRow { grid-template-columns: $prj-outer; }
+  .prjData { grid-template-columns: $prj-data-wide; }
+  .prjColFp { display: flex; }
+}
+
+@mixin prj-mid {
+  // "First position" goes first: it is the rarest of the three counters, and
+  // the one most projects read as a constant 0.
+  .prjListHead { display: grid; grid-template-columns: $prj-outer; }
+  .prjRow { grid-template-columns: $prj-outer; }
+  .prjData { grid-template-columns: $prj-data-mid; }
+  .prjColFp { display: none; }
+}
+
+@mixin prj-stack {
+  // No header can span a stacked row, so every cell shows its own label again.
+  .prjListHead { display: none; }
+
+  .prjRow {
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    column-gap: var(--sp-4);
+    row-gap: var(--sp-4);
+    padding: var(--sp-4);
+  }
+
+  // explicit placement, not auto-flow: .prjData spans two tracks, and left to
+  // place itself it would push the kebab onto a third row
+  .prjFavicon  { grid-column: 1; grid-row: 1; }
+  .prjIdentity { grid-column: 2; grid-row: 1; }
+  .prjMenu     { grid-column: 3; grid-row: 1; }
+
+  .prjData {
+    grid-column: 2 / -1;
+    grid-row: 2;
+    grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+    column-gap: var(--sp-4);
+    row-gap: var(--sp-3);
+  }
+
+  .prjColFp { display: flex; }
+
+  // every cell becomes label-over-value, left aligned
+  .prjMetric,
+  .prjMetricValue,
+  .prjTrend {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .prjSpark {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-1);
+  }
+
+  .prjSrOnly {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+  }
+}
+
+// -- rail expanded (248px): the default above 1199px
+@media (min-width: 1200px) { body:not(.railCollapsed) { @include prj-wide; } }
+@media (min-width: 1080px) and (max-width: 1199px) { body:not(.railCollapsed) { @include prj-mid; } }
+@media (max-width: 1079px) { body:not(.railCollapsed) { @include prj-stack; } }
+
+// -- rail collapsed (68px): 180px comes back, so each band survives lower
+@media (min-width: 1000px) { body.railCollapsed { @include prj-wide; } }
+@media (min-width: 900px) and (max-width: 999px) { body.railCollapsed { @include prj-mid; } }
+@media (max-width: 899px) { body.railCollapsed { @include prj-stack; } }
+
+// The row entrance animates opacity from 0, so cancelling it outright would
+// leave the list invisible. Collapse the duration instead.
+@media (prefers-reduced-motion: reduce) {
+  .prjRow {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+  }
+}
+
+// ---- rank direction -----------------------------------------------------
+// The one place colour is allowed to speak (docs/DESIGN.md). The SearchMirror Score
+// summary read "Raising" in the accent blue, "No change" in green and only
+// "Dropping" in red, so green meant two different things and the accent -- which
+// is reserved for links and focus -- was carrying a rank. Three classes, three
+// tokens, one meaning each.
+.rankUp {
+  color: var(--up) !important;
+}
+
+.rankDown {
+  color: var(--down) !important;
+}
+
+.rankFlat {
+  color: var(--flat) !important;
+}
+
+// .arrow fills from the legacy palette ($redClr / $greenClr); the direction it
+// draws is right, the colour is not. Doubled for the same reason as the card
+// box above -- several page stylesheets re-state .arrow.
+.arrow.arrow.red path {
+  fill: var(--down);
+}
+
+.arrow.arrow.green path {
+  fill: var(--up);
+}
+
+// the stat tiles (Improved / Declined / No change, and the project cards)
+.whiteCard .status,
+.projectCard .status {
+  font-variant-numeric: tabular-nums;
+}
+
+.ovTileLabel {
+  font-family: "SemiBold";
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+
+  // A two-word label like "No Change" wraps in the narrow tile column. The
+  // inner span carries .lineHTen (line-height: 10px), which made the two lines
+  // overlap each other and the number below. Restore a normal line-height when
+  // the label wraps -- scoped here so single-line uses of .lineHTen elsewhere
+  // keep their tight spacing.
+  .lineHTen { line-height: 1.15; }
+}
+
+// ---- usage meters -------------------------------------------------------
+// Geometry lives here for every meter in the app; the caller supplies only the
+// two colours, because on the usage cards the fill colour is what encodes how
+// close the meter is to its cap.
+.meterTrack {
+  height: 6px;
+  width: 100%;
+  margin-bottom: var(--sp-1);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+
+.meterFill {
+  height: 100%;
+  border-radius: inherit;
+}
+
+// The count beside the meter must not jump around as its digits change.
+.progressCard .pLimit {
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+// ---- surface effects ----------------------------------------------------
+// The three effects below are the magicui components the brief named, written
+// out in CSS. app/ is CRA 4 + MUI + SCSS with no Tailwind and no shadcn, so the
+// packages cannot be installed here -- but none of them needs a package: each
+// is a masked gradient. They are reusable classes, not page rules.
+//
+// This is an application, not a landing page (docs/DESIGN.md, Motion), so each
+// one is spent where it says something:
+//   .lightRays   -- static. Light falling on the panel, no animation at all.
+//   .beamBorder  -- only on a row that is mid-crawl. Motion means "working".
+//   .shinySweep  -- only on hover of a primary action. Motion means "pressable".
+// None of them animates continuously on content that is merely sitting there.
+
+// ---- light rays ---------------------------------------------------------
+// A soft wash across the top of a panel, so it reads as an object with light on
+// it rather than as a fenced-off region -- the same correction docs/
+// PRODUCT-DESIGN.md section 4 makes about elevation.
+//
+// Four background layers on the element itself, with no pseudo-element and no
+// stacking context, because the panel this lands on holds absolutely positioned
+// menus that have to escape their row. Top to bottom: two fades that dissolve
+// the rays into the surface downward and to the right, the rays, and a corner
+// glow under them. Background images paint above the element's own
+// background-color and below its content, so the caller keeps its own fill.
+//
+// The rays are --line-2, not --accent-weak. docs/DESIGN.md forbids coloured
+// card tints, and it is right to: a blue wash under a monochrome list would be
+// the one decorative colour on the page. Tonal, not chromatic.
+.lightRays {
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-size: 100% 240px;
+  background-image:
+    linear-gradient(to bottom, transparent 0%, var(--surface) 100%),
+    linear-gradient(to right, transparent 0%, var(--surface) 78%),
+    repeating-linear-gradient(
+      102deg,
+      transparent 0 30px,
+      var(--line-2) 30px 33px,
+      transparent 33px 78px
+    ),
+    radial-gradient(120% 150% at 4% 0%, var(--surface-2) 0%, transparent 62%);
+}
+
+// ---- border beam --------------------------------------------------------
+// A hairline of light travelling along the element's border. The ring is drawn
+// by an overlay masked to its own 1px padding box -- the standard two-layer
+// mask-composite trick, which is what makes a gradient border possible without
+// a second element inside the box.
+//
+// The sweep animates background-position, the same property _motion.scss's
+// skeleton shimmer uses; it is a paint, not a layout. Percentages throughout,
+// because with a 200%-wide image a percentage position is interpolable and a
+// px one is not.
+//
+// Applied only while a project is crawling, alongside the spinner in its row,
+// which is why the beam is --accent: it is the same signal the spinner is, and
+// the accent is already on screen in that row.
+@keyframes beamSweep {
+  from { background-position: -40% 0; }
+  to   { background-position: 140% 0; }
+}
+
+.beamBorder {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    padding: 1px;
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 42%,
+      var(--accent) 50%,
+      transparent 58%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    -webkit-mask: linear-gradient(var(--ink) 0 0) content-box,
+                  linear-gradient(var(--ink) 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(var(--ink) 0 0) content-box,
+          linear-gradient(var(--ink) 0 0);
+    mask-composite: exclude;
+    animation: beamSweep 2.2s linear infinite;
+  }
+}
+
+// ---- shiny sweep --------------------------------------------------------
+// A highlight crossing a filled control. On a data screen a button that glints
+// on its own is noise, so it runs once per hover and once per keyboard focus,
+// which makes it a press affordance rather than an attractor.
+@keyframes shinySweep {
+  from { background-position: 160% 0; }
+  to   { background-position: -60% 0; }
+}
+
+.shinySweep {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    opacity: 0;
+    background-image: linear-gradient(
+      105deg,
+      transparent 40%,
+      var(--surface) 50%,
+      transparent 60%
+    );
+    background-size: 220% 100%;
+    background-repeat: no-repeat;
+    background-position: 160% 0;
+  }
+
+  &:hover::after,
+  &:focus-visible::after,
+  &:focus-within::after {
+    opacity: 0.3;
+    animation: shinySweep 780ms var(--ease) 1;
+  }
+}
+
+// ---- animated circular progress bar -------------------------------------
+// An SVG ring whose arc is drawn on entrance. stroke-dashoffset is not one of
+// the five properties docs/DESIGN.md permits a transition on, but the reason
+// that list is short is layout thrash, and stroke-dashoffset on an SVG
+// geometry is paint only -- it forces no layout. It runs once, at the entrance
+// duration, not on every state change.
+//
+// The final offset is an inline style on the circle, so cancelling the
+// animation under reduced motion paints the finished arc immediately. That is
+// the opposite of the entrance rule for opacity, and it is safe for the same
+// reason: the resting state here is the visible one.
+//
+// Colour comes from CSS, never from a presentation attribute -- var() does not
+// resolve inside fill=" " or stroke=" ".
+@keyframes ringDraw {
+  from { stroke-dashoffset: var(--ring-c); }
+}
+
+.ringMeter {
+  position: relative;
+  display: block;
+  width: 36px;
+  height: 36px;
+
+  svg {
+    display: block;
+    width: 36px;
+    height: 36px;
+  }
+}
+
+.ringTrack {
+  stroke: var(--line);
+}
+
+// Never scored. A lighter track and an en dash, so the cell reads as "there is
+// no score here" rather than as a score of zero -- or, worse, as a ring still
+// loading. The row's tooltip has always said "not available" for this case.
+.ringMeterEmpty {
+  .ringTrack {
+    stroke: var(--line-2);
+  }
+
+  .ringValue {
+    color: var(--ink-4);
+  }
+}
+
+.ringFill {
+  stroke: var(--ink);
+  animation: ringDraw 320ms var(--ease) 1;
+}
+
+.ringValue {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "SemiBold";
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  // Each of these rests in its visible state, so cancelling outright is correct
+  // here -- unlike the entrances above, which fade in from zero opacity.
+  .beamBorder::after {
+    animation: none;
+    background-image: none;
+    background-color: var(--accent-weak);
+  }
+
+  .shinySweep::after {
+    display: none;
+  }
+
+  .ringFill {
+    animation: none;
+  }
+}
+
+// ---- capability notice ------------------------------------------------------
+// Shown where a feature has no data because a credential is missing. Sits above
+// the page body so the explanation arrives before the empty table does.
+.capNotice {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--warn);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  padding: var(--sp-3) var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+
+.capNoticeBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.capNoticeTitle {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.capNoticeText { color: var(--ink-2); }
+.capNoticeFix  { color: var(--ink-3); font-size: 13px; }
+
+// The onboarding screens render outside .layout, so the notice needs the page
+// gutter applied to it directly. Collapses to nothing when the notice does.
+.capNoticeStandalone:empty { display: none; }
+.capNoticeStandalone { padding: var(--sp-5) var(--sp-5) 0; }

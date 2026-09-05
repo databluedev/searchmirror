@@ -1,0 +1,168 @@
+/* Tabs are one pattern for the whole app: the pill in the MUI theme, the strip
+   in _controls.scss (.tabStrip). The `.overview-tabs`, `.MuiTab-root`,
+   `.MuiTabs-scroller` and `.MuiTabPanel-root` rules that used to sit here were
+   top-level, and a page stylesheet is global as soon as its page is loaded --
+   so they flattened the pills into 14px "Regular" words with 40px of right
+   margin on every screen in the app, not just this one. Do not re-add them. */
+
+@media (max-width: 574px) {
+    .prjtsettingstab {
+        padding-left: 6px !important;
+    }
+}
+
+.fp-modal-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 0;
+    padding: var(--sp-4) var(--sp-5) !important;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+/* Team, role and member editing are part of Settings, not a second app. Keep
+   the product rail/top bar visible and use only the canvas below them. */
+.workspaceModal.MuiModal-root {
+    bottom: 0 !important;
+    left: var(--rail-w) !important;
+    right: 0 !important;
+    top: var(--shell-head-h) !important;
+    transition: left var(--dur) var(--ease);
+}
+
+.workspaceModal .fp-modal-box {
+    background: var(--paper);
+    height: 100%;
+    inset: 0;
+    outline: none;
+    overflow: auto;
+    padding: 0;
+    position: absolute;
+    width: 100%;
+}
+
+.workspaceModal .drp-form {
+    padding: var(--sp-5);
+}
+
+@media (max-width: 575.98px) {
+    .workspaceModal.MuiModal-root {
+        left: 0 !important;
+        top: var(--shell-head-h) !important;
+    }
+
+    .fp-modal-header {
+        padding: var(--sp-3) var(--sp-4) !important;
+    }
+
+    .workspaceModal .drp-form {
+        padding: var(--sp-4);
+    }
+}
+
+/* The shell, the header row, the row separator and the cell type all come from
+   _data.scss now that these three tables sit in .SR-Listtable -- the rules that
+   used to live here restated them wrongly (a --paper header row at body size, a
+   left/right/bottom border on every ROW so the body read as a stack of open
+   boxes, and min-height 70px against max-height 50px) and out-specified the
+   shared layer. What is left is the one thing that is genuinely local: the
+   column gutter. */
+.clientTable {
+    span.__rdt_custom_sort_icon__ svg {
+        height: 14px !important;
+    }
+
+    .rdt_TableCol {
+        padding-left: var(--sp-3) !important;
+        padding-right: var(--sp-3) !important;
+    }
+
+    /* docs/DESIGN.md: "Every column of numbers uses tabular-nums." */
+    .rdt_TableCell {
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+.custom-file-upload {
+    border: 1px solid var(--line);
+    border-radius: 5px;
+
+    input[type=file]::file-selector-button {
+        background-color: var(--surface);
+        color: var(--ink);
+        border: 0px;
+        border-right: 1px solid var(--line);
+        padding: 10px 15px;
+        margin-right: 20px;
+        transition: .5s;
+        cursor: pointer;
+        font-size: 14px
+    }
+
+    input[type=file]::file-selector-button:hover {
+        background-color: var(--surface-2);
+        border: 0px;
+        border-right: 1px solid var(--line);
+        cursor: pointer;
+        font-size: 14px
+    }
+}
+
+.wlBgComn {
+    background-color: var(--surface-2) !important;
+    border: 1px solid var(--line) !important;
+}
+
+.rprtWlRprtImg {
+    padding: 10px !important;
+    min-width: 30% !important;
+    max-width: -webkit-fit-content !important;
+    max-width: -moz-fit-content !important;
+    max-width: fit-content !important;
+    height: 120px !important;
+}
+
+.nw_circleArrow {
+    width: 24px;
+    height: 24px;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    margin-right: 0;
+}
+
+.sp_vt10Button {
+    color: var(--accent) !important;
+    font-family: "SemiBold" !important;
+    grid-gap: 5px;
+}
+
+.modDesctd {
+    opacity: 0.5 !important;
+}
+
+.bxShdw {
+    &:hover {
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        border: 1px solid white !important;
+    }
+}
+
+.rlFrm{
+    .customTextArea{
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        padding: 8px;
+        &:hover{
+            // border: 0px;
+            border: 1px solid var(--accent) !important;
+        }
+        &:focus{
+            outline: 0px !important;
+            border: 1px solid var(--accent) !important;
+        }
+    }
+}

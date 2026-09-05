@@ -1,0 +1,14 @@
+// Font faces live in _tokens.scss -- one declaration site, imported first.
+// This file previously re-declared "Regular" / "SemiBold" / "Bold" against
+// Be Vietnam Pro, and because it imports after _tokens.scss those later
+// @font-face rules silently won and the whole app kept the old face.
+//
+// The three aliases are kept as families (not renamed) because several hundred
+// call sites name them and there is no "Medium" face to map onto.
+
+.fM { font-family: "SemiBold" !important; }
+.fB { font-family: "Bold" !important; }
+
+.fsES { font-size: 10px !important; }
+.fsM  { font-size: 22px !important; }
+.fsL  { font-size: 26px !important; }

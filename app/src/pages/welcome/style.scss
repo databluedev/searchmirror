@@ -1,0 +1,186 @@
+// Shared authentication shell for sign-in, sign-up and password recovery.
+// The auth task stays primary: one compact card, one product identity.
+
+.authShell {
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--surface-2);
+
+  a, button, [role="button"] { cursor: pointer; }
+
+  a, .MuiButton-root {
+    transition: color var(--dur) var(--ease),
+                background-color var(--dur) var(--ease),
+                border-color var(--dur) var(--ease),
+                opacity var(--dur) var(--ease);
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--sp-1);
+  }
+}
+
+.authMain {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  overflow-y: auto;
+  padding: var(--sp-6) var(--sp-5);
+}
+
+.authFrame {
+  width: 100%;
+  max-width: 28rem;
+  margin: auto;
+
+  > section { display: contents; }
+}
+
+.authBrand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+  color: var(--ink);
+  // It is a link now, but it should not read as one until you reach for it:
+  // it is the page's identity first and its way out second.
+  text-decoration: none;
+
+  &:hover .authBrand__word {
+    color: var(--accent);
+  }
+
+  img {
+    display: block;
+    flex: 0 0 auto;
+    border-radius: var(--sp-1);
+  }
+
+  div {
+    display: grid;
+    gap: 1px;
+  }
+
+  // Metrics copied from .brandWord in modules/_shell.scss, deliberately: the
+  // rail and this header must set the same lockup at the same size, weight and
+  // tracking. font-family is named for the same reason .brandWord names it:
+  // style.scss still carries `body { font-family: "Regular" }`, and that alias
+  // declares only weight 400, so anything inheriting it at 600 gets a
+  // synthesised bold rather than the variable face. Today modules/_shell.scss
+  // is imported last and resets body to var(--font), so the alias does not
+  // actually reach here -- measured 2026-09-03, both this and .brandWord
+  // compute to the token stack. Stated anyway so the lockup does not depend on
+  // that import order staying where it is.
+  .authBrand__word {
+    font-family: var(--font);
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  .authBrand__s {
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+
+  // The strapline only. Scoped to a direct child of the text column so it
+  // cannot reach the span inside the logotype.
+  div > span {
+    font-size: 11px;
+    line-height: 1.2;
+    color: var(--ink-3);
+  }
+}
+
+.loginRightBox {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--sp-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--paper);
+
+  .centerAlign {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-4) 0;
+    width: 100%;
+    min-width: 0;
+
+    > * {
+      max-width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .text-center {
+    margin-bottom: 0;
+    text-align: center !important;
+
+    .f24x {
+      font-size: 24px !important;
+      font-weight: 600 !important;
+      letter-spacing: -0.028em;
+      color: var(--ink);
+    }
+
+    p {
+      margin-bottom: 0;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--ink-3);
+    }
+
+    br { display: none; }
+  }
+
+  form { margin-top: var(--sp-1); }
+
+  .lightTxtClr {
+    font-size: 13px;
+    color: var(--ink-3);
+    text-decoration: none;
+
+    &:hover { color: var(--ink); }
+  }
+}
+
+.authFoot {
+  margin: var(--sp-4) 0 0;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-4);
+}
+
+.primaryLink {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+.scroll { height: 100vh; overflow-y: auto; }
+
+.elementor-divider {
+  border: 0;
+  height: 1px;
+  background: var(--line);
+}
+
+@media (max-width: 575.98px) {
+  .authMain { padding: var(--sp-5); }
+  .authBrand { margin-bottom: var(--sp-4); }
+  .loginRightBox { padding: var(--sp-4); }
+}

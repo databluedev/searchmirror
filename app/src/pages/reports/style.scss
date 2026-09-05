@@ -1,0 +1,718 @@
+@import "../../assets/styles/style.scss";
+
+$Width : (
+  50,100,150,160,170,180,190,200,
+  210,220,230,240,250,260,270,280,290,300,
+  310,320,330,340,350,360,370,380,390,400,
+  410,420,430,440,450,460,470,480,490,500
+); 
+
+@each $width in $Width {
+   .w#{$width}x{
+      width: #{$width}px !important;
+   }
+} 
+
+.f-semi {
+   font-family: "SemiBold" !important; 
+}
+
+.f-regular {
+   font-family: "Regular" !important; 
+} 
+
+.primaryClr {
+   color: var(--accent) !important; 
+}
+
+.secondaryClr {
+   color: var(--ink-3) !important; 
+}
+
+.defaultClr {
+   color: var(--ink) !important; 
+}
+
+.f-14x {
+   font-size: 14px !important; 
+} 
+
+.drp-modal {
+   .drp-form {
+      padding: 20px 20px 50px; 
+   }
+
+   .drp-content-block {
+      background-color: var(--surface-2);
+      padding: 20px;
+      border: none;
+      border-radius: 5px;
+
+      .footer {
+          position: fixed;
+          bottom: 0;
+          left: var(--rail-w);
+          right: 0;
+          background-color: var(--surface);
+          border-top: 1px solid var(--line);
+          padding: 15px;
+          display: grid;
+          justify-content: center;
+          grid-template-columns: 130px 150px;
+          z-index: 2;
+          grid-gap: 20px;
+          gap: 20px; 
+      }
+   }
+
+   .drp-border {
+      border-bottom: 1px solid var(--line) !important;
+   }
+
+   .drp-inner-block {
+      background-color: var(--surface);
+      padding: 20px;
+      border: none;
+      border-radius: 5px;
+   }
+   
+}
+
+.gNJUsR{
+   min-height: 300px !important;
+   max-height: 300px !important;
+   padding-left: 20px !important;
+   overflow-x: hidden !important;
+   overflow-y: hidden !important;
+   scrollbar-gutter: stable both-edges;
+   &:hover{
+      overflow-x: scroll !important;
+      overflow-y: scroll !important;
+   }
+}
+.gNJUsR::-webkit-scrollbar{
+   transition: 1.5s ease-in-out !important;
+}
+.gNJUsR::-webkit-scrollbar-thumb{
+   color: var(--line) !important;
+} 
+
+.reportsDnmcWdgtTable{
+   th{
+      font-family:inherit !important
+   }
+}
+
+.reportsDnmcWdgtTbleFooter{
+   color:rgba(0, 0, 0, 0.54) !important;
+   p{
+      margin:0px !important;
+      font-size:13px !important;
+   }
+   .MuiTablePagination-input{
+      div{
+         font-size:13px !important;
+      }
+   }
+   .MuiTablePagination-actions button {
+      border: none;
+   }
+}
+.minW100x{
+   min-width:100px 
+}
+.minW250x{
+   min-width:250px
+}
+
+.piningCls{
+   position: sticky !important;
+   left: 0 !important;
+   background-color: var(--surface-2) !important;
+   z-index: 1 !important
+}
+
+.projectTableCard{
+   .MuiTableContainer-root::-webkit-scrollbar-thumb{
+      background-color: rgba(0, 0, 0, .05) !important;
+   }
+}
+
+.text-truncate-ecom{
+   overflow: hidden;
+   white-space: nowrap;
+}
+
+.projectTableCard{
+   .projectTableHeader{
+      padding:20px 20px 0px !important;
+      // background-color: white !important;
+      background-color: var(--surface-2) !important;
+   }
+   .reportsDnmcWdgtTbleFooter{
+      // background-color: white !important;
+      background-color: var(--surface-2) !important;
+   }
+}
+
+.layout{
+   -webkit-overflow-scrolling: touch !important;
+}
+
+.reportsCanvas {
+   width: 100%;
+   min-width: 0;
+
+   .projectSection {
+      min-width: 0;
+   }
+
+   // Grid items are flex children globally. Let this one shrink while the
+   // report table owns its horizontal overflow.
+   .projectSection > .MuiGrid-item {
+      min-width: 0;
+   }
+
+   .projectTableCard {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
+
+      // Report cards are containers, not clickable dashboard widgets.
+      &:hover {
+         outline: none;
+      }
+
+   }
+
+   // Sticky table cells sit at z-index: 1; keep the report action menu above
+   // them so the visible actions remain clickable.
+   //
+   // The shared .MenuIconlist offset (`right: 20px`, dev_style.scss) is
+   // measured for a wider icon button; on this 14px kebab it hangs the panel
+   // off to the left of the control that opened it. And a popover is one of
+   // the few things DESIGN.md lets float, so it gets a real edge from tokens
+   // rather than the inherited hardcoded #00000029 with no border.
+   .projectTableCard .actionToggleList {
+      z-index: 10 !important;
+      right: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      box-shadow: var(--elev-2);
+   }
+
+   .projectTableHeader {
+      box-sizing: border-box;
+      width: 100%;
+   }
+
+   .MuiTableContainer-root {
+      width: 100%;
+      overflow-x: auto;
+      scrollbar-gutter: stable;
+      overscroll-behavior-inline: contain;
+   }
+
+   .reportsDnmcWdgtTable {
+      th {
+         white-space: normal;
+         line-height: 1.3;
+      }
+
+      .MuiTableSortLabel-root {
+         align-items: flex-start;
+      }
+   }
+
+   .text-truncate-ecom {
+      text-overflow: ellipsis;
+   }
+
+   .reportsDnmcWdgtTbleFooter {
+      width: 100%;
+      overflow: hidden;
+   }
+
+   @media (max-width: 900px) {
+      .reportsDnmcWdgtTbleFooter {
+         .MuiTablePagination-toolbar {
+            min-height: 52px;
+            padding: 6px 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 0 8px;
+         }
+
+         .MuiTablePagination-spacer {
+            display: none;
+         }
+
+         .MuiTablePagination-selectLabel,
+         .MuiTablePagination-displayedRows {
+            margin: 0;
+         }
+      }
+   }
+}
+
+// ---------------------------------------------------------------------------
+// Reports -- docs/DESIGN.md. Everything below reads a token; no raw colour.
+// ---------------------------------------------------------------------------
+
+// ---- report type picker ---------------------------------------------------
+// .wd-filterLabel and .wd-filterOption are declared in serpRank, competitor and
+// pageaudit. This page imports none of them, so the Configure Report picker
+// shipped completely unstyled: five bare radios stacked above five labels that
+// ran into each other as one line of text. Same control, same tokens, declared
+// where this page can see it.
+.reportTypePicker {
+   margin-bottom: var(--sp-2);
+
+   > div {
+      gap: var(--sp-2);
+   }
+
+   .wd-filterLabel {
+      margin: 0;
+
+      > input {
+         position: absolute;
+         clip: rect(0 0 0 0);
+         clip-path: inset(50%);
+         height: 1px;
+         width: 1px;
+         overflow: hidden;
+         white-space: nowrap;
+      }
+
+      > input:focus-visible + .wd-filterOption {
+         outline: 2px solid var(--accent);
+         outline-offset: 2px;
+      }
+   }
+
+   .wd-filterOption {
+      align-items: center;
+      background-color: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      color: var(--ink-2);
+      cursor: pointer;
+      display: inline-flex;
+      font-size: 13.5px;
+      gap: var(--sp-1);
+      height: 34px;
+      line-height: 1;
+      padding: 0 14px;
+      white-space: nowrap;
+
+      small {
+         color: var(--ink-4);
+         font-size: 11px;
+      }
+
+      &:hover {
+         border-color: var(--ink-4);
+         color: var(--ink);
+      }
+   }
+
+   .wd-filterLabel.active .wd-filterOption {
+      background-color: var(--ink);
+      border-color: var(--ink);
+      color: var(--surface);
+
+      small { color: var(--surface); }
+
+      &:hover {
+         background-color: var(--ink);
+         border-color: var(--ink);
+         color: var(--surface);
+      }
+   }
+
+   // A type this instance cannot build. It stays visible so the reader knows
+   // it exists and why it is not on, and it is plainly not pressable.
+   .wd-filterLabel.disabled .wd-filterOption {
+      background-color: var(--surface-2);
+      border-color: var(--line-2);
+      color: var(--ink-4);
+      cursor: not-allowed;
+
+      &:hover {
+         border-color: var(--line-2);
+         color: var(--ink-4);
+      }
+   }
+}
+
+// ---- Configure Report sheet ----------------------------------------------
+.drp-modal {
+   .fp-modal-header {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: var(--sp-4);
+   }
+
+   .fp-modal-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: var(--sp-1) !important;
+   }
+
+   .fp-modal-sub-title {
+      color: var(--ink-3);
+      font-size: 14px;
+      line-height: 1.5;
+   }
+
+   // The form is a column of fields, not a poster. Capping the measure stops a
+   // four-item metric row from spreading across 1400px with a metre of air
+   // between a checkbox and its neighbour.
+   .drp-main-grid {
+      max-width: 1000px;
+   }
+
+   .drp-content-block {
+      background-color: transparent;
+      padding: 0;
+   }
+
+   .drp-inner-block {
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: var(--sp-5);
+   }
+
+   // Section headings inside the sheet sit UNDER the sheet title, so they are
+   // smaller than it, not the same 15px bold as the field label above them.
+   // Field labels take the micro-caps that "Schedule & Interval" already uses,
+   // so a label reads as a label wherever it appears.
+   #drp-rank-content h2,
+   .drp-inner-block h2 {
+      color: var(--ink);
+      font-size: 12px !important;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      line-height: 1.2;
+      margin-bottom: var(--sp-2) !important;
+      text-transform: uppercase;
+   }
+
+   #drp-rank-content h2 {
+      color: var(--ink-3);
+   }
+
+   .drp-border {
+      margin-bottom: var(--sp-4) !important;
+      margin-top: var(--sp-2) !important;
+   }
+
+   // The metric rows were fixed-height grids -- h-[80px] for four items in
+   // three columns -- so two rows of checkboxes were crushed into 80px while
+   // the row itself stretched the full width. Let them wrap on their own.
+   .drp-inner-block .grid {
+      display: flex !important;
+      flex-wrap: wrap;
+      gap: var(--sp-3) var(--sp-5);
+      height: auto !important;
+   }
+
+   .customRadio .labl {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      margin-bottom: 0;
+   }
+
+   .customRadio .labl > input:disabled + div {
+      cursor: not-allowed;
+      opacity: 0.55;
+   }
+
+   .MuiInputLabel-root {
+      color: var(--ink-3);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+   }
+
+   .drp-content-block .footer {
+      // The sheet covers the whole viewport, so offsetting the bar by the
+      // navigation rail put its hairline 232px in from the edge of a surface
+      // that has no rail on it. It also centred the two buttons in the middle
+      // of the screen; a form's actions belong at the end of the form.
+      display: flex;
+      gap: var(--sp-3);
+      justify-content: flex-end;
+      left: 0;
+      padding: var(--sp-3) var(--sp-5);
+
+      > div {
+         min-width: 120px;
+      }
+   }
+}
+
+// ---- report card ----------------------------------------------------------
+// The card had no box of its own: a grey header band and a grey pagination
+// band with a white table between them, and nothing tying the three together.
+// One white ground and one hairline, like every other card in the app.
+.reportsCanvas {
+   .projectTableCard {
+      background-color: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+   }
+
+   .projectTableHeader {
+      background-color: var(--surface) !important;
+      border-bottom: 1px solid var(--line);
+      padding: var(--sp-4) var(--sp-5) !important;
+   }
+
+   .wd-colTitleRow {
+      align-items: baseline;
+      display: flex;
+      flex-wrap: wrap;
+      font-size: 15px;
+      gap: var(--sp-1) var(--sp-3);
+      letter-spacing: -0.01em;
+      margin-bottom: 0 !important;
+   }
+
+   // ---- collapse ----------------------------------------------------------
+   // The header collapses its table. See components/ecom_widget.js for why the
+   // chevron is a button of its own rather than the whole header being one.
+   .reportCardTitle {
+      align-items: center;
+      display: flex;
+      gap: var(--sp-3);
+      min-width: 0;
+   }
+
+   .reportCollapseToggle {
+      align-items: center;
+      appearance: none;
+      background: transparent;
+      border: 0;
+      border-radius: var(--r-sm);
+      color: var(--ink-3);
+      cursor: pointer;
+      display: flex;
+      flex: 0 0 auto;
+      height: 20px;
+      justify-content: center;
+      padding: 0;
+      width: 20px;
+
+      svg {
+         transition: transform var(--dur) var(--ease);
+      }
+
+      &:hover {
+         color: var(--ink);
+      }
+
+      &:focus-visible {
+         outline: 2px solid var(--accent);
+         outline-offset: 2px;
+      }
+   }
+
+   .reportCardActions {
+      align-items: center;
+      display: flex;
+      flex: 0 0 auto;
+      gap: var(--sp-4);
+   }
+
+   // Closed, the card is one line -- it still has to say how much is behind it.
+   .reportCardRowCount {
+      color: var(--ink-3);
+      font-size: 12px;
+      white-space: nowrap;
+   }
+
+   .reportCardBody[hidden] {
+      display: none;
+   }
+
+   .projectTableCard.isCollapsed {
+      // The card clips its children so the header and footer bands cannot
+      // square off its rounded corners. Closed, the card IS the header, and
+      // that clip would eat the actions menu opening below the kebab -- so the
+      // header takes the radius itself and the card stops clipping.
+      overflow: visible;
+
+      .projectTableHeader {
+         border-bottom: 0;
+         border-radius: var(--r-md);
+      }
+
+      .reportCollapseToggle svg {
+         transform: rotate(-90deg);
+      }
+   }
+
+   // Same stacking-context fault as the projects list: modules/_motion.scss
+   // gives each grid item `animation: riseIn ... both`, and a fill that stays
+   // applied leaves a computed transform behind, which makes every card a
+   // stacking context. The actions menu's z-index then cannot lift it over the
+   // NEXT report card. `backwards` holds the pre-start frame -- which is all
+   // this animation needs -- and leaves nothing applied afterwards. Belongs in
+   // _motion.scss; scoped here because that file is shared. Reported.
+   .projectSection > .MuiGrid-item {
+      animation-fill-mode: backwards;
+   }
+
+   .reportsDnmcWdgtTbleFooter {
+      background-color: var(--surface) !important;
+      border-top: 1px solid var(--line-2);
+      color: var(--ink-3) !important;
+   }
+
+   // A text column is capped so one long landing-page URL cannot widen the
+   // table past the card on its own; the ellipsis and the tooltip carry the
+   // rest. Numeric columns keep their 100px floor.
+   .minW250x {
+      max-width: 260px;
+   }
+
+   .MuiTableCell-root {
+      padding: var(--sp-3) var(--sp-3);
+   }
+
+   // When a report genuinely is wider than the card, the reader has to be able
+   // to SEE that it scrolls. A zero-height thumb reads as a clipped table.
+   .MuiTableContainer-root {
+      scrollbar-width: thin;
+
+      &::-webkit-scrollbar {
+         height: 8px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+         background-color: var(--line);
+         border-radius: var(--r-pill);
+      }
+   }
+
+   // Sticky first column: it sat on --surface-2 against a white table, which
+   // drew a grey stripe down the left of every report.
+   .piningCls {
+      background-color: var(--surface) !important;
+   }
+
+   .reportsDnmcWdgtTable .piningCls {
+      background-color: var(--surface-2) !important;
+   }
+}
+
+// The pencil beside a report name is an affordance, not a decoration.
+.reportRenameBtn {
+   background: transparent;
+   border: 0;
+   color: var(--ink-4);
+   line-height: 0;
+   padding: 0 var(--sp-1);
+
+   &:hover { color: var(--ink); }
+
+   &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+   }
+}
+
+// Load More was a div carrying an inline --accent pill: a bright blue call to
+// action for "show me two more rows of the thing I am already looking at".
+.reportLoadMore {
+   min-width: 180px;
+}
+
+// Deleting a report destroys collected history, so the confirm is drawn in
+// --down. It is the one place on this page a colour other than ink appears.
+.reportDeleteConfirm {
+   .MuiDialogActions-root {
+      justify-content: flex-end;
+   }
+
+   .addButton:last-child .MuiButton-root {
+      background-color: var(--down) !important;
+      border-color: var(--down) !important;
+      color: var(--surface) !important;
+
+      &:hover {
+         background-color: var(--down) !important;
+         filter: brightness(0.92);
+      }
+   }
+}
+
+.reportEmptyRows {
+   min-height: 180px;
+   padding: var(--sp-6) var(--sp-5);
+}
+
+// ---- narrow viewports -----------------------------------------------------
+@media (max-width: 575.98px) {
+   .reportsCanvas {
+      .projectTableHeader {
+         padding: var(--sp-3) var(--sp-4) !important;
+      }
+
+      .wd-colTitleRow {
+         font-size: 14px;
+      }
+
+      // The pinned keyword column held 250 of a 322px viewport, so a swipe
+      // right revealed one number at a time.
+      .minW250x {
+         max-width: 170px;
+         min-width: 150px !important;
+      }
+
+      .MuiTableCell-root {
+         padding: var(--sp-3) var(--sp-2);
+      }
+   }
+
+   .drp-modal {
+      .drp-form {
+         padding: var(--sp-4) var(--sp-4) 90px;
+      }
+
+      .drp-inner-block {
+         padding: var(--sp-4);
+      }
+
+      .drp-content-block .footer {
+         padding: var(--sp-3) var(--sp-4);
+      }
+
+      // Two 200px selects side by side on a 390px screen left each about
+      // 130px, so the value ran under its own chevron. One field per row.
+      .drp-inner-block .d-flex {
+         flex-wrap: wrap;
+         gap: var(--sp-3);
+      }
+
+      .drp-inner-block .d-flex > div {
+         flex: 1 1 100%;
+         min-width: 0;
+      }
+
+      .w200x,
+      .maxW300x,
+      .m-r10 {
+         margin-right: 0 !important;
+         max-width: 100% !important;
+         width: 100% !important;
+      }
+   }
+}

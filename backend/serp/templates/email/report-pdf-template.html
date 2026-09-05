@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Project Report</title>
+  <style>
+	table, p {
+	  font-family: arial, sans-serif;
+	  border-collapse: collapse;
+	  width: 100%;
+	}
+	th{
+		background-color: #6d73ef;
+		color: #fff;
+	}
+	td, th {
+	  border: 1px solid #dddddd;
+	  text-align: left;
+	  padding: 8px;
+	}
+	tr:nth-child(even) {
+	  background-color: #dddddd;
+	}
+	span.uparrow {
+		display: inline-block;
+	}
+	span.downarrow {
+		display: inline-block;
+	}
+	.f-semi-color{
+		color: #8a8a8a;
+	}	
+	@page {
+   size: 15in 9.25in;
+   margin: 27mm 16mm 27mm 16mm;
+}
+
+
+.favicon{
+	border: 1px solid #e4e5f8;
+    margin: 0;
+    padding: 4px;
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    line-height: 5px;
+    border-radius: 5px;
+    background-color: #ffffff;
+}
+
+.up_downIcon{
+	width:10px;
+	height:12px;
+	padding-top: 0.5rem;
+}
+
+  </style>
+
+</head>
+<body>
+  <div style="text-align:center;margin-bottom:30px;">	
+	<a href="{{siteurl}}"><img src="{{serivceurl}}static/uploads/Logo_color.png" width="198" height="62" alt="SearchMirror"></a>
+  </div>
+  
+  <div style="display: flex;justify-content: space-between;margin-bottom:20px; "> 
+  	<div style="display: flex; width: 900px;" >	
+  		<div style="margin-top: 10px;" >
+  			<a target="_blank" href="{{domainname}}">
+				<img class="favicon" style="" alt="embedded" src="https://www.google.com/s2/favicons?sz=64&domain_url={{domainname}}/" />
+			</a>
+		</div>
+		<div style="margin-left: 1rem;">			
+  		<p style="height: 8px;"><b>Project : </b> {{projectname}} </p>
+  		<p style="height: 8px;"><b>Domain  : </b> {{domainname}} </p>
+  		</div>
+  	</div>
+  	<div style="text-align:right;">
+  		<p> <b>Date : </b>{% now "F j, Y" %} </p>
+  	</div>
+  </div>
+  <table>
+  <tr>
+    <th style="text-align: center;">#</th>
+    <th>Keyword</th>
+    <!-- <th>Language</th> -->
+    <th style="text-align: center;">Rank</th>
+    <th style="text-align: center;">Best rank</th>
+    <th style="text-align: center; width: 50px;">1d</th>
+    <th style="text-align: center; width: 50px;">7d</th>
+    <th style="text-align: center;">Volume</th>
+    <th style="text-align: center;">Comp</th>
+    <th>URL</th>
+    <th style="text-align: center;">Region</th>
+    <th style="text-align: center;">Date added</th>
+  </tr>
+{% for paragraph in paragraphs %}
+  <tr>
+  	<td style="text-align: center;"> {{ forloop.counter }}</td>
+    
+    <td style="width: 250px;">{{ paragraph.keyword }}</td>
+    <!-- <td>{{ paragraph.lng }}</td> -->
+    
+	{% if paragraph.ranknow == 0 %}
+		<td style="text-align: center; width: 100px;" class="f-semi-color">
+		(not ranked)	
+		</td>	
+	{% else %}
+	<td style="text-align: center; width: 80px;">
+		{{ paragraph.ranknow }}
+		</td>
+	{% endif %}
+
+	<td style="text-align: center; width: 60px;">
+		{% if paragraph.brnk > 0 %}
+			{{ paragraph.brnk }}
+		{% else %}
+			<span class="f-semi-color"> - </span> 
+		{% endif %}
+	</td>	
+	
+    <td style="text-align: center;">
+    	<div>
+			{% if paragraph.dayval == 0 %}
+				<span class="f-semi-color"> - </span> 	
+			{% else %}
+				{{ paragraph.dayval }}
+			{% endif %}
+			
+			{% if 'up' == paragraph.Dmark %}
+				<span class="uparrow">
+					<img alt="uparrow" class="up_downIcon" width="10px" height="18px" src="{{serivceurl}}static/uploads/up.png" />
+				</span>
+			{% elif 'down' == paragraph.Dmark %}
+				<span class="downarrow">
+					<img alt="downarrow" class="up_downIcon" width="10px" height="18px" src="{{serivceurl}}static/uploads/down.png" />
+				</span>
+			{% endif %}
+		</div>
+	</td>
+    <td style="text-align: center;">
+    	<div>
+			{% if paragraph.Wk == 0 %}
+				<span class="f-semi-color"> - </span> 	
+			{% else %}
+				{{ paragraph.Wk }}
+			{% endif %}
+			
+			{% if 'up' == paragraph.Wkmark %}
+				<span class="uparrow">
+					<img alt="uparrow" class="up_downIcon" width="10px" height="18px" src="{{serivceurl}}static/uploads/up.png" />
+				</span>
+			{% elif 'down' == paragraph.Wkmark %}
+				<span class="downarrow">
+					<img alt="downarrow" class="up_downIcon" width="10px" height="18px" src="{{serivceurl}}static/uploads/down.png" />
+				</span>
+			{% endif %}	
+		</div>
+	</td>
+
+	{% if paragraph.SV == '-' %}
+		<td class="f-semi-color" style="text-align: center; width: 60px;">
+		(NA)	
+		</td>	
+	{% else %}
+	<td style="text-align: center; width: 80px;">
+		{{ paragraph.SV }}
+		</td>
+	{% endif %}
+
+	{% if paragraph.CLV == '-' %}
+		<td class="f-semi-color" style="text-align: center; width: 50px;">
+		(NA)	
+		</td>	
+	{% else %}
+	<td style="text-align: center; width: 60px;">
+		{{ paragraph.CLV }}
+		</td>
+	{% endif %}
+
+	<td style="width: 240px;word-break: break-word; "><a href="{{ paragraph.furl }}" style="text-decoration:none; color: #763de1; ">{{ paragraph.URL }}</a></td>
+    <td style="text-align: center; width: 90px;">{{ paragraph.RGN }}</td>
+    <td style="text-align: center; width: 140px;">{{ paragraph.c_d }}</td>
+  </tr>
+{% endfor %}
+  
+</table>
+  
+</body>
+</html>

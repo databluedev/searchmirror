@@ -1,0 +1,139 @@
+// Motion layer.
+//
+// This is an application, not a landing page: motion here exists to explain
+// where something came from, never to decorate. One distance (8px), one curve,
+// two durations. Everything transforms or fades -- nothing animates width,
+// height or position, which would force layout on every frame.
+//
+// Every rule below collapses to nothing under prefers-reduced-motion.
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes shimmer {
+  from { background-position: -150% 0; }
+  to   { background-position: 250% 0; }
+}
+
+/* ---- entrances ---------------------------------------------------------- */
+/* Content arrives rather than appearing. 320ms is long enough to read as
+   deliberate and short enough that it never delays someone who knows the app. */
+.authAsideBody > *,
+.authAsideFoot,
+.loginRightBox .centerAlign > * {
+  animation: riseIn 320ms var(--ease) both;
+}
+
+/* A short stagger reads as one movement. Past ~5 steps it starts to feel slow,
+   so the ladder stops there. */
+.authAsideBody > *:nth-child(1),
+.loginRightBox .centerAlign > *:nth-child(1) { animation-delay: 0ms; }
+.authAsideBody > *:nth-child(2),
+.loginRightBox .centerAlign > *:nth-child(2) { animation-delay: 40ms; }
+.authAsideBody > *:nth-child(3),
+.loginRightBox .centerAlign > *:nth-child(3) { animation-delay: 80ms; }
+.authAsideBody > *:nth-child(4),
+.loginRightBox .centerAlign > *:nth-child(4) { animation-delay: 120ms; }
+.authAsideBody > *:nth-child(n + 5),
+.loginRightBox .centerAlign > *:nth-child(n + 5) { animation-delay: 160ms; }
+
+/* Page content on route change. Fade only -- the sidebar stays put, so sliding
+   the panel would imply a spatial relationship that isn't there. */
+.layout > * {
+  animation: fadeIn 200ms var(--ease) both;
+}
+
+/* Cards and rows in a list settle in together. Capped at 8 so a 200-row table
+   does not spend two seconds arriving. */
+.projectSection > .MuiGrid-item {
+  animation: riseIn 300ms var(--ease) both;
+
+  @for $i from 1 through 8 {
+    &:nth-child(#{$i}) { animation-delay: #{($i - 1) * 35}ms; }
+  }
+  &:nth-child(n + 9) { animation-delay: 280ms; }
+}
+
+/* ---- micro-interactions ------------------------------------------------- */
+/* Buttons acknowledge the press. 1px is enough to feel; more looks like a toy. */
+.MuiButton-root,
+.btn {
+  transition: background-color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              color var(--dur) var(--ease),
+              transform 80ms var(--ease);
+
+  &:active { transform: translateY(1px); }
+}
+
+/* Row hover resolves quickly -- a slow hover on a dense table feels laggy when
+   the cursor crosses many rows at once. */
+.rdt_TableRow {
+  transition: background-color 90ms var(--ease);
+}
+
+/* The disclosure caret turns rather than swapping glyphs. */
+.MuiAccordionSummary-expandIconWrapper,
+.rotateIcon {
+  transition: transform var(--dur) var(--ease);
+}
+
+/* ---- loading ------------------------------------------------------------ */
+/* A skeleton in the shape of the content, moving just enough to read as "still
+   working" rather than "frozen".
+ *
+ * One highlight crosses the whole bone. It used to be a repeating 320px tile,
+ * which on anything wider than 320px -- every table row, every card -- painted
+ * three or four highlights marching in lockstep with a visible seam between
+ * them. A ten-row table skeleton read as a four-COLUMN grid, so the skeleton
+ * misdescribed the shape of the thing it was standing in for, which is the one
+ * job it has. Hence no-repeat, a size in percent, and positions in percent:
+ * with a percentage-sized image a percentage position is interpolable and a
+ * pixel one is not (same reason the border beam gives for its own sweep).
+ *
+ * The highlight is --surface over the --surface-2 ground rather than a literal
+ * white with an alpha, so no colour is stated outside _tokens.scss. */
+.skeleton,
+.MuiSkeleton-root {
+  background-color: var(--surface-2);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--surface) 50%,
+    transparent 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 60% 100%;
+  animation: shimmer 1.4s var(--ease) infinite;
+}
+
+/* ---- the escape hatch --------------------------------------------------- */
+/* Not a blanket `animation: none` -- entrances animate opacity from 0, so
+   cancelling them outright would leave content invisible. Collapse the duration
+   instead and the final state paints immediately. */
+@media (prefers-reduced-motion: reduce) {
+  .authAsideBody > *,
+  .authAsideFoot,
+  .loginRightBox .centerAlign > *,
+  .layout > *,
+  .projectSection > .MuiGrid-item {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+  }
+
+  .skeleton,
+  .MuiSkeleton-root {
+    animation: none !important;
+    background: var(--surface-2);
+  }
+
+  .MuiButton-root:active,
+  .btn:active { transform: none; }
+}

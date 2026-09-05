@@ -1,0 +1,54 @@
+// Spacing
+$spaceamounts: (
+  0,
+  3,
+  5,
+  7,
+  8,
+  9,
+  10,
+  15,
+  20,
+  25,
+  30,
+  35,
+  40,
+  45,
+  50,
+  55,
+  60,
+  65,
+  70,
+  75,
+  80,
+  85,
+  90,
+  95,
+  100
+); // Adjust this to include the pixel amounts you need.
+$sides: (top, bottom, left, right); // Leave this variable alone
+
+@each $space in $spaceamounts {
+  @each $side in $sides {
+    .m-#{str-slice($side, 0, 1)}#{$space} {
+      margin-#{$side}: #{$space}px !important;
+    }
+
+    .p-#{str-slice($side, 0, 1)}#{$space} {
+      padding-#{$side}: #{$space}px !important;
+    }
+  }
+}
+
+$maxWidth : (
+  100, 150,165,180,190,195,
+  200,210,215,220,230,240,250,260,270,280,290,
+  300,310,315,320,330,340,350,360,370,380,390,
+  400,410,422
+); 
+
+@each $width in $maxWidth {
+  .maxW#{$width}x{
+    max-width: #{$width}px !important;
+  }
+}

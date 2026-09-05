@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Welcome To Tracker</title>
+      <style type="text/css">
+         @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+         .li-left {
+         padding: 0px 15px 0 0;
+         }
+         .li-right {
+         padding: 0px 10px;
+         }
+         ul > li {
+         padding: 5px 0px;
+         }
+         ul {
+         padding: 0px 0px;
+         margin: 0px; 
+         }
+      </style>
+   </head>
+   <body style="background-color: #ECEDF0;">
+      <div style="max-width:640px; margin:0 auto;color:#1b1c1c;line-height:25px;font-size: 14px;font-family: 'SofiaproLight',Lato,Arial,Sans-serif;">
+         <div style="width: 100%;">
+            <div style="text-align: center;margin: 30px 0;">
+               <a href="https://tracker.example/"><img src="/static/uploads/Logo_color.png" alt="Tracker"></a>			
+            </div>
+         </div>
+         <div style="background-color: #676be1;padding:15px 30px;">
+            <h1 style="font-size: 24px;font-family: 'SofiaproBold',Lato,Arial,Sans-serif;font-weight:bold;color: #fff;text-align:center">{{alert}}!</h1>
+         </div>
+         <div style="background-color: #fff;padding:30px 30px 5px; border-top:1px solid #fefefe;font-family: 'SofiaproLight',Lato,Arial,Sans-serif;">
+            <h3 style="margin:0;font-size:28px;font-family: 'Roboto', sans-serif;"><b>Hi {{username}},</b></h3>
+         </div>
+         <div style="background-color: #fff;padding:15px 30px 5px; border-top:1px solid #fefefe;font-family: 'Roboto', sans-serif;font-size: 16px;">
+            Some <b style="color: red">problems</b> have risen in the <b>ENGINE</b>. Am really disgusted with it to proceed my schedule and please check the details as follows:  
+         </div>
+         <div style="background-color: #fff;padding:15px 30px 5px; border-top:1px solid #fefefe;font-family: 'Roboto', sans-serif;font-size: 16px;">
+            <ul style="list-style: none; ">
+               <li> 
+                  <span class="li-left"><b> Severity condition </b> </span> : 
+                  <span class="li-right"> 
+                  <b style="color: red; text-transform: uppercase;"> {{condition}} </b> 
+                  </span>
+               </li>
+               <li> 
+                  <span class="li-left"><b> Usage mode </b> </span> :  
+                  <span class="li-right">
+                  <b style="text-transform: capitalize;"> {{mode}} </b>
+                  </span>
+               </li>
+               <li> 
+                  <span class="li-left"><b> Platform </b> </span> :  
+                  <span class="li-right">
+                  <b style="text-transform: capitalize;"> {{device}} </b> 
+                  </span>
+               </li>
+               <li> 
+                  <span class="li-left"><b> Time </b></span> : 
+                  <span class="li-right"> {{date}} </span> 
+               </li>
+               </li> 
+               <li> 
+                  <span class="li-left"><b> Failed at</b></span> :  
+                  <span class="li-right"> {{key}} </span> 
+               </li>
+            </ul>
+         </div>
+		 <div style="background-color: #fff;padding:30px 30px 5px; border-top:1px solid #fefefe;font-family: 'SofiaproLight',Lato,Arial,Sans-serif;">
+            <h5 style="margin:0;font-size:18px;font-family: 'Roboto', sans-serif;"><b>Message :</b></h5>
+         </div>
+		 <div style="background-color: #fff;padding:15px 30px 5px; border-top:1px solid #fefefe;font-family: 'Roboto', sans-serif;font-size: 16px;">
+			{{subject}} 
+		 </div>
+         <div style="background-color: #fff;padding:30px 30px 5px; border-top:1px solid #fefefe;font-family: 'SofiaproLight',Lato,Arial,Sans-serif;">
+            <h5 style="margin:0;font-size:18px;font-family: 'Roboto', sans-serif;"><b>Description :</b></h5>
+         </div>
+		 <div style="background-color: #fff;padding:15px 30px 5px; border-top:1px solid #fefefe;font-family: 'Roboto', sans-serif;font-size: 16px;">
+			{{message}} 
+		 </div>
+		 <div style="background-color: #fff;padding:30px 30px 5px; border-top:1px solid #fefefe;font-family: 'SofiaproLight',Lato,Arial,Sans-serif;">
+            <h5 style="margin:0;font-size:18px;font-family: 'Roboto', sans-serif;"><b>Actions :</b></h5>
+         </div>
+		 <div style="background-color: #fff;padding:15px 30px 70px; border-top:1px solid #fefefe;font-family: 'Roboto', sans-serif;font-size: 16px;">
+			{{description}} 
+		 </div>
+		 
+         <div style="background-color: #fff;padding:15px 30px;margin-top:10px;margin-bottom:60px; text-align: center;color: #737373;">
+            <p style="font-size: 14px;">Questions? The Tracker team is always here to help. Contact <a style="color:#2aa0eb" href="mailto:support@tracker.example">support@tracker.example</a> and we'll get back to you soon.</p>
+         </div>
+      </div>
+   </body>
+</html>

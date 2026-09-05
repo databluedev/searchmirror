@@ -1,0 +1,77 @@
+name: Bug report
+description: Something behaves differently from what the documentation says
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not report a security vulnerability here.** Use the process in
+        [SECURITY.md](../blob/main/SECURITY.md) instead — a public issue tells
+        everyone before there is a fix.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you observed, not what you think caused it.
+      placeholder: The keywords table showed "Not checked yet" for every keyword after a rank run.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The shortest sequence that produces it, starting from a fresh stack if you can.
+      placeholder: |
+        1. cp .env.example .env && docker compose up -d
+        2. Sign in, add a project for example.com
+        3. Add one keyword, click Rank
+        4. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: |
+        The exact error first, explanation second. Backend tracebacks help most:
+        `docker logs --tail=100 tracker-backend 2>&1 | grep -A5 Traceback`
+      render: shell
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: main @ 0a2b00b
+    validations:
+      required: true
+
+  - type: dropdown
+    id: how-run
+    attributes:
+      label: How are you running it
+      options:
+        - Local Docker stack (docker compose up)
+        - Production overlay (docker-compose.prod.yml)
+        - Something else — described above
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I checked that a DataBlue key is configured, if this involves ranking
+          required: false
+        - label: I am not reporting a security vulnerability
+          required: true

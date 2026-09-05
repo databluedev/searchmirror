@@ -1,0 +1,201 @@
+@import "../../assets/styles/style.scss";
+
+// The projects screen no longer renders .projectCard -- it is a list of
+// .prjRow now, styled in modules/_surfaces.scss. The .projectCard rules that
+// used to live here (logo box, sparkline tiles) went with it. Other pages
+// still use .projectCard and keep their own rules; the shared card box stays
+// in _surfaces.scss.
+
+// ---- the row kebab menu -------------------------------------------------
+//
+// The menu opened *underneath* the rows below it: its four items showed
+// through wherever the next row had nothing painted, and were covered by that
+// row's numbers wherever it did, so the menu and the data read as one mixed
+// column.
+//
+// Root cause is the row's own entrance animation, not the menu's z-index.
+// `animation: riseIn ... both` (modules/_surfaces.scss) keeps the animation's
+// fill applied after it ends, so every .prjRow keeps a computed
+// `transform: matrix(...)` and is therefore a permanent stacking context.
+// .actionToggleList carries `z-index: 1` (dev_style.scss), but inside its own
+// row's stacking context that only orders it against its siblings -- the next
+// row, later in DOM order, still paints on top of the whole thing. Verified in
+// the browser: elementFromPoint at the open menu's centre returned .prjRow.
+//
+// `backwards` is the fill this animation actually wants: hold the "before"
+// frame so the row does not flash in at full opacity, then hand the element
+// back to its own styles. No transform survives, no stacking context is left
+// behind, and the menu's z-index reaches the panel again.
+//
+// Scoped as .prjList .prjRow so it beats the 0,1,0 rule in _surfaces.scss no
+// matter which page chunk emits that file last. The rule belongs in
+// _surfaces.scss beside the animation; it is here because this page owns
+// .prjRow outright and _surfaces.scss is shared. Reported to the lead.
+.prjList .prjRow {
+  animation-fill-mode: backwards;
+}
+
+.prjMenu {
+  // .actionToggleList is `position: absolute` against the kebab button, and
+  // the shared .MenuIconlist offset (`right: 20px`) is measured for a 34px
+  // icon button elsewhere in the app. On this 14px kebab it pushed the panel
+  // 20px past the button's own left edge, out over the Visibility ring.
+  .actionToggleList {
+    right: 0;
+    min-width: 140px;
+    // DESIGN.md allows shadow on what genuinely floats, and a popover does.
+    // The inherited rule paints a hardcoded #00000029; tokens instead, plus a
+    // hairline so the panel still has an edge over a white row.
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    box-shadow: var(--elev-2);
+  }
+
+  // A menu on a row near the bottom of a full page opens below the fold: the
+  // panel does not clip it, but the reader has to scroll to reach Delete.
+  // The bottom two rows open upward instead. Guarded by :nth-child(n + 4) --
+  // .prjListHead is child 1, so that is "from the third row on" -- because on
+  // a list of one or two rows there is nothing below to escape and upward
+  // would push the menu out through the top of the panel.
+  //
+  // Both selectors are needed: `top` is set by .actionToggleList and `bottom`
+  // by nothing, so the flip has to state both.
+  .prjRow:nth-child(n + 4):nth-last-child(-n + 2) & .actionToggleList {
+    top: auto;
+    bottom: 100%;
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+}
+
+// Subscription notice from dashboard/components/banner_status.js, which renders
+// <section className="renewal"> in six branches. It was a pale blue panel ringed
+// in the accent; the accent is reserved for links and focus, and the heading and
+// Upgrade button already carry the urgency, so it is a plain card.
+.renewal {
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  padding: var(--sp-5) var(--sp-6);
+  border-radius: var(--r-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--sp-5);
+  min-height: 150px;
+
+  .person {
+    margin-bottom: -20px;
+  }
+}
+
+@media (max-width: 991px) {
+  .renewal {
+    padding: var(--sp-4);
+    flex-wrap: wrap;
+    gap: var(--sp-4);
+    min-height: 0;
+  }
+}
+@media (max-width: 768px) {
+  // .usedProgress {
+  //   margin-top: 75px !important;
+  // }
+  .MuiTypography-h2{
+    font-size: 18px !important;
+  }
+}
+@media (max-width: 591px) {
+  .layout {
+    .swiper-slide {
+      width: 70% !important;
+      &:last-child{
+        width: 100% !important;
+      }
+    }
+  }
+}
+
+
+//project info start
+// Each icon used to sit on its own pastel -- lilac, mint, pink, peach, one per
+// field. The colour distinguished nothing the label beside it did not already
+// say, so all nine keep their class names and share one inset fill.
+.projectInfo {
+   .box {
+      width: 60px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--r-sm);
+      background-color: var(--surface-2);
+      color: var(--ink-2);
+  }
+}
+
+.responsivePadding{
+  padding-left: 60px;
+}
+
+@media (max-width: 574px){
+  .responsivePadding{
+    padding-left: 0px;
+  }
+}
+
+//project info end
+
+.boxes{
+  height: 56px !important;
+}
+
+.boxContent{
+   padding-top: 6px;
+}
+
+.fR{
+   font-family: regular !important;
+}
+
+/* AK */
+.statusMFChart {
+  & >div {
+    height: auto !important;
+    min-height: auto !important; 
+  }
+}
+
+.usedProgress{
+  .swiper-slide {
+    // width: 24.4% !important;
+    margin-right: 10px !important;
+  }
+}
+.pUsedPrg{
+  .pLimit{
+    margin-left: 12px !important;
+  } 
+  .swiper-slide{
+    min-width: 265px !important;
+  }
+}
+
+//domain name responsivness
+
+.prjctDomain{
+  width: 183px;
+}
+
+@media (max-width: 380px){
+  .modalDomain{
+    width: 120px !important;
+  }
+  .prjctDomain{
+    width: 150px !important;
+  }
+}
+.dS_Bsdte{
+  font-size: 13px !important;
+  line-height: 20px !important;
+  color: var(--ink-3) !important;
+}

@@ -1,0 +1,71 @@
+{% comment %}
+   NOT USED -- this file never renders.
+
+   Django's app-directories loader resolves the template name
+   "email/base/layout.html" to serp/templates/email/base/layout.html, which
+   comes first in INSTALLED_APPS. Every email that extends that name, this
+   app's own included, renders THAT file and never this one. Verified
+   2026-09-02 with
+   django.template.loader.get_template("email/base/layout.html").origin.
+
+   Its footer text is kept in step with the serp copy on purpose, so that if
+   the app order ever changes the delivered email does not. Make real edits in
+   the serp file; this is a mirror. If you came here to change what an email
+   says, you are in the wrong file.
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+   <title>
+
+   </title>
+   <style type="text/css">
+     /* Common Styles Starts */
+     /* Common Styles Ends */
+     a {
+      color: #6f73ef !important;
+      text-decoration: none !important; 
+     }  
+   </style>
+</head>  
+<body style="margin: 0; padding: 0; background: #FFF;">
+   <div width="100%" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';margin:0;padding:0;width:100%;background-color:#edf2f7;color: #718096; cursor: default !important;"> 
+         <div width="100%" cellpadding="0" cellspacing="0" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';background-color:#edf2f7;border-bottom:1px solid #edf2f7;border-top:1px solid #edf2f7;margin:0;padding:50px 0px 0px;width:100%">
+            <table align="center" width="570" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';background-color:#ffffff;border-color:#e8e5ef;border-radius:2px;border-width:1px;margin:0 auto;padding:0;width:570px">
+
+               <tbody>
+                  <tr>
+                     <td style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';padding:30px 30px 0;text-align:left">
+                        <a href="{{siteurl}}" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';color:#3d4852;font-size:19px;font-weight:bold;text-decoration:none;display:inline-block" target="_blank">
+                           <img src="{{serivceurl}}static/uploads/Logo_color.png" height="50px" />
+                        </a>
+                     </td>
+                  </tr>
+
+                  {% block content %} 
+
+                  {% endblock %}
+
+               </tbody>
+            </table> 
+         </div>
+         
+         <div style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol'">
+            <table align="center" width="570" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';margin:0 auto;padding:0;text-align:center;width:570px">
+               <tbody>
+                  <tr>
+                     <td align="center" style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';max-width:100vw;padding:30px">
+                        <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';line-height:1.8em;margin:0;color:#b0adc5;font-size:12px;text-align:center">SearchMirror is open source and self-hosted.</p>
+                        
+                        <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';line-height:1.8em;margin:0;color:#b0adc5;font-size:12px;text-align:center">This message was sent by your own instance, not by a vendor.</p> 
+                        
+                        <p style="box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';line-height:1.5em;margin-top:20px;color:#b0adc5;font-size:12px;text-align:center">SearchMirror — open source, licensed under the AGPL-3.0.</p>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+      </div>
+</body>
+</html> 
