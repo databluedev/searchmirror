@@ -35,5 +35,6 @@
       "@swc/core",
       "esbuild"
     ]
-  }
+  },
+  "packageManager": "pnpm@10.16.1"
 }
