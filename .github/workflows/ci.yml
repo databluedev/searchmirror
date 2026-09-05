@@ -78,7 +78,14 @@ jobs:
 
       - name: Build the marketing site
         working-directory: landing
+        # The version is PINNED in landing/package.json ("packageManager").
+        # `corepack enable` alone installs whatever pnpm is newest, and pnpm 10
+        # changed where `onlyBuiltDependencies` is read from -- CI refused to run
+        # @swc/core and esbuild build scripts while the same files built locally.
+        # Pinning makes the two agree.
         run: |
           corepack enable
+          corepack prepare --activate
+          pnpm --version
           pnpm install --frozen-lockfile
           pnpm build
