@@ -22,7 +22,10 @@
 #     docker compose -f docker-compose.yml -f docker-compose.prod.yml \
 #                    --profile prod config --no-interpolate
 #
-#   then delete the `app:` service block and every `profiles:` key.
+#   then: delete the `app:` service block, delete every `profiles:` key,
+#   and REWRITE EVERY PATH BACK TO RELATIVE. `config` resolves build
+#   contexts, bind-mount sources and env_file entries to absolute paths
+#   on the machine that renders them, which will not exist on the server.
 #
 # Domains in Dokploy:
 #     searchmirror.datablue.dev      -> app-prod : 80
@@ -38,7 +41,7 @@ services:
     build:
       args:
         - VITE_API_URL=${APP_API_URL:?set APP_API_URL to your public API origin, e.g. https://api.example.com}
-      context: D:\github_repo\opentracker
+      context: .
       dockerfile: docker/Dockerfile.node.vite.prod
     container_name: tracker-app-prod
     depends_on:
@@ -72,7 +75,7 @@ services:
     restart: unless-stopped
   backend:
     build:
-      context: D:\github_repo\opentracker\backend
+      context: ./backend
       dockerfile: ../docker/Dockerfile.django
     command: |
       sh -c "mkdir -p logs files && chown -R app:app logs files && exec setpriv --reuid=app --regid=app --init-groups -- sh -c 'python manage.py migrate --noinput && gunicorn tracker.wsgi:application --bind 0.0.0.0:8000 --worker-class gthread --workers ${GUNICORN_WORKERS:-3} --threads ${GUNICORN_THREADS:-4} --timeout 120 --access-logfile - --error-logfile -'"
@@ -82,7 +85,7 @@ services:
         condition: service_healthy
         required: true
     env_file:
-      - path: D:\github_repo\opentracker\.env
+      - path: .env
         required: true
     environment:
       HOME: /home/app
@@ -114,17 +117,17 @@ services:
     volumes:
       - bind:
           create_host_path: true
-        source: D:\github_repo\opentracker\backend
+        source: ./backend
         target: /app
         type: bind
       - bind:
           create_host_path: true
-        source: D:\github_repo\opentracker\shared
+        source: ./shared
         target: /app/shared
         type: bind
   engine:
     build:
-      context: D:\github_repo\opentracker\engine
+      context: ./engine
       dockerfile: ../docker/Dockerfile.engine
     command: |
       sh -c "mkdir -p logs project/files && chown -R app:app logs project/files && exec setpriv --reuid=app --regid=app --init-groups -- gunicorn project.wsgi:application --bind 0.0.0.0:8001 --worker-class gthread --workers ${ENGINE_WORKERS:-2} --threads ${ENGINE_THREADS:-8} --timeout 300 --access-logfile - --error-logfile -"
@@ -134,7 +137,7 @@ services:
         condition: service_healthy
         required: true
     env_file:
-      - path: D:\github_repo\opentracker\.env
+      - path: .env
         required: true
     environment:
       HOME: /home/app
@@ -166,12 +169,12 @@ services:
     volumes:
       - bind:
           create_host_path: true
-        source: D:\github_repo\opentracker\engine
+        source: ./engine
         target: /app
         type: bind
       - bind:
           create_host_path: true
-        source: D:\github_repo\opentracker\shared
+        source: ./shared
         target: /app/shared
         type: bind
   mongo:
@@ -206,7 +209,7 @@ services:
         volume: {}
   scheduler:
     build:
-      context: D:\github_repo\opentracker\backend
+      context: ./backend
       dockerfile: ../docker/Dockerfile.django
     command: |
       sh -c "exec setpriv --reuid=app --regid=app --init-groups -- sh -c 'while true; do python manage.py rank_schedule || true; sleep 900; done'"
@@ -216,7 +219,7 @@ services:
         condition: service_healthy
         required: true
     env_file:
-      - path: D:\github_repo\opentracker\.env
+      - path: .env
         required: true
     environment:
       HOME: /home/app
@@ -231,12 +234,12 @@ services:
     volumes:
       - bind:
           create_host_path: true
-        source: D:\github_repo\opentracker\backend
+        source: ./backend
         target: /app
         type: bind
       - bind:
           create_host_path: true
-        source: D:\github_repo\opentracker\shared
+        source: ./shared
         target: /app/shared
         type: bind
 volumes:
