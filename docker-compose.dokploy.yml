@@ -1,0 +1,251 @@
+# SearchMirror - single-file production compose, for Dokploy.
+#
+# WHY THIS EXISTS
+# The real definition is docker-compose.yml plus docker-compose.prod.yml, run
+# together with the prod profile:
+#
+#     docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+#                    --profile prod up -d --build
+#
+# Dokploy invokes a SINGLE compose file with no extra flags. Given only the
+# base file it runs Django's DEVELOPMENT server, publishes MongoDB, and starts
+# the Vite dev server instead of the built bundle. That is what the first
+# deploy did: no app-prod container at all, and tracker-app crash-looping.
+#
+# This file is those two already merged, with the prod profile resolved and
+# the dev-only `app` service removed, so a plain `docker compose up` is correct
+# by construction. Environment variables are NOT interpolated here -- they
+# still come from Dokploy's Environment tab.
+#
+# REGENERATE after changing either source file:
+#
+#     docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+#                    --profile prod config --no-interpolate
+#
+#   then delete the `app:` service block and every `profiles:` key.
+#
+# Domains in Dokploy:
+#     searchmirror.datablue.dev      -> app-prod : 80
+#     api-searchmirror.datablue.dev  -> backend  : 8000
+#   mongo, engine and scheduler take no domain: they stay internal.
+
+name: opentracker
+networks:
+  default:
+    name: opentracker_default
+services:
+  app-prod:
+    build:
+      args:
+        - VITE_API_URL=${APP_API_URL:?set APP_API_URL to your public API origin, e.g. https://api.example.com}
+      context: D:\github_repo\opentracker
+      dockerfile: docker/Dockerfile.node.vite.prod
+    container_name: tracker-app-prod
+    depends_on:
+      backend:
+        condition: service_healthy
+        required: true
+    healthcheck:
+      interval: 15s
+      retries: 5
+      start_period: 10s
+      test:
+        - CMD
+        - wget
+        - -q
+        - --spider
+        - http://127.0.0.1/
+      timeout: 5s
+    logging:
+      driver: json-file
+      options:
+        max-file: "3"
+        max-size: 10m
+    networks:
+      default: null
+    ports:
+      - host_ip: 127.0.0.1
+        mode: ingress
+        protocol: tcp
+        published: "4001"
+        target: 80
+    restart: unless-stopped
+  backend:
+    build:
+      context: D:\github_repo\opentracker\backend
+      dockerfile: ../docker/Dockerfile.django
+    command: |
+      sh -c "mkdir -p logs files && chown -R app:app logs files && exec setpriv --reuid=app --regid=app --init-groups -- sh -c 'python manage.py migrate --noinput && gunicorn tracker.wsgi:application --bind 0.0.0.0:8000 --worker-class gthread --workers ${GUNICORN_WORKERS:-3} --threads ${GUNICORN_THREADS:-4} --timeout 120 --access-logfile - --error-logfile -'"
+    container_name: tracker-backend
+    depends_on:
+      mongo:
+        condition: service_healthy
+        required: true
+    env_file:
+      - path: D:\github_repo\opentracker\.env
+        required: true
+    environment:
+      HOME: /home/app
+    healthcheck:
+      interval: 5s
+      retries: 40
+      start_period: 60s
+      test:
+        - CMD
+        - nc
+        - -z
+        - 127.0.0.1
+        - "8000"
+      timeout: 3s
+    logging:
+      driver: json-file
+      options:
+        max-file: "3"
+        max-size: 10m
+    networks:
+      default: null
+    ports:
+      - host_ip: 127.0.0.1
+        mode: ingress
+        protocol: tcp
+        published: "8000"
+        target: 8000
+    restart: unless-stopped
+    volumes:
+      - bind:
+          create_host_path: true
+        source: D:\github_repo\opentracker\backend
+        target: /app
+        type: bind
+      - bind:
+          create_host_path: true
+        source: D:\github_repo\opentracker\shared
+        target: /app/shared
+        type: bind
+  engine:
+    build:
+      context: D:\github_repo\opentracker\engine
+      dockerfile: ../docker/Dockerfile.engine
+    command: |
+      sh -c "mkdir -p logs project/files && chown -R app:app logs project/files && exec setpriv --reuid=app --regid=app --init-groups -- gunicorn project.wsgi:application --bind 0.0.0.0:8001 --worker-class gthread --workers ${ENGINE_WORKERS:-2} --threads ${ENGINE_THREADS:-8} --timeout 300 --access-logfile - --error-logfile -"
+    container_name: tracker-engine
+    depends_on:
+      mongo:
+        condition: service_healthy
+        required: true
+    env_file:
+      - path: D:\github_repo\opentracker\.env
+        required: true
+    environment:
+      HOME: /home/app
+    healthcheck:
+      interval: 5s
+      retries: 30
+      start_period: 45s
+      test:
+        - CMD
+        - nc
+        - -z
+        - 127.0.0.1
+        - "8001"
+      timeout: 3s
+    logging:
+      driver: json-file
+      options:
+        max-file: "3"
+        max-size: 10m
+    networks:
+      default: null
+    ports:
+      - host_ip: 127.0.0.1
+        mode: ingress
+        protocol: tcp
+        published: "8001"
+        target: 8001
+    restart: unless-stopped
+    volumes:
+      - bind:
+          create_host_path: true
+        source: D:\github_repo\opentracker\engine
+        target: /app
+        type: bind
+      - bind:
+          create_host_path: true
+        source: D:\github_repo\opentracker\shared
+        target: /app/shared
+        type: bind
+  mongo:
+    container_name: tracker-mongo
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_DB:-tracker}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:?set MONGO_PASSWORD in .env — see .env.production.example}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:-tracker}
+    healthcheck:
+      interval: 5s
+      retries: 20
+      test:
+        - CMD
+        - mongo
+        - --quiet
+        - --eval
+        - db.adminCommand('ping')
+      timeout: 5s
+    image: mongo:4.4
+    logging:
+      driver: json-file
+      options:
+        max-file: "3"
+        max-size: 10m
+    networks:
+      default: null
+    restart: unless-stopped
+    volumes:
+      - source: mongo_data
+        target: /data/db
+        type: volume
+        volume: {}
+  scheduler:
+    build:
+      context: D:\github_repo\opentracker\backend
+      dockerfile: ../docker/Dockerfile.django
+    command: |
+      sh -c "exec setpriv --reuid=app --regid=app --init-groups -- sh -c 'while true; do python manage.py rank_schedule || true; sleep 900; done'"
+    container_name: tracker-scheduler
+    depends_on:
+      backend:
+        condition: service_healthy
+        required: true
+    env_file:
+      - path: D:\github_repo\opentracker\.env
+        required: true
+    environment:
+      HOME: /home/app
+    logging:
+      driver: json-file
+      options:
+        max-file: "3"
+        max-size: 10m
+    networks:
+      default: null
+    restart: unless-stopped
+    volumes:
+      - bind:
+          create_host_path: true
+        source: D:\github_repo\opentracker\backend
+        target: /app
+        type: bind
+      - bind:
+          create_host_path: true
+        source: D:\github_repo\opentracker\shared
+        target: /app/shared
+        type: bind
+volumes:
+  app_modules:
+    name: opentracker_app_modules
+  mongo_data:
+    name: opentracker_mongo_data
+x-logging:
+  driver: json-file
+  options:
+    max-file: "3"
+    max-size: 10m
