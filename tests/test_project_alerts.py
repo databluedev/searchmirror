@@ -84,19 +84,25 @@ def test_the_run_failure_is_composed_into_the_alert_list():
     assert '"severity": "warn"' in source
 
 
-def test_the_standing_count_is_withheld_only_when_a_run_row_explains_it():
+def test_the_standing_count_is_not_an_alert_on_this_screen():
+    """It used to be, guarded so it only showed when no run row explained it.
+
+    That was right about not saying the same thing twice and wrong about the
+    screen. `fkw` is sticky between runs, so a keyword the provider simply
+    cannot rank produced a banner that never went away -- and reporting the run
+    outcome once, then replacing it with a permanent second row, is still a
+    permanent row.
+
+    The dashboard reports news. The standing fact lives where it is acted on:
+    the keywords table reads "Could not be checked" against each affected
+    keyword, and the keyword's own page says the same with the depth that
+    produced it. Nothing is hidden -- it is moved.
+    """
     source = ast.get_source_segment(_read(OVERVIEW), _function(ast.parse(_read(OVERVIEW)), "_alerts_block"))
-    assert 'if run["fkw"] and not (run.get("errc") or run.get("err")):' in source, (
-        "the standing count is no longer guarded on the presence of a run row"
+    assert '"code": "failed_keywords"' not in source, (
+        "the standing count is an alert row again, so the dashboard will carry "
+        "a banner that no page load can clear"
     )
-
-
-def test_the_standing_row_is_not_worded_as_this_run_outcome():
-    """`fkw` is sticky between runs, so it can outlive the run that caused it."""
-    source = ast.get_source_segment(_read(OVERVIEW), _function(ast.parse(_read(OVERVIEW)), "_alerts_block"))
-    standing = source.split('"code": "failed_keywords"', 1)[1].split("alerts.append", 1)[0]
-    assert "last check failed" not in standing
-    assert "could not be checked" not in standing
 
 
 def test_the_failure_carries_something_the_user_can_do():
@@ -107,11 +113,12 @@ def test_the_failure_carries_something_the_user_can_do():
     builder = ast.get_source_segment(module, _function(tree, "_recheck_action"))
     assert '"kind": "recheck"' in builder
     assert '"keyword_ids"' in builder, "an action that names no keywords cannot be priced"
-    # and it is actually attached to both rows that can carry it
+    # The run failure is the one row that carries it. The standing count is no
+    # longer an alert here -- see test_the_standing_count_is_not_an_alert_on_this_screen.
     block = ast.get_source_segment(module, _function(tree, "_alerts_block"))
-    assert block.count("_recheck_action(") == 2, (
-        "the action is attached to %d alert rows, expected the run failure and "
-        "the standing count" % block.count("_recheck_action(")
+    assert block.count("_recheck_action(") == 1, (
+        "the action is attached to %d alert rows, expected exactly the run "
+        "failure" % block.count("_recheck_action(")
     )
 
 

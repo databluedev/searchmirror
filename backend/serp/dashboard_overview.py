@@ -1079,24 +1079,20 @@ def _alerts_block(group, rows, run, visibility, failed_ids=None, failed_searches
             }
         )
 
-    # The standing count, and ONLY when the run row above does not already
-    # account for it. `fkw` is sticky between runs (refresh_error.py), so it
-    # can be non-zero long after the run that caused it -- and when a run has
-    # just failed for exactly these keywords, saying it twice is saying it
-    # twice.
-    if run["fkw"] and not (run.get("errc") or run.get("err")):
-        failed = run["fkw"]
-        row = {
-            "code": "failed_keywords",
-            "severity": "info",
-            # Worded as a state, not as the outcome of the run just watched.
-            "text": "%d %s no current rank data."
-            % (failed, "keyword has" if failed == 1 else "keywords have"),
-        }
-        action = _recheck_action(failed_ids, failed_searches)
-        if action:
-            row["action"] = action
-        alerts.append(row)
+    # THE STANDING COUNT IS NOT AN ALERT ON THIS SCREEN.
+    #
+    # It used to be, guarded so it only appeared when no run row explained it.
+    # That was right about not saying the same thing twice and wrong about the
+    # screen: `fkw` is sticky between runs, so a keyword the provider simply
+    # cannot rank -- and there is one, seven zeroes deep -- produced a banner
+    # that never went away. Reporting the run outcome once and then replacing
+    # it with a permanent second row is still a permanent row.
+    #
+    # This dashboard reports NEWS. A standing fact belongs where it is acted
+    # on: the keywords table already reads "Could not be checked" against each
+    # affected keyword, and the keyword's own page says the same with the depth
+    # that produced it. Nothing is hidden by leaving it out here; it is moved
+    # to the screen that can do something about it.
 
     if rows and visibility["unranked"] == len(rows):
         alerts.append(
