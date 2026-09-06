@@ -20,7 +20,6 @@ import { cookiesremove } from "../common_fun";
 import Cookies from 'universal-cookie';
 import axios from 'axios';
 import ProjectSwitcher from "./project_switcher";
-import { useHasProject } from "./use_projects";
 
 // import profileImg from "../../assets/images/test.jpg";
 import { Button, Box, Drawer } from "@mui/material";
@@ -156,20 +155,20 @@ const NAV_ITEMS = {
       { to: "/projects", match: "projects", module: "Prjcts", cls: "projectMenu", Icon: NavProjects, label: " All Projects " },
    ],
    tracking: [
-      { to: "/dashboard", match: "dashboard", module: "Widgets", cls: "dashboardMenu", Icon: NavDashboard, label: " Dashboard ", needsProject: true },
-      { to: "/keywords", match: "keywords", module: "Keyword", cls: "rankMenu", Icon: NavKeywords, label: " Keywords ", needsProject: true },
-      { to: "/llmtracker", match: "llmtracker", module: "LLMTracker", cls: "reportMenu", Icon: NavGlobe, label: " Geo Citations ", isNew: true, needsProject: true },
+      { to: "/dashboard", match: "dashboard", module: "Widgets", cls: "dashboardMenu", Icon: NavDashboard, label: " Dashboard " },
+      { to: "/keywords", match: "keywords", module: "Keyword", cls: "rankMenu", Icon: NavKeywords, label: " Keywords " },
+      { to: "/llmtracker", match: "llmtracker", module: "LLMTracker", cls: "reportMenu", Icon: NavGlobe, label: " Geo Citations ", isNew: true },
    ],
    content: [
-      { to: "/contentplanner", match: "contentplanner", module: "ContentPlanner", cls: "reportMenu", Icon: NavPlanner, label: " Content Planner ", isNew: true, needsProject: true },
+      { to: "/contentplanner", match: "contentplanner", module: "ContentPlanner", cls: "reportMenu", Icon: NavPlanner, label: " Content Planner ", isNew: true },
    ],
    insights: [
-      { to: "/competitors", match: "competitors", module: "CompAi", cls: "aiMenu", Icon: NavSpark, label: " Competitors ", needsProject: true },
+      { to: "/competitors", match: "competitors", module: "CompAi", cls: "aiMenu", Icon: NavSpark, label: " Competitors " },
    ],
    // Reports is client-visible, so on the rail it cannot live inside the gated
    // Insights <Menu> -- hiding that group took Reports with it.
    reports: [
-      { to: "/reports", match: "reports", module: "Reports", cls: "reportMenu", Icon: NavReports, label: "Reports", needsProject: true },
+      { to: "/reports", match: "reports", module: "Reports", cls: "reportMenu", Icon: NavReports, label: "Reports" },
    ],
    account: [
       { to: "/settings", match: "settings", module: "Settings", cls: "settingMenu", Icon: NavSettings, label: "Settings" },
@@ -245,26 +244,27 @@ function visibleNavItems(items, teamModules) {
    ));
 }
 
-function NavLinks({ items, activeMenu, teamModules, hasProject = true }) {
-   return visibleNavItems(items, teamModules).map(({ to, match, cls, Icon, label, isNew, tag, needsProject }) => {
+function NavLinks({ items, activeMenu, teamModules }) {
+   /* The rail does NOT mark what the account cannot use yet. It was tried and
+      removed: on a new account nothing is usable, so every row carried the same
+      "Set up" chip -- and a marker that applies to every item carries no
+      information. It read as six faults rather than one next step, and fought
+      the "new" dots for the same 8px.
+
+      "+ New project" already sits at the top of this rail, and each page
+      explains what it needs when you open it. The explanation belongs at the
+      point of intent, not smeared across the navigation. */
+   return visibleNavItems(items, teamModules).map(({ to, match, cls, Icon, label, isNew, tag }) => {
       const name = label.trim();
       const active = activeMenu === match;
 
-      /* A feature that needs a project the account does not have yet. The item
-         stays -- somebody evaluating SearchMirror should see its scope -- but it
-         is marked, and the page it leads to explains what is missing instead of
-         failing. The chip is the DESIGN.md micro-label the rail already styles. */
-      const notYet = Boolean(needsProject) && !hasProject;
-      const chip = notYet ? "Set up" : tag;
-      const title = notYet ? name + " — add a project first" : name;
-
       return (
-         <Link className="" to={to} key={to} style={{ textDecoration: 'none' }} title={title} aria-label={title}>
+         <Link className="" to={to} key={to} style={{ textDecoration: 'none' }} title={name} aria-label={name}>
             <MenuItem active={active} className={cls}>
                <Icon />
                <span className="item">{label}</span>
                {isNew ? <span className="railNew" aria-hidden="true" /> : null}
-               {chip ? <span className="complable m-l10">{chip}</span> : null}
+               {tag ? <span className="complable m-l10">{tag}</span> : null}
             </MenuItem>
          </Link>
       );
@@ -297,7 +297,6 @@ function greetingFor(name, now) {
 
 // DESKTOP SIDEBAR OPTIONS - STARTS
 export function Sidebar({ children, ...props }) {
-   const hasProject = useHasProject();
    // Open unless the user has said otherwise, or unless there is not much room
    // to open into. Read once, during the first render, so the rail paints at
    // its final width instead of opening and then snapping shut.
@@ -452,7 +451,7 @@ export function Sidebar({ children, ...props }) {
                       always-visible entry rather than inside a collapsible
                       section. */}
                   <Menu iconShape="square" aria-label="Projects">
-                     <NavLinks items={NAV_ITEMS.projects} activeMenu={activeMenu} teamModules={props.teamModules} hasProject={hasProject} />
+                     <NavLinks items={NAV_ITEMS.projects} activeMenu={activeMenu} teamModules={props.teamModules} />
                   </Menu>
 
                   {/* Thirteen flat entries were unscannable, so the rail is
@@ -471,7 +470,7 @@ export function Sidebar({ children, ...props }) {
                         id="railSection-tracking"
                         className={openGroups.tracking ? "railSection is-open" : "railSection"}
                      >
-                        <NavLinks items={NAV_ITEMS.tracking} activeMenu={activeMenu} teamModules={props.teamModules} hasProject={hasProject} />
+                        <NavLinks items={NAV_ITEMS.tracking} activeMenu={activeMenu} teamModules={props.teamModules} />
                      </Menu>
                   </> : null}
 
@@ -483,7 +482,7 @@ export function Sidebar({ children, ...props }) {
                         id="railSection-content"
                         className={openGroups.content ? "railSection is-open" : "railSection"}
                      >
-                        <NavLinks items={NAV_ITEMS.content} activeMenu={activeMenu} teamModules={props.teamModules} hasProject={hasProject} />
+                        <NavLinks items={NAV_ITEMS.content} activeMenu={activeMenu} teamModules={props.teamModules} />
                      </Menu>
                   </> : null}
 
@@ -495,14 +494,14 @@ export function Sidebar({ children, ...props }) {
                         id="railSection-insights"
                         className={openGroups.insights ? "railSection is-open" : "railSection"}
                      >
-                        <NavLinks items={NAV_ITEMS.insights} activeMenu={activeMenu} teamModules={props.teamModules} hasProject={hasProject} />
+                        <NavLinks items={NAV_ITEMS.insights} activeMenu={activeMenu} teamModules={props.teamModules} />
                      </Menu>
                   </> : null}
 
                   {/* Reports is client-visible, so it cannot live inside the gated
                       Insights <Menu> -- hiding that group took Reports with it. */}
                   {visibleNavItems(NAV_ITEMS.reports, props.teamModules).length ? <Menu iconShape="square" aria-label="Reports">
-                     <NavLinks items={NAV_ITEMS.reports} activeMenu={activeMenu} teamModules={props.teamModules} hasProject={hasProject} />
+                     <NavLinks items={NAV_ITEMS.reports} activeMenu={activeMenu} teamModules={props.teamModules} />
                   </Menu> : null}
 
                   {/* Settings is the only entry the old "Account" section held,
@@ -511,7 +510,7 @@ export function Sidebar({ children, ...props }) {
                       sections above it and reading as part of the account row
                       it sits on top of. */}
                   {visibleNavItems(NAV_ITEMS.account, props.teamModules).length ? <Menu iconShape="square" aria-label="Account" className="railTail">
-                     <NavLinks items={NAV_ITEMS.account} activeMenu={activeMenu} teamModules={props.teamModules} hasProject={hasProject} />
+                     <NavLinks items={NAV_ITEMS.account} activeMenu={activeMenu} teamModules={props.teamModules} />
                   </Menu> : null}
                </SidebarContent>
             </section>
@@ -676,7 +675,6 @@ export function Sidebar({ children, ...props }) {
 
 // MOBILE OR RESPONSIVE SIDEBAR - STARTS
 export function MobSidebar({ children, ...props }) {
-   const hasProject = useHasProject();
    const [open, setOpen] = React.useState(false);
    const [accountAnchor, setAccountAnchor] = React.useState(null);
    const location = useLocation();
@@ -813,7 +811,7 @@ export function MobSidebar({ children, ...props }) {
                       standalone entry above the first section -- the same place
                       it holds in the rail. */}
                   <Menu iconShape="square" aria-label="Projects">
-                     <NavLinks items={NAV_ITEMS.projects} activeMenu={activeMenu} teamModules={props.teamModules} hasProject={hasProject} />
+                     <NavLinks items={NAV_ITEMS.projects} activeMenu={activeMenu} teamModules={props.teamModules} />
                   </Menu>
 
                   {/* Same five sections as the desktop rail, in the same order,
@@ -821,29 +819,29 @@ export function MobSidebar({ children, ...props }) {
                   {visibleNavItems(NAV_ITEMS.tracking, props.teamModules).length ? <>
                      <RailGroup label="Tracking" first />
                      <Menu iconShape="square" aria-label="Tracking">
-                        <NavLinks items={NAV_ITEMS.tracking} activeMenu={activeMenu} teamModules={props.teamModules} hasProject={hasProject} />
+                        <NavLinks items={NAV_ITEMS.tracking} activeMenu={activeMenu} teamModules={props.teamModules} />
                      </Menu>
                   </> : null}
 
                   {visibleNavItems(NAV_ITEMS.content, props.teamModules).length ? <>
                      <RailGroup label="Content" />
                      <Menu iconShape="square" aria-label="Content">
-                        <NavLinks items={NAV_ITEMS.content} activeMenu={activeMenu} teamModules={props.teamModules} hasProject={hasProject} />
+                        <NavLinks items={NAV_ITEMS.content} activeMenu={activeMenu} teamModules={props.teamModules} />
                      </Menu>
                   </> : null}
 
                   {(visibleNavItems(NAV_ITEMS.insights, props.teamModules).length || visibleNavItems(NAV_ITEMS.reports, props.teamModules).length) ? <>
                      <RailGroup label="Insights" />
                      <Menu iconShape="square" aria-label="Insights">
-                        <NavLinks items={NAV_ITEMS.insights} activeMenu={activeMenu} teamModules={props.teamModules} hasProject={hasProject} />
-                        <NavLinks items={NAV_ITEMS.reports} activeMenu={activeMenu} teamModules={props.teamModules} hasProject={hasProject} />
+                        <NavLinks items={NAV_ITEMS.insights} activeMenu={activeMenu} teamModules={props.teamModules} />
+                        <NavLinks items={NAV_ITEMS.reports} activeMenu={activeMenu} teamModules={props.teamModules} />
                      </Menu>
                   </> : null}
 
                   {visibleNavItems(NAV_ITEMS.account, props.teamModules).length ? <>
                      <RailGroup label="Account" />
                      <Menu iconShape="square" aria-label="Account">
-                        <NavLinks items={NAV_ITEMS.account} activeMenu={activeMenu} teamModules={props.teamModules} hasProject={hasProject} />
+                        <NavLinks items={NAV_ITEMS.account} activeMenu={activeMenu} teamModules={props.teamModules} />
                      </Menu>
                   </> : null}
                </SidebarContent>
