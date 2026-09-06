@@ -25,6 +25,25 @@ from unidecode import unidecode as _u__dcode_
 import re
 
 
+
+def __distinct_pages__(links):
+	"""The pages that cannibalise a keyword, each counted once.
+
+	Cannibalisation is more than one page of YOUR OWN site ranking for one
+	keyword, so they compete with each other. The collector above appends every
+	matching result, and the same URL can arrive more than once -- as an organic
+	result and again as a sitelink or a variant. Counting the raw list therefore
+	flagged a single page as cannibalising itself: seen in production on
+	2026-09-06, where one keyword carried the identical URL twice and the
+	keywords table told the owner to "fix cannibalization issues" for a page that
+	has no competitor.
+
+	Order is preserved -- it is the order the pages ranked in, which is the order
+	someone reading the list expects.
+	"""
+	seen = list(dict.fromkeys(link for link in (links or []) if link))
+	return seen if len(seen) > 1 else []
+
 def trim(value):
     return value.strip()
 
@@ -535,7 +554,7 @@ def engineParseData(engineMode, soupdata, postdata):
                             ("SNIPPET_DETAILS", xpdTotalContent),
                             ("COMPETITORS", xpdCompContent),
                             ("TODAY", todaySnip if "todaySnip" in locals() else {}),
-                            ("CANNIBALISATION", cannibalisationResult if len(cannibalisationResult) > 1 else []),
+                            ("CANNIBALISATION", __distinct_pages__(cannibalisationResult)),
                         ]
                     )
                     flager = centralised.mongopush(engineMode, mongoResults)
@@ -555,7 +574,7 @@ def engineParseData(engineMode, soupdata, postdata):
                             ("SNIPPET_DETAILS", xpdTotalContent),
                             ("COMPETITORS", xpdCompContent),
                             ("TODAY", {}),
-                            ("CANNIBALISATION", cannibalisationResult if len(cannibalisationResult) > 1 else []),
+                            ("CANNIBALISATION", __distinct_pages__(cannibalisationResult)),
                         ]
                     )
                     flager = centralised.mongopush(engineMode, mongoResults)
