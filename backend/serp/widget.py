@@ -3395,7 +3395,12 @@ def rnme_sht(request):
                     return JsonResponse({'st':0, 'dt':'Sheet name already exists'})
         return JsonResponse({'st':0, 'dt':'Something went wrong'})
     except Exception as e:
+        # A handler that logs and returns nothing makes Django render a 500,
+        # so a request missing a field became a server error. 19 other views
+        # share this shape and are reachable on other inputs -- see the
+        # verification note for this change.
         log_exception('rnme_sht', e)
+        return JsonResponse({'st':0, 'dt':'Something went wrong'})
         # print(str(e))
 
 @api_view(['POST', 'GET'])

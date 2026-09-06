@@ -39,6 +39,10 @@ SKIP_DIRS = {"__pycache__", "static", "files", "logs", "templates", "migrations"
 REACHED_BY_NAME = {
     "serp.management.commands.rank_schedule":
         "manage.py rank_schedule, run every 15 minutes by the scheduler service",
+    "serp.management.commands.load_reference_data":
+        "manage.py load_reference_data, run by every container entrypoint on "
+        "boot -- without it a fresh install has an empty country list and no "
+        "project can be created",
     "serp.management.commands": "package marker for the command above",
     "serp.management": "package marker for the command above",
     "tracker.wsgi": "gunicorn, via tracker.wsgi:application in the prod overlay",

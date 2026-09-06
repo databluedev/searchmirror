@@ -59,6 +59,7 @@ function CompetitorsComparison(props) {
       const usertoken = cookies.get('session_token')
       const userid = cookies.get('session_userid')
       var grpid = cookies.get('activegrp')
+      if (!grpid) { return; }   // no project: nothing to ask about
       var comp_grpid = cookies.get('__sp_cgrp__')
 
       if(!usertoken || !userid){

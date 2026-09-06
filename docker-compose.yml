@@ -79,7 +79,7 @@ services:
     command: >
       sh -c "mkdir -p logs files && chown -R app:app logs files &&
       exec setpriv --reuid=app --regid=app --init-groups --
-      sh -c 'python manage.py migrate --noinput && python scripts/seed_local.py && python manage.py runserver 0.0.0.0:8000'"
+      sh -c 'python manage.py migrate --noinput && python manage.py load_reference_data && python scripts/seed_local.py && python manage.py runserver 0.0.0.0:8000'"
     # There is no HTTP readiness endpoint to point this at yet, so it proves
     # only that something is accepting connections on 8000. That is still the
     # gap `depends_on` had: the container is *created* immediately but spends

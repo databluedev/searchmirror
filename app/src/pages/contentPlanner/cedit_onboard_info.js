@@ -88,6 +88,7 @@ function CEditOnboardInfo({ ...props }) {
       const usertoken = cookies.get('session_token')
       const userid = cookies.get('session_userid')
       const grpid = cookies.get('activegrp')
+      if (!grpid) { return; }   // no project: nothing to ask about
       let region_name = regionDetails.region
       let region_code = regionDetails.isocode
       let country_name = regionDetails.countryname

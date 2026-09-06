@@ -37,6 +37,7 @@ function COMPTableSearch(props) {
          const usertoken = cookies.get('session_token')
          const userid = cookies.get('session_userid')
          const grpid = cookies.get('activegrp');
+         if (!grpid) { return; }   // no project: nothing to ask about
 
          var data = {
             'userid': userid,

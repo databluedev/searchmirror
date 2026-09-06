@@ -69,6 +69,7 @@ export default function RefreshBar({ onRefreshTriggerFunc, onRefreshCheckFunc, k
       const usertoken = cookies.get('session_token')
       const userid = cookies.get('session_userid')
       const grpid = cookies.get('activegrp')
+      if (!grpid) { return; }   // no project: nothing to ask about
 
 
       var data = {
@@ -100,6 +101,7 @@ export default function RefreshBar({ onRefreshTriggerFunc, onRefreshCheckFunc, k
    const grpConfirm = (projectid) =>{
       const cookies = new Cookies();
       const grpid = cookies.get('activegrp')
+      if (!grpid) { return; }   // no project: nothing to ask about
       // console.log("test in fun ",projectid, grpid)
       return projectid !== grpid 
    }

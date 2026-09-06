@@ -9,10 +9,14 @@ import LLMOnboardInfo from "../commonComponents/llm/llm_onboard_info";
 import LLMHeader from "./components/llm_header";
 import LLMInsights from "./components/llm_insights";
 import CapabilityNotice from "../commonComponents/capability_notice";
+import { NoProjectYet } from "../commonComponents/not_ready";
 import PageSkeleton from "../commonComponents/page_skeleton";
 import { allowsTeamAction } from '../../utils/team_permissions';
 
 function LLMTracker(props) {
+    /* private_route.js leaves activegrp unset when the account has no project,
+       so every project-scoped call below would go out without a grpid. */
+    const hasProject = Boolean(props.projectList && props.projectList.length);
     const history = useHistory()
     const canManageGeo = allowsTeamAction(props.fullbasedata, "LLMTracker", "Manage Geo Citations");
     // A project with no prompts has nothing to put in the table, so the page
@@ -65,6 +69,7 @@ function LLMTracker(props) {
             const usertoken = cookies.get('session_token')
             const userid = cookies.get('session_userid')
             const grpid = cookies.get('activegrp');
+            if (!grpid) { setApiLoading(false); return; }
             if (!usertoken || !userid) {
                 history.push("/login");
                 return;
@@ -100,7 +105,7 @@ function LLMTracker(props) {
                 if (axios.isCancel(error)) {
                     return;
                 }
-                toast.error(error)
+                toast.error("Geo Citations could not be loaded. Try again in a moment.")
             }
             
             // Call API to get initial prompts data
@@ -126,6 +131,7 @@ function LLMTracker(props) {
             const usertoken = cookies.get('session_token')
             const userid = cookies.get('session_userid')
             const grpid = cookies.get('activegrp');
+            if (!grpid) { setApiLoading(false); return; }
 
             if (!usertoken || !userid) {
                 history.push("/login");
@@ -177,7 +183,11 @@ function LLMTracker(props) {
 
     return (
         <>
-            {apiLoading ?
+            {!hasProject ?
+                <section className="layout kr_layout">
+                    <NoProjectYet feature="Geo Citations" canAddProject={canManageGeo} />
+                </section>
+            : apiLoading ?
                 // The shape is known before the payload is: header, the two
                 // insight cards, then the prompt table at its 10-row page size.
                 // A centred bar on a blank h100vh said only "wait" and then

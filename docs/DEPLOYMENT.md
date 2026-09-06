@@ -295,6 +295,36 @@ docker compose exec backend python -c \
 A container being `Up` is not the same as the application working. Sign in with
 a real account and load the dashboard before you call the deployment done.
 
+### There is no login yet — you create the first account
+
+A production instance is seeded with **nothing**: no account, no project, no
+keywords. That is deliberate. The development seed creates
+`admin@local.test` with a password published in this repository's README, so it
+is disabled whenever `DJANGO_DEBUG` is off. Do not turn `SEED_LOCAL=true` on to
+get a login — you would be creating an account whose credentials are public.
+
+Register through the signup page at your own site. That path sends a
+verification email, so **`EMAIL_HOST`, `EMAIL_HOST_USER` and
+`EMAIL_HOST_PASSWORD` must be configured first** or registration cannot
+complete and nobody can sign in at all.
+
+### Reference data loads itself
+
+The country and language lookups are **not** demo data — the add-project and
+add-keyword forms cannot render without them, and a project cannot be created
+at all with an empty country list. They used to be written only by the
+development seed, which meant every production install started unusable.
+
+`manage.py load_reference_data` now owns them and every container entrypoint
+runs it on boot. It is idempotent, so it is safe on every restart. To check:
+
+```bash
+# Should list countries, not an empty array.
+docker compose exec backend python manage.py load_reference_data
+```
+
+If a country dropdown is ever empty, run that command; it is the whole fix.
+
 ---
 
 ## 6. Backups
@@ -413,7 +443,59 @@ docker compose build \
 
 ---
 
-## 10. Known gaps
+## 10. The Django admin — off by default, and why
+
+`ENABLE_DJANGO_ADMIN` is blank in `.env.production.example` and should stay
+that way. Django's admin at `/serministrator/` is **full cross-tenant access**:
+every account's data, every project, every stored row, in one interface that
+nothing in the product links to. On a public instance it is the highest-value
+target you have, and an obscure URL is not access control.
+
+Nothing in SearchMirror needs it. It is a support and debugging tool.
+
+**If you do need it, turn it on for as long as you need and then off again.**
+
+1. **Set the flag and redeploy.**
+
+   ```
+   ENABLE_DJANGO_ADMIN=true
+   ```
+
+   The route is registered only when this is `true` or when `DJANGO_DEBUG` is
+   on. Until then `/serministrator/` is a 404 for everyone — not hidden, absent.
+
+2. **Create a superuser. You will not have one.** This is the step that catches
+   people: the seed only creates a superuser when debug is on, so a production
+   install has *no* account that can enter the admin, and no existing product
+   login will work.
+
+   ```bash
+   docker compose exec backend python manage.py createsuperuser
+   ```
+
+3. **Collect static files, or the admin loads unstyled.** Gunicorn does not
+   serve them.
+
+   ```bash
+   docker compose exec backend python manage.py collectstatic --noinput
+   ```
+
+   Then map `/static/` to `backend/static/` in your reverse proxy — see
+   [Static files](#static-files) in section 4. Without this the admin renders as
+   raw HTML: it works, it just looks broken.
+
+4. **It lives on the API host**, not the app host:
+   `https://api.example.com/serministrator/`.
+
+5. **Turn it off when you are done.** Set `ENABLE_DJANGO_ADMIN=` and redeploy.
+
+If you find yourself needing it routinely, that is a signal the product is
+missing an operator view — building a narrow one beats leaving Django's admin
+exposed permanently.
+
+---
+
+## 11. Known gaps
 
 Be aware of these before you expose this to anyone but yourself.
 
@@ -463,7 +545,7 @@ Be aware of these before you expose this to anyone but yourself.
 
 ---
 
-## 11. Updating
+## 12. Updating
 
 ```bash
 git pull

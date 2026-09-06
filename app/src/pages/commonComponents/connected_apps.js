@@ -54,6 +54,7 @@ function ConnectedApp(props) {
         const cookies = new Cookies();
         const userid = cookies.get('session_userid')
         const grpid = cookies.get('activegrp');
+        if (!grpid) { return; }   // no project: nothing to ask about
         const usertoken = cookies.get('session_token');
         console.log(property)
         const data = {
@@ -89,6 +90,7 @@ function ConnectedApp(props) {
         const cookies = new Cookies();
         const userid = cookies.get('session_userid')
         const grpid = cookies.get('activegrp');
+        if (!grpid) { return; }   // no project: nothing to ask about
         const usertoken = cookies.get('session_token');
         const data = {
             'userid': userid,
@@ -123,6 +125,7 @@ function ConnectedApp(props) {
         const cookies = new Cookies();
         const userid = cookies.get('session_userid')
         const grpid = cookies.get('activegrp');
+        if (!grpid) { return; }   // no project: nothing to ask about
         const usertoken = cookies.get('session_token');
         const data = {
             'userid': userid,
@@ -159,6 +162,7 @@ function ConnectedApp(props) {
         const cookies = new Cookies();
         const userid = cookies.get('session_userid')
         const grpid = cookies.get('activegrp');
+        if (!grpid) { return; }   // no project: nothing to ask about
         const usertoken = cookies.get('session_token');
         const data = {
             'userid': userid,
@@ -189,6 +193,7 @@ function ConnectedApp(props) {
         const cookies = new Cookies()
         const userid = cookies.get('session_userid')
         const grpid = cookies.get('activegrp');
+        if (!grpid) { return; }   // no project: nothing to ask about
         const usertoken = cookies.get('session_token');
         const data = {
             'userid': userid,
@@ -239,6 +244,7 @@ function ConnectedApp(props) {
         const usertoken = cookies.get('session_token')
         const userid = cookies.get('session_userid')
         const grpid = cookies.get('activegrp')
+        if (!grpid) { return; }   // no project: nothing to ask about
         const params = {
             'userid': userid,
             'grpid': grpid,
@@ -260,6 +266,7 @@ function ConnectedApp(props) {
         const usertoken = cookies.get('session_token')
         const userid = cookies.get('session_userid')
         const grpid = cookies.get('activegrp')
+        if (!grpid) { return; }   // no project: nothing to ask about
         const params = {
             'userid': userid,
             'grpid': grpid,
