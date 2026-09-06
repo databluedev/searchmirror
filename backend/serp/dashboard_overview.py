@@ -84,7 +84,7 @@ from account import verify as authPermission
 from competitor.models import CompKeyword, CompProject
 from serp.common import f_to_i, host_domain
 from serp.models import Groups, Keyword
-from serp.refresh_error import refresh_error_state
+from serp.refresh_error import mark_run_outcome_reported, refresh_error_state
 from shared.scoring import calculate_visibility_history
 
 logger = logging.getLogger(__name__)
@@ -1079,24 +1079,20 @@ def _alerts_block(group, rows, run, visibility, failed_ids=None, failed_searches
             }
         )
 
-    # The standing count, and ONLY when the run row above does not already
-    # account for it. `fkw` is sticky between runs (refresh_error.py), so it
-    # can be non-zero long after the run that caused it -- and when a run has
-    # just failed for exactly these keywords, saying it twice is saying it
-    # twice.
-    if run["fkw"] and not (run.get("errc") or run.get("err")):
-        failed = run["fkw"]
-        row = {
-            "code": "failed_keywords",
-            "severity": "info",
-            # Worded as a state, not as the outcome of the run just watched.
-            "text": "%d %s no current rank data."
-            % (failed, "keyword has" if failed == 1 else "keywords have"),
-        }
-        action = _recheck_action(failed_ids, failed_searches)
-        if action:
-            row["action"] = action
-        alerts.append(row)
+    # THE STANDING COUNT IS NOT AN ALERT ON THIS SCREEN.
+    #
+    # It used to be, guarded so it only appeared when no run row explained it.
+    # That was right about not saying the same thing twice and wrong about the
+    # screen: `fkw` is sticky between runs, so a keyword the provider simply
+    # cannot rank -- and there is one, seven zeroes deep -- produced a banner
+    # that never went away. Reporting the run outcome once and then replacing
+    # it with a permanent second row is still a permanent row.
+    #
+    # This dashboard reports NEWS. A standing fact belongs where it is acted
+    # on: the keywords table already reads "Could not be checked" against each
+    # affected keyword, and the keyword's own page says the same with the depth
+    # that produced it. Nothing is hidden by leaving it out here; it is moved
+    # to the screen that can do something about it.
 
     if rows and visibility["unranked"] == len(rows):
         alerts.append(
@@ -1148,10 +1144,20 @@ def _overview(group):
     buckets = _attention_buckets(rows)
     projects, by_project = _competitor_rows(userid, grpid)
 
+    alerts = _alerts_block(group, rows, run, visibility, failed_ids, failed_searches)
+
+    # Reported once. See refresh_error.mark_run_outcome_reported -- the run row
+    # is news, and it was redrawn on every page load until the next run
+    # happened. Cleared only when an alert was actually produced from it, so a
+    # response that never reached a browser cannot swallow the only report of a
+    # failed run.
+    if any(row.get("severity") == "warn" for row in alerts):
+        mark_run_outcome_reported(userid, grpid)
+
     return {
         "status": "true",
         "project": _project_block(group, rows),
-        "alerts": _alerts_block(group, rows, run, visibility, failed_ids, failed_searches),
+        "alerts": alerts,
         "attention": _attention_block(buckets),
         "attention_groups": _attention_groups_block(buckets),
         "visibility": visibility,

@@ -19,6 +19,11 @@ import { WarnMark, InfoMark } from "./dash_icons";
    the failed keyword set, which only the server has. So it decides, here we
    draw, and there is one place to change when the wording changes.
 
+   The machine code is NOT rendered. `serp_failed` printed beside the sentence
+   told the reader nothing the sentence had not already said, and read as an
+   error dump. It still travels in the payload as `row.code`, where it keys the
+   list and is useful to anyone reading the response.
+
    An alert may carry an `action`: something the user can do that CLEARS the
    condition, rather than a dead statement they can only read. An alert is
    never dismissed or faded while it is still true -- the way it goes away is
@@ -40,10 +45,7 @@ export default function AlertBar({ alerts, run, renderAction }) {
          {rows.map((row, i) => (
             <div key={row.code || "alert-" + i} className={"dashAlert dashAlert--" + (row.severity || "info")}>
                <span className="dashAlert__mark">{row.severity === "warn" ? <WarnMark /> : <InfoMark />}</span>
-               <p className="dashAlert__text">
-                  {row.text}
-                  {row.code && row.severity === "warn" ? <span className="dashAlert__code">{row.code}</span> : null}
-               </p>
+               <p className="dashAlert__text">{row.text}</p>
                {row.action && renderAction ? renderAction(row.action) : null}
             </div>
          ))}
