@@ -306,6 +306,22 @@ class DashHomeSerializer(serializers.ModelSerializer):
 # 		return  superData
 
 
+def _cannibalises(links):
+    """True when more than one DISTINCT page of the site ranks for the keyword.
+
+    Cannibalisation is two of your own pages competing for one keyword. The
+    engine's collector appends every matching result and the same URL can
+    arrive twice -- as an organic result and again as a sitelink or a variant --
+    so counting the raw list flagged a single page as cannibalising itself.
+    Seen in production on 2026-09-06, where a keyword carried the identical URL
+    twice and the table told the owner to fix a problem they did not have.
+
+    The parsers now store distinct pages, so this agrees with them; it also
+    reads rows written before that fix without needing a migration.
+    """
+    return len({link for link in (links or []) if link}) > 1
+
+
 class DashKeywordSerializer(serializers.Serializer):
 
     def to_representation(self, obj):
@@ -438,7 +454,7 @@ class DashKeywordSerializer(serializers.Serializer):
         superData["io"] = obj["isocode"]
         superData["PM"] = "D" if obj["platform"] == "desktop" else "M"
         superData["kwas"] = obj["keyword_alias"]
-        superData["cnn"] = True if len(obj["cannibalisation"]) > 1 else False
+        superData["cnn"] = _cannibalises(obj["cannibalisation"])
 
         # GOOGLE SEARCH CONSOLE
         # Only when the project is actually connected to one. These columns
@@ -953,7 +969,7 @@ class TagKeywordSerializer(serializers.ModelSerializer):
         superData["RW"], _rs, _rc, _rsk = apply_rank_state(superData, obj, self.context.get("account_pages"))
         superData["edm"] = obj["exactdomain"]
         superData["io"] = obj["isocode"]
-        superData["cnn"] = True if len(obj["cannibalisation"]) > 1 else False
+        superData["cnn"] = _cannibalises(obj["cannibalisation"])
         # superData['srs'] = obj['search_results']
         superData["RG"] = obj["region"]
         superData["CY"] = obj["location"].split("(")[1].replace(")", "").strip() if "(" in obj["location"] else "-"

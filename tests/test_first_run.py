@@ -281,3 +281,36 @@ def test_the_engine_reads_the_settings_row_this_command_writes():
         "the engine no longer looks up id=1; load_reference_data creates that "
         "row and the two have drifted apart"
     )
+
+
+def test_a_page_cannot_cannibalise_itself():
+    """Cannibalisation is two DIFFERENT pages of your site competing for one
+    keyword. The engine's collector appends every matching result, and the same
+    URL can arrive twice -- as an organic result and again as a sitelink or a
+    variant -- so counting the raw list flagged one page as cannibalising
+    itself.
+
+    Seen in production on 2026-09-06:
+
+        cannibalisation: ["https://.../rapid-ai-prototyping",
+                          "https://.../rapid-ai-prototyping"]
+
+    one page, stored twice, and the keywords table told the owner to "fix
+    keyword cannibalization issues" for a problem they did not have. Both ends
+    now count distinct pages: the parsers so new rows are clean, and the
+    serializer so rows written before the fix read correctly without a
+    migration.
+    """
+    serializers = (ROOT_DIR / "backend" / "serp" / "serializers.py").read_text(encoding="utf-8")
+    assert "def _cannibalises(" in serializers, "the distinct-page check is gone"
+    assert 'len(obj["cannibalisation"]) > 1' not in serializers, (
+        "the raw list length is being counted again, so a page duplicated in "
+        "the results reads as cannibalisation"
+    )
+
+    for parser in ("mobileparser.py", "parser.py", "parser_json.py"):
+        source = (ROOT_DIR / "engine" / "project" / "machine" / parser).read_text(encoding="utf-8")
+        assert "__distinct_pages__" in source, "%s no longer de-duplicates" % parser
+        assert "cannibalisationResult if len(cannibalisationResult) > 1" not in source, (
+            "%s writes the raw list again" % parser
+        )
