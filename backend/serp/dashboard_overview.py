@@ -84,7 +84,7 @@ from account import verify as authPermission
 from competitor.models import CompKeyword, CompProject
 from serp.common import f_to_i, host_domain
 from serp.models import Groups, Keyword
-from serp.refresh_error import refresh_error_state
+from serp.refresh_error import mark_run_outcome_reported, refresh_error_state
 from shared.scoring import calculate_visibility_history
 
 logger = logging.getLogger(__name__)
@@ -1148,10 +1148,20 @@ def _overview(group):
     buckets = _attention_buckets(rows)
     projects, by_project = _competitor_rows(userid, grpid)
 
+    alerts = _alerts_block(group, rows, run, visibility, failed_ids, failed_searches)
+
+    # Reported once. See refresh_error.mark_run_outcome_reported -- the run row
+    # is news, and it was redrawn on every page load until the next run
+    # happened. Cleared only when an alert was actually produced from it, so a
+    # response that never reached a browser cannot swallow the only report of a
+    # failed run.
+    if any(row.get("severity") == "warn" for row in alerts):
+        mark_run_outcome_reported(userid, grpid)
+
     return {
         "status": "true",
         "project": _project_block(group, rows),
-        "alerts": _alerts_block(group, rows, run, visibility, failed_ids, failed_searches),
+        "alerts": alerts,
         "attention": _attention_block(buckets),
         "attention_groups": _attention_groups_block(buckets),
         "visibility": visibility,

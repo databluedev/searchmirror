@@ -123,6 +123,11 @@
 .dashAlert {
    align-items: flex-start;
    display: flex;
+   // The action is the only way to clear the alert, and it sits at the far end
+   // behind `margin-left: auto`. Without wrapping, a long sentence pushed it
+   // past the viewport on a narrow window and the alert read as a dead
+   // statement -- which is exactly what it is not.
+   flex-wrap: wrap;
    gap: var(--sp-3);
 }
 
@@ -147,14 +152,6 @@
    margin: 0;
    min-width: 0;
    overflow-wrap: anywhere;
-}
-
-// The machine code is its own element so it can never be concatenated into
-// run.err, which is rendered verbatim.
-.dashAlert__code {
-   @extend %microLabel;
-   display: inline-block;
-   margin-left: var(--sp-2);
 }
 
 // The thing that CLEARS the alert. Secondary weight on purpose: it sits inside

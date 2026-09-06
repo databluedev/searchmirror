@@ -149,3 +149,32 @@ def refresh_error_state(userid, grpid, refreshIns=None):
     # -- the same class of bug as reporting success on runkeyword == 0, only
     # inverted. The engine's per-run record above is what decides.
     return "", "", failed
+
+
+def mark_run_outcome_reported(userid, grpid):
+    """Clear the recorded run outcome once it has been reported to a client.
+
+    A RUN OUTCOME IS NEWS, AND NEWS IS REPORTED ONCE.
+
+    `refresh_error_code` records what the LAST run did. Reloading the dashboard
+    re-runs nothing, so that record -- and the banner drawn from it -- survived
+    every page load until another run happened. An event was being rendered as a
+    standing condition, and it read as a fault the user could not clear.
+
+    This is not dismissal. The condition the run alert reports is "there is an
+    unreported run outcome", and reporting it makes that false, so the alert
+    still goes away by ceasing to be true. The durable fact stays: the standing
+    `failed_keywords` row takes over, worded as a state rather than as this
+    run's outcome, and every affected keyword still reads "Could not be checked"
+    in the keywords table.
+
+    Returns True when a record was actually cleared.
+    """
+    from serp.models import Refreshmanual
+
+    updated = Refreshmanual.objects.filter(
+        fb_user_id=userid, fk_group_id=grpid
+    ).exclude(refresh_error_code="", refresh_error="").update(
+        refresh_error_code="", refresh_error=""
+    )
+    return bool(updated)

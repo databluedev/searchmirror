@@ -215,3 +215,58 @@ def test_no_two_live_alert_rows_describe_the_same_failed_keywords(api, headers):
 
     if not checked:
         pytest.skip("no project answered /dashboard_overview")
+
+
+# --- a run outcome is news, and news is reported once -------------------------
+
+
+def test_the_run_outcome_is_cleared_once_it_has_been_reported():
+    """`refresh_error_code` records what the LAST run did. Reloading the
+    dashboard re-runs nothing, so that record -- and the warn banner drawn from
+    it -- survived every page load until another run happened. An event was
+    being rendered as a standing condition, and it read as a fault the user
+    could not clear.
+
+    This is not dismissal, which `test_the_client_cannot_dismiss_a_true_alert`
+    forbids and which stays forbidden. The condition the run row reports is
+    "there is an unreported run outcome"; reporting it makes that false. The
+    durable fact survives in the standing `failed_keywords` row and in the
+    keywords table, where each affected keyword reads "Could not be checked".
+    """
+    source = _read(OVERVIEW)
+    assert "mark_run_outcome_reported" in source, (
+        "the dashboard no longer clears the run outcome after reporting it, so "
+        "the warn banner will persist across every page load again"
+    )
+    guard = source.split("mark_run_outcome_reported(userid, grpid)", 1)[0]
+    assert 'severity") == "warn"' in guard.rsplit("\n\n", 1)[-1], (
+        "the clear is not guarded on an alert actually having been produced. "
+        "Unguarded, a response that never reached a browser would swallow the "
+        "only report of a failed run."
+    )
+
+
+def test_the_machine_code_is_not_rendered_to_the_user():
+    """`serp_failed` printed beside the sentence told the reader nothing the
+    sentence had not already said, and read as an error dump."""
+    source = _code_only(ALERT_BAR)
+    assert "dashAlert__code" not in source, (
+        "the raw error code is rendered in the alert again"
+    )
+    assert "row.code" not in source.split("key=", 1)[-1].split("\n", 1)[-1], (
+        "row.code is being displayed rather than only keying the row"
+    )
+
+
+def test_the_alert_row_wraps_so_its_action_stays_reachable():
+    """The action is the only way to clear the alert and sits behind
+    `margin-left: auto`. Without wrapping, a long sentence pushed it past the
+    viewport on a narrow window and the alert read as a dead statement."""
+    from pathlib import Path
+
+    style = (Path(__file__).parents[1] / "app" / "src" / "pages" / "widget" / "style.scss").read_text(encoding="utf-8")
+    block = style.split(".dashAlert {", 1)[1].split("}", 1)[0]
+    assert "flex-wrap: wrap" in block, (
+        "the alert row no longer wraps, so its re-check control can be pushed "
+        "off-screen at narrow widths"
+    )
