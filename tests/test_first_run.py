@@ -125,6 +125,7 @@ import re
 from pathlib import Path
 
 _APP = Path(__file__).parents[1] / "app" / "src"
+ROOT_DIR = Path(__file__).parents[1]
 _GUARD = re.compile(r"if\s*\(.*grpid|grpid\s*&&|&&\s*grpid|!grpid|!grpId", re.I)
 
 
@@ -235,3 +236,48 @@ def test_the_rank_key_capability_is_actually_shown():
         assert 'name="rank_tracking"' in text, (
             "%s does not surface the rank_tracking capability" % page
         )
+
+
+def test_the_engine_settings_row_is_bootstrap_data_not_demo_data():
+    """The engine cannot start work without Settings(id=1).
+
+    `automation_common.__ms_record__` does
+
+        Settings.objects.filter(id=1).first().core_manual_mode
+
+    with no None check, so a missing row is an AttributeError inside the engine
+    -- an unexplained 500 on EVERY automation endpoint, with nothing in any log.
+
+    Observed in production on 2026-09-06: every scheduled pass had answered 500
+    for hours and the Refresh button did the same, because the row was created
+    only by `scripts/seed_local.py` and production correctly does not run the
+    seed. Reproduced locally by deleting the row (500) and fixed by running the
+    command (200).
+
+    Same class as the region lookups: data the product cannot run without,
+    gated behind the demo switch.
+    """
+    command = (ROOT_DIR / "backend" / "serp" / "management" / "commands"
+               / "load_reference_data.py").read_text(encoding="utf-8")
+    assert "Settings" in command, (
+        "load_reference_data no longer ensures the engine's settings row, so a "
+        "fresh install cannot rank anything"
+    )
+    assert "get_or_create(id=1)" in command, (
+        "the settings row is not created idempotently on id=1, which is the id "
+        "the engine looks up"
+    )
+
+
+def test_the_engine_reads_the_settings_row_this_command_writes():
+    """Keeps the two ends honest: if the engine starts reading a different id
+    or model, the command above is writing the wrong row and a fresh install
+    breaks again in the same silent way."""
+    engine = (ROOT_DIR / "engine" / "project" / "machine"
+              / "automation_common.py").read_text(encoding="utf-8")
+    assert "def __ms_record__" in engine
+    body = engine.split("def __ms_record__", 1)[1].split("\ndef ", 1)[0]
+    assert "'id': 1" in body or '"id": 1' in body, (
+        "the engine no longer looks up id=1; load_reference_data creates that "
+        "row and the two have drifted apart"
+    )
