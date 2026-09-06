@@ -183,25 +183,31 @@ def test_the_no_project_empty_state_is_shared():
         assert "hasProject" in text, "%s does not derive whether a project exists" % page
 
 
-def test_navigation_marks_what_the_account_cannot_use_yet():
-    """The rail offered all seven features from the first second and gated
-    nothing, so clicking the obvious thing led to a page that failed."""
-    sidebar = (_APP / "pages" / "commonComponents" / "sidebar.js").read_text(encoding="utf-8")
+def test_navigation_does_not_mark_every_item():
+    """The rail briefly carried a "Set up" chip on every project-scoped item.
 
-    assert "useHasProject" in sidebar, "the rail no longer knows whether a project exists"
-    for feature in ("/dashboard", "/keywords", "/llmtracker",
-                    "/contentplanner", "/competitors", "/reports"):
-        item = [l for l in sidebar.splitlines() if '"%s"' % feature in l and "to:" in l]
-        assert item, "no nav item for %s" % feature
-        assert "needsProject: true" in item[0], (
-            "%s does not declare that it needs a project, so it is offered "
-            "identically to a feature that works" % feature
-        )
-    assert "Settings" in sidebar and 'to: "/settings"' in sidebar
-    settings = [l for l in sidebar.splitlines() if 'to: "/settings"' in l][0]
-    assert "needsProject" not in settings, (
-        "Settings must NOT be marked: it is where the account fixes the very "
-        "things the other screens are waiting for"
+    On a new account nothing is usable, so all six rows carried the same chip --
+    and a marker that applies to every item carries no information. It read as
+    six faults rather than one next step, and collided with the "new" dots.
+
+    "+ New project" is already at the top of the rail, and each page explains
+    what it needs when opened. That is where the explanation belongs: at the
+    point of intent, not smeared across the navigation.
+    """
+    # Assert on CODE, not comments: the comment in sidebar.js explains what the
+    # chip used to say, and a bare substring check fails against correctly-fixed
+    # code the moment somebody documents the old behaviour.
+    raw = (_APP / "pages" / "commonComponents" / "sidebar.js").read_text(encoding="utf-8")
+    sidebar = re.sub(r"/\*.*?\*/", "", re.sub(r"^\s*//.*$", "", raw, flags=re.M), flags=re.S)
+    assert "needsProject" not in sidebar, (
+        "the rail marks items again. If some items were usable and others were "
+        "not, marking would inform -- but on an empty account none are, so it "
+        "marks everything and says nothing."
+    )
+    assert "Set up" not in sidebar
+    assert "useHasProject" not in sidebar, (
+        "the rail is fetching the project list again for a signal it no longer "
+        "renders"
     )
 
 
