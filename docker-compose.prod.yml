@@ -51,7 +51,7 @@ services:
     command: >
       sh -c "mkdir -p logs files && chown -R app:app logs files &&
       exec setpriv --reuid=app --regid=app --init-groups --
-      sh -c 'python manage.py migrate --noinput && gunicorn tracker.wsgi:application --bind 0.0.0.0:8000 --worker-class gthread --workers ${GUNICORN_WORKERS:-3} --threads ${GUNICORN_THREADS:-4} --timeout 120 --access-logfile - --error-logfile -'"
+      sh -c 'python manage.py migrate --noinput && python manage.py load_reference_data && gunicorn tracker.wsgi:application --bind 0.0.0.0:8000 --worker-class gthread --workers ${GUNICORN_WORKERS:-3} --threads ${GUNICORN_THREADS:-4} --timeout 120 --access-logfile - --error-logfile -'"
 
   engine:
     ports: !override ["127.0.0.1:8001:8001"]

@@ -22,6 +22,8 @@ function ExportReport() {
         setIsExporting(true);
 
         const cookies = new Cookies();
+        const grpid = cookies.get('activegrp');
+        if (!grpid) { return; }   // no project: nothing to export
         try {
             const response = await axios.post(
                 global.apiurl + '/local_report_export',

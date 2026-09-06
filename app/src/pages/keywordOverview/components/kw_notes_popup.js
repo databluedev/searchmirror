@@ -90,6 +90,7 @@ function KwNotesPopup({ children, kwdata, keyid, tabledataUpdate}) {
          const userToken = cookies.get('session_token')
          const userId = cookies.get('session_userid')
          const grpId = cookies.get('activegrp')
+         if (!grpId) { return; }   // no project: nothing to ask about
          const keyId = keyid
 
          if(userId && grpId && keyId) {

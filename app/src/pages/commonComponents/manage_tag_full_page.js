@@ -65,6 +65,7 @@ function ManageTagFullPage({ managetagopenFunc, ...props }) {
       const usertoken = cookies.get('session_token')
       const userid = cookies.get('session_userid')
       const grpid = cookies.get('activegrp');
+      if (!grpid) { return; }   // no project: nothing to ask about
 
       if (userid) {
          // }else if(userid && (selectedtags.length > 0 || commontags.length > 0)){
@@ -126,6 +127,7 @@ function ManageTagFullPage({ managetagopenFunc, ...props }) {
       const usertoken = cookies.get('session_token')
       const userid = cookies.get('session_userid')
       const grpid = cookies.get('activegrp');
+      if (!grpid) { return; }   // no project: nothing to ask about
 
       if (JSON.stringify(selectedkwIds) !== JSON.stringify(kwIds) && selectedkwIds.length > 0) {
          setKwIds(selectedkwIds);

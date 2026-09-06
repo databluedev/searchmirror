@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { NoProjectYet } from "../commonComponents/not_ready";
 import './style.scss';
 import ProjectFavIcon from "../commonComponents/project_fav_icon";
 import PageSkeleton from "../commonComponents/page_skeleton";
@@ -29,6 +30,11 @@ const demoDataRows = [
 // EXPORT REPORT MANAGEMENT 
 
 const ReportManagement = (props) => {
+
+    /* No project means no activegrp cookie (private_route.js leaves it unset on
+       purpose), so /smrdata and the widget calls below would go out without a
+       grpid -- which is how this page answered a brand-new account with a 500. */
+    const hasProject = Boolean(props.projectList && props.projectList.length);
 
     const canAddReports = allowsTeamAction(props.fullbasedata, "Reports", "Add Report");
     const canDeleteReports = allowsTeamAction(props.fullbasedata, "Reports", "Delete Report");
@@ -104,6 +110,7 @@ const ReportManagement = (props) => {
         const cookies = new Cookies();
         var usertoken = cookies.get('session_token')
         var grpid = cookies.get('activegrp')
+        if (!grpid) { return; }
         var userid = cookies.get('session_userid')
         var data = { 'userid': userid, 'grpid': grpid }
 
@@ -136,6 +143,7 @@ const ReportManagement = (props) => {
 
             const cookies = new Cookies();
             var grpid = cookies.get('activegrp')
+        if (!grpid) { return; }
             const usertoken = cookies.get('session_token')
             const userid = cookies.get('session_userid');
             const param_data = {
@@ -186,6 +194,7 @@ const ReportManagement = (props) => {
     const handleInitialise = useCallback(async (projectList) => {
         const cookies = new Cookies();
         var grpid = cookies.get('activegrp')
+        if (!grpid) { return; }
         var apidata = {}
         let aborted = false
 
@@ -345,7 +354,11 @@ const ReportManagement = (props) => {
 
     return (
         <>
-            {viewLoad ?
+            {!hasProject ?
+                <section className="layout">
+                    <NoProjectYet feature="Reports" canAddProject={canAddReports} />
+                </section>
+            : viewLoad ?
                 <section className='layout' id='layout' onClick={props.handleClick} >
                     <header className=''>
                         <div className="d-flex justify-content-between flex-wrap gap-3">

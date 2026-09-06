@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { NoProjectYet } from "../commonComponents/not_ready";
 import "./style.scss";
 import { useHistory } from "react-router-dom";
 import { Title, Para, AppButton } from "../commonComponents/parts";
@@ -29,6 +30,10 @@ import { allowsTeamAction } from '../../utils/team_permissions';
 const compProjectPageLimit = 15
 
 function CompetitorAnalysis(props) {
+   /* No project means no activegrp cookie, so /compai/* would be called with no
+      grpid. analysis_status reads request.data['grpid'] directly, which is how
+      this page answered a brand-new account with a 500 and a blank screen. */
+   const hasProject = Boolean(props.projectList && props.projectList.length);
 
    const canAddCompetitor = allowsTeamAction(props.fullbasedata, "CompAi", "Add Competitor");
    const canReanalyseCompetitors = allowsTeamAction(props.fullbasedata, "CompAi", "Re-analysis Competitor");
@@ -132,6 +137,7 @@ function CompetitorAnalysis(props) {
       const usertoken = cookies.get('session_token')
       const userid = cookies.get('session_userid')
       const grpid = cookies.get('activegrp');
+      if (!grpid) { return; }
       if (!usertoken || !userid) {
          history.push("/login");
       }
@@ -185,6 +191,7 @@ function CompetitorAnalysis(props) {
       const usertoken = cookies.get('session_token');
       const userid = cookies.get('session_userid');
       const grpid = cookies.get('activegrp');
+      if (!grpid) { return; }
       if (userid && grpid) {
          setAiRunStatus(olddata => ({ ...olddata, 'Astatus': "LOAD" }))
          var data = {
@@ -199,7 +206,7 @@ function CompetitorAnalysis(props) {
             if (res.st !== 1) {
                setAiRunStatus(olddata => ({ ...olddata, 'Astatus': "VOID" }))
                // setAstatus(false)
-               toast.error(res.message)
+               toast.error("Competitor analysis could not be loaded. Try again in a moment.")
             } else {
                if (res.Eg !== 1) {
                   setAiRunStatus(olddata => ({ ...olddata, 'Astatus': "VOID" }))
@@ -251,7 +258,11 @@ function CompetitorAnalysis(props) {
          {/* INIT is "the status request has not answered yet". The top progress
              line above is the whole loading state for it; a second, centred bar
              on a blank h100vh was the same message in a second idiom. */}
-         {aiRunStatus.Astatus === "INIT" ?
+         {!hasProject ?
+            <section className="layout">
+               <NoProjectYet feature="Competitors" canAddProject={canAddCompetitor} />
+            </section>
+         : aiRunStatus.Astatus === "INIT" ?
             <div className="layout" role="status" aria-live="polite" aria-busy="true">
                <span className="visually-hidden">Loading competitors</span>
             </div>

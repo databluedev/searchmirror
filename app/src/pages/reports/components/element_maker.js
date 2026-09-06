@@ -34,6 +34,7 @@ function ElementMaker(props){
     // the parent last fetched, so a second rename in the same session sent the
     // original name and was refused with "Something went wrong". updtEl is what
     // this component knows is stored right now.
+    if (!grpid) { return; }   // no project: nothing to ask about
     const payload={'userid':userid, 'grpid':grpid, 'shtNmber':props.sheetNumber, 'shtNme':updtEl, 'updtShtNme':text}
     axios.post(global.apiurl + '/sheet_update', payload, {
       headers: {'Authorization':'Token '+usertoken}

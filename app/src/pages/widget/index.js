@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import CapabilityNotice from "../commonComponents/capability_notice";
 import Cookies from "universal-cookie";
 import "./style.scss";
 import {
@@ -163,6 +164,13 @@ const Dashboard = (props) => {
             projectList={projectList}
             showRunMeta={Boolean(data)}
          />
+
+         {/* `rank_tracking` has existed in capabilities() since it was written
+             and was rendered nowhere. Without a readable DataBlue key nothing
+             ranks, so positions never update -- and the dashboard said only
+             that it had no data, which reads as "nothing has happened yet"
+             rather than "this account cannot rank". */}
+         <CapabilityNotice name="rank_tracking" />
 
          {state.loading ? <DashSkeleton /> : null}
 

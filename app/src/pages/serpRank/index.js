@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import CapabilityNotice from "../commonComponents/capability_notice";
 import { useHistory } from "react-router-dom";
 import "swiper/css";
 import { ParaLg, Para, Title, Tsk } from "../commonComponents/parts";
@@ -196,6 +197,8 @@ function SerpRank(props) {
                         </div>
                      </div>
                   </header>
+
+                  <CapabilityNotice name="rank_tracking" />
 
                   <div id="smoothscrollbar" className="lightscroll scroll-y-trnspnt">
                      <section className="project_overviewCard no-outline m-b30 p-t15">

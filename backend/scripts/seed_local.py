@@ -16,6 +16,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tracker.settings")
 django.setup()
 
+from serp.reference_data import SEARCH_REGIONS  # noqa: E402  (after django.setup)
+
 from datetime import date, timedelta          # noqa: E402
 from django.apps import apps                  # noqa: E402
 from django.conf import settings as django_settings  # noqa: E402
@@ -69,66 +71,17 @@ if user is None:
 else:
     print(f"user           exists   {EMAIL}")
 
-# Region / Language are foreign lookups the keyword form depends on.
+# Region / Language are foreign lookups the keyword form depends on. They are
+# NOT demo data: without them the add-project form has an empty country list and
+# no project can be created at all. They therefore live in serp/reference_data.py
+# and are written by `manage.py load_reference_data`, which every container
+# entrypoint runs -- this seed imports the same list so the two cannot drift.
 Region, Language = M("serp", "Region"), M("serp", "Language")
 # region_name holds the GOOGLE DOMAIN, not the country. The add-keyword form
 # stores whatever is in region_name on the keyword (`setRegion(selected.RN)`),
 # and the engine's _google_domain_ only accepts a value starting "google." --
 # anything else falls back to google.com. Seeding "India" here therefore
 # searched the wrong engine while the UI said India.
-SEARCH_REGIONS = [
-    ("in", "google.co.in", "India"),
-    ("us", "google.com", "United States"),
-    ("gb", "google.co.uk", "United Kingdom"),
-    ("ca", "google.ca", "Canada"),
-    ("au", "google.com.au", "Australia"),
-    ("de", "google.de", "Germany"),
-    ("fr", "google.fr", "France"),
-    ("es", "google.es", "Spain"),
-    ("it", "google.it", "Italy"),
-    ("nl", "google.nl", "Netherlands"),
-    ("se", "google.se", "Sweden"),
-    ("pl", "google.pl", "Poland"),
-    ("br", "google.com.br", "Brazil"),
-    ("mx", "google.com.mx", "Mexico"),
-    ("ar", "google.com.ar", "Argentina"),
-    ("jp", "google.co.jp", "Japan"),
-    ("kr", "google.co.kr", "South Korea"),
-    ("sg", "google.com.sg", "Singapore"),
-    ("id", "google.co.id", "Indonesia"),
-    ("ph", "google.com.ph", "Philippines"),
-    ("my", "google.com.my", "Malaysia"),
-    ("th", "google.co.th", "Thailand"),
-    ("vn", "google.com.vn", "Vietnam"),
-    ("ae", "google.ae", "United Arab Emirates"),
-    ("sa", "google.com.sa", "Saudi Arabia"),
-    ("za", "google.co.za", "South Africa"),
-    ("ng", "google.com.ng", "Nigeria"),
-    ("ke", "google.co.ke", "Kenya"),
-    ("eg", "google.com.eg", "Egypt"),
-    ("tr", "google.com.tr", "Turkey"),
-    ("ru", "google.ru", "Russia"),
-    ("ua", "google.com.ua", "Ukraine"),
-    ("il", "google.co.il", "Israel"),
-    ("pk", "google.com.pk", "Pakistan"),
-    ("bd", "google.com.bd", "Bangladesh"),
-    ("lk", "google.lk", "Sri Lanka"),
-    ("nz", "google.co.nz", "New Zealand"),
-    ("ie", "google.ie", "Ireland"),
-    ("pt", "google.pt", "Portugal"),
-    ("be", "google.be", "Belgium"),
-    ("ch", "google.ch", "Switzerland"),
-    ("at", "google.at", "Austria"),
-    ("dk", "google.dk", "Denmark"),
-    ("no", "google.no", "Norway"),
-    ("fi", "google.fi", "Finland"),
-    ("cz", "google.cz", "Czechia"),
-    ("gr", "google.gr", "Greece"),
-    ("hk", "google.com.hk", "Hong Kong"),
-    ("tw", "google.com.tw", "Taiwan"),
-    ("cl", "google.cl", "Chile"),
-    ("co", "google.com.co", "Colombia"),
-]
 for _code, _engine, _country in SEARCH_REGIONS:
     Region.objects.update_or_create(
         region_code=_code,

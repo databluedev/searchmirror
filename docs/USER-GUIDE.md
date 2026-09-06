@@ -7,7 +7,7 @@ with the [README](../README.md) for local use or
 > **Ranking costs money.** Every rank check spends one DataBlue request per page
 > of results, against *your* key. Nothing in this product ranks anything without
 > being asked — but the buttons that ask are easy to click, so they are named
-> explicitly in [§9](#9-what-costs-money).
+> explicitly in [§10](#10-what-costs-money).
 
 ---
 
@@ -21,12 +21,38 @@ development instance seeds one account:
 | Email | `admin@local.test` |
 | Password | `LocalDev12345` |
 
+**On a real instance there is no seeded login.** That account's password is
+published in this repository, so it is created only when the development stack
+is running. On a production instance you register the first account through the
+signup page — which sends a verification email, so the operator must have
+configured SMTP first.
+
 Sessions live in **cookies**, not local storage. If you rebuild the database
 while a browser tab is open, the stale cookie makes every request fail with a
 401 and it looks like broken login — clear the site's cookies and sign in
 again.
 
-## 2. Adding your DataBlue key
+## 2. What you will see first
+
+A new account has no projects, so most of the product has nothing to report on
+yet. That is expected, and the app says so rather than failing:
+
+- The rail still lists every feature — so you can see what SearchMirror does —
+  but the ones that need a project are marked **Set up**.
+- Opening one shows what is missing and a single button that fixes it.
+- Once a project exists, the marks disappear and those pages fill in.
+
+Three different things can leave a screen waiting, and each says which:
+
+| What it says | What it means |
+|---|---|
+| **No projects** | The account is empty. Create a project. |
+| A key is required | The feature needs a DataBlue or AI key. Add it under Settings. |
+| **No rankings yet** | The project exists but nothing has been checked yet. |
+
+The order to work through is: **key → project → keywords → rank**.
+
+## 3. Adding your DataBlue key
 
 SearchMirror is **bring-your-own-key**. Nothing will rank until a key is stored.
 
@@ -40,7 +66,7 @@ they explicitly enabled `ALLOW_INSTANCE_FALLBACK`. If you have no key and
 fallback is off, rank checks do nothing rather than quietly spending someone
 else's credits.
 
-## 3. Creating a project
+## 4. Creating a project
 
 A project is one domain tracked in one place.
 
@@ -62,7 +88,7 @@ A project is one domain tracked in one place.
    truthfully, and without guessing a position. Increasing depth later is
    allowed; it costs proportionally more on every future check.
 
-## 4. Adding keywords
+## 5. Adding keywords
 
 **Add keywords** takes one keyword per line. Keep them literal: a keyword is
 the exact string sent to Google, and it is stored and displayed exactly as
@@ -73,7 +99,7 @@ depth from the keyword's own **Configuration** panel — useful for the handful
 of terms you want tracked deeper than the rest without paying for the whole
 list.
 
-## 5. Reading the dashboard
+## 6. Reading the dashboard
 
 The dashboard summarises one project.
 
@@ -85,7 +111,7 @@ The dashboard summarises one project.
   what the API actually determined. An alert that offers a re-check tells you
   what it will cost before you confirm.
 
-## 6. Reading the keywords table
+## 7. Reading the keywords table
 
 The position column never invents a number. It shows one of four states:
 
@@ -102,7 +128,7 @@ position rather than treating them as position 101.
 
 Click any keyword to open its detail page.
 
-## 7. The keyword detail page
+## 8. The keyword detail page
 
 **Overview** — current position, best position, the depth that produced the
 result, and the keyword's configuration.
@@ -121,7 +147,7 @@ them.
 **Notes** — dated annotations. Use them to record what you changed, so a
 movement six weeks later has an explanation attached.
 
-## 8. The other modules
+## 9. The other modules
 
 **Competitors** — track rival domains against the same keywords and compare
 positions side by side.
@@ -141,7 +167,7 @@ as interrupted rather than left claiming to be running.
 in with their own credentials and acts within the owning account, so their
 access can be narrowed without sharing the owner's login.
 
-## 9. What costs money
+## 10. What costs money
 
 Only these spend provider credits:
 
@@ -155,7 +181,7 @@ Only these spend provider credits:
 Browsing, sorting, filtering, exporting and reading history cost nothing — they
 read what has already been measured.
 
-## 10. When something looks wrong
+## 11. When something looks wrong
 
 **Every keyword says "Not checked yet".** No key is stored, or a check has not
 run yet. Add your DataBlue key under Account → SERP key, then rank once.

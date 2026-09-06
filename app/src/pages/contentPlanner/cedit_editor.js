@@ -238,6 +238,7 @@ function CEditor(props) {
          history.push("/login");
       }
 
+      if (!grpid) { return; }   // no project: nothing to ask about
       axios.post(global.apiurl + '/contentmanager/details', { 'userid': userid, 'grpid': grpid, 'content_id': content_id }, {
          headers: { 'Authorization': 'Token ' + usertoken }
       }).then(response => {
@@ -279,6 +280,7 @@ function CEditor(props) {
       const cookies = new Cookies();
       const usertoken = cookies.get('session_token')
       const userid = cookies.get('session_userid')
+      if (!grpid) { return; }   // no project: nothing to ask about
       axios.post(global.apiurl + '/contentmanager/update', {
          'userid': userid,
          'grpid': grpid,

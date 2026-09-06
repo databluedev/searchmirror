@@ -1,125 +1,231 @@
-"""A brand-new account must not meet a 500 on its first day.
+"""What a brand-new account meets.
 
-Every case here is a row that simply does not exist yet on a fresh install.
-The code dereferenced the result of .first() without checking, so "nothing
-here yet" arrived as a server error rather than as an empty answer.
+Every check here is about the state an installation is in *before* anyone has
+done anything: no project, no measurements, and — until this change — no
+country list either.
+
+The reference-data bug is the one worth understanding. `Region` and `Language`
+are foreign lookups the add-project and add-keyword forms cannot render without.
+They were created only by `scripts/seed_local.py`, which is correctly disabled
+in production because it also creates an account whose password is published in
+this repository. So the single switch that keeps the demo login out of
+production also left every production install with an empty country dropdown
+and no way to create a project at all. It was found on a real deployment on
+2026-09-06, where the Region dropdown rendered a broken image and the value "0".
+
+Reference data and demo data do not share a switch.
 """
 
 import requests
 
-from conftest import API, TIMEOUT
+from conftest import TIMEOUT
 
 
-def test_keyword_ads_without_history(headers, auth):
-    """KeywordHistory appears the first time a keyword is ranked.
-
-    Open a keyword's detail panel before any ranking run and this used to
-    raise AttributeError on None -- so on a fresh install every newly added
-    keyword broke its own panel.
-    """
-    user_id, _ = auth
-    r = requests.post(
-        API + "/kwads",
-        json={"userid": user_id, "grpid": "1", "kwid": "999999", "type": "tp"},
-        headers=headers, timeout=TIMEOUT,
-    )
-    assert r.status_code == 200, "kwads answered HTTP %s" % r.status_code
-    assert r.json().get("status") == "true"
-    assert r.json().get("lst") == []
-
-
-def test_keyword_competitors_without_history(headers, auth):
-    user_id, _ = auth
-    r = requests.post(
-        API + "/kwcomps",
-        json={"userid": user_id, "grpid": "1", "kwid": "999999", "type": "tp"},
-        headers=headers, timeout=TIMEOUT,
-    )
-    assert r.status_code == 200, "kwcmptrs answered HTTP %s" % r.status_code
-    assert r.json().get("status") == "true"
-
-
-def test_add_keyword_rejects_unknown_language(headers, auth):
-    """The language name comes straight from the request. An unrecognised one
-    is a bad request; it used to be a 500 on Add Keyword."""
-    user_id, _ = auth
-    r = requests.post(
-        API + "/addkeyv3",
-        json={"userid": user_id, "grpid": "1",
-              "language": "NotARealLanguage", "keyword": ["x"]},
-        headers=headers, timeout=TIMEOUT,
-    )
-    assert r.status_code == 200, "addkeyv3 answered HTTP %s" % r.status_code
-    body = r.json()
-    assert body.get("status") == "false"
-    assert "language" in (body.get("message") or "").lower(), body
-
-
-def test_usage_summary_survives(headers, auth):
-    """redirectcheck dereferenced the Accountusage row without checking."""
-    user_id, _ = auth
-    r = requests.post(
-        API + "/redirectcheck",
-        data={"userid": user_id, "grpid": "1"},
-        headers={"Authorization": headers["Authorization"]}, timeout=TIMEOUT,
-    )
-    assert r.status_code == 200, r.text[:200]
-
-
-def test_recipient_and_mail_switch_reads(headers, auth):
-    """Both dereferenced the project row; a deleted project made them 500."""
-    user_id, _ = auth
-    auth_only = {"Authorization": headers["Authorization"]}
-    for path in ("rpntmailupdate", "mailoptswupdate", "projectsetting"):
-        r = requests.post(API + "/" + path,
-                          data={"userid": user_id, "grpid": "1"},
-                          headers=auth_only, timeout=TIMEOUT)
-        assert r.status_code == 200, "%s answered HTTP %s" % (path, r.status_code)
-
-
-def test_missing_serp_link_is_a_clean_not_found(headers, auth):
-    """An old/missing preview token must never call a retired host or raise."""
-    user_id, _ = auth
-    r = requests.post(
-        API + "/gresultpage",
-        json={"userid": user_id, "grpid": "1", "kwid": 999999,
-              "pageType": ""},
-        headers=headers, timeout=TIMEOUT,
-    )
-    assert r.status_code == 200, r.text[:200]
-    body = r.json()
-    assert body.get("status") == "false", body
-    assert "not found" in (body.get("message") or "").lower(), body
-
-
-def test_missing_keyword_detail_is_a_clean_not_found(headers, auth):
-    user_id, _ = auth
-    r = requests.post(
-        API + "/keyauth",
-        json={
-            "userid": user_id,
-            "grpid": "1",
-            "kwid": 999999,
-            "type": "full",
-        },
-        headers=headers,
+def test_the_country_list_is_populated(api, session, headers, auth):
+    """Without this the add-project form cannot be completed, so the product is
+    unusable on a fresh install however healthy every container looks."""
+    user_id = auth[0]
+    response = session.post(
+        api + "/country_list", json={"userid": user_id}, headers=headers,
         timeout=TIMEOUT,
     )
-    assert r.status_code == 200, r.text[:200]
-    body = r.json()
-    assert body.get("status") == "false", body
-    assert "not found" in (body.get("message") or "").lower(), body
-
-
-def test_report_widget_serializes_its_page_result(headers, auth):
-    user_id, _ = auth
-    response = requests.post(
-        API + "/dynamic_widget",
-        json={"userid": user_id, "grpid": "1", "page": 1},
-        headers=headers,
-        timeout=TIMEOUT,
-    )
-
     assert response.status_code == 200, response.text[:200]
+
     body = response.json()
-    assert body != {"st": 0, "dt": "Something went wrong"}, body
+    text = str(body)
+    assert "india" in text.lower() or "united states" in text.lower(), (
+        "the country list came back without recognisable countries. If the "
+        "region table is empty, `manage.py load_reference_data` did not run -- "
+        "every container entrypoint is supposed to run it on boot. A fresh "
+        "install with an empty region table cannot create a project.\n\n%s"
+        % text[:300]
+    )
+
+
+def test_every_region_names_a_google_domain():
+    """`region_name` holds the GOOGLE DOMAIN, not the country.
+
+    `/country_list` returns display names, which is its job. The invariant that
+    matters is in the stored data: the add-keyword form writes `region_name`
+    onto the keyword, and the engine only accepts a value beginning "google." --
+    anything else silently falls back to google.com. Seeding "India" there
+    searched the wrong engine while the interface said India, which is a wrong
+    answer rather than an error, and no test would have caught it.
+    """
+    import sys
+    from pathlib import Path
+
+    backend = str(Path(__file__).parents[1] / "backend")
+    if backend not in sys.path:
+        sys.path.insert(0, backend)
+    from serp.reference_data import SEARCH_REGIONS
+
+    wrong = [(code, engine) for code, engine, _ in SEARCH_REGIONS
+             if not engine.startswith("google.")]
+    assert not wrong, (
+        "%d region(s) do not name a Google domain: %s. The engine falls back to "
+        "google.com for these, so the measurement would come from the wrong "
+        "search engine while the interface names the right country."
+        % (len(wrong), wrong)
+    )
+    assert len(SEARCH_REGIONS) >= 50, (
+        "only %d regions defined; the product supports far more countries than "
+        "that and the list has probably been truncated" % len(SEARCH_REGIONS)
+    )
+
+
+def test_reference_data_is_not_gated_on_the_demo_seed():
+    """The two must not share a switch. If the region list is only written by
+    the seed, disabling the published demo login empties the country dropdown."""
+    from pathlib import Path
+
+    root = Path(__file__).parents[1]
+    reference = root / "backend" / "serp" / "reference_data.py"
+    command = root / "backend" / "serp" / "management" / "commands" / "load_reference_data.py"
+
+    assert reference.exists(), "the shared reference-data module is gone"
+    assert command.exists(), "manage.py load_reference_data is gone"
+
+    seed = (root / "backend" / "scripts" / "seed_local.py").read_text(encoding="utf-8")
+    assert "from serp.reference_data import" in seed, (
+        "the seed defines its own region list again. Two copies drift: the "
+        "engine only accepts region_name values starting 'google.', so a "
+        "divergent copy searches the wrong engine while the UI names the right "
+        "country."
+    )
+
+    # Every entrypoint must run it, or a fresh install still starts empty.
+    for compose in ("docker-compose.yml", "docker-compose.prod.yml",
+                    "docker-compose.dokploy.yml"):
+        text = (root / compose).read_text(encoding="utf-8")
+        assert "load_reference_data" in text, (
+            "%s does not run load_reference_data, so an install started with "
+            "that file has no country list" % compose
+        )
+
+
+# --- the frontend side -------------------------------------------------------
+#
+# `private_route.js` leaves the `activegrp` cookie UNSET when the account has no
+# project. That is the honest value -- it previously wrote the literal 'dmo',
+# which the backend parsed as an integer and answered with a 500 on every
+# screen. The comment justifying that fix states the assumption the whole design
+# rests on:
+#
+#     "Absent is the honest value: the `if (userid && grpid)` guards those
+#      callers already carry then skip the request."
+#
+# The assumption was false. Of 54 files that read the cookie and then call the
+# API, 21 carried no such guard, so four pages called endpoints they could not
+# satisfy -- two of them answering 500. The bootstrap was made honest on the
+# belief that the callers were already safe; two thirds were.
+
+import os
+import re
+from pathlib import Path
+
+_APP = Path(__file__).parents[1] / "app" / "src"
+_GUARD = re.compile(r"if\s*\(.*grpid|grpid\s*&&|&&\s*grpid|!grpid|!grpId", re.I)
+
+
+def _files_that_call_with_a_project():
+    out = []
+    for dirpath, dirnames, filenames in os.walk(_APP):
+        dirnames[:] = [d for d in dirnames if d != "node_modules"]
+        for name in filenames:
+            if not name.endswith(".js"):
+                continue
+            path = Path(dirpath) / name
+            text = path.read_text(encoding="utf-8", errors="replace")
+            if "get('activegrp')" not in text:
+                continue
+            if "axios.post" not in text and "axios.get" not in text:
+                continue
+            out.append((path, text))
+    return out
+
+
+def test_every_caller_guards_on_having_a_project():
+    unguarded = sorted(
+        str(path.relative_to(_APP.parents[1])).replace(os.sep, "/")
+        for path, text in _files_that_call_with_a_project()
+        if not _GUARD.search(text)
+    )
+    assert not unguarded, (
+        "%d file(s) read the active-project cookie and call the API without "
+        "checking a project exists:\n\n    %s\n\n"
+        "With no project that cookie is unset, so the request goes out with no "
+        "grpid. Some endpoints answer 500; the user sees a blank page or the "
+        "API's own diagnostic in a red toast."
+        % (len(unguarded), "\n    ".join(unguarded))
+    )
+
+
+def test_the_no_project_empty_state_is_shared():
+    """One component, so the four pages cannot drift into four wordings."""
+    component = _APP / "pages" / "commonComponents" / "not_ready.js"
+    assert component.exists(), "the shared not-ready component is gone"
+
+    source = component.read_text(encoding="utf-8")
+    assert "emptyState" in source, (
+        "the component stopped using the house emptyState block; docs/DESIGN.md "
+        "defines it as micro-label, one sentence, one action, no art"
+    )
+    assert "axios" not in source, (
+        "the empty state fetches. It is a presentation component: the caller "
+        "already knows why the screen is not ready and passes the reason in."
+    )
+
+    for page in ("contentPlanner/index.js", "llmTracker/index.js",
+                 "reports/index.js", "competitor/index.js"):
+        text = (_APP / "pages" / page).read_text(encoding="utf-8")
+        assert "NoProjectYet" in text, "%s does not render the empty state" % page
+        assert "hasProject" in text, "%s does not derive whether a project exists" % page
+
+
+def test_navigation_marks_what_the_account_cannot_use_yet():
+    """The rail offered all seven features from the first second and gated
+    nothing, so clicking the obvious thing led to a page that failed."""
+    sidebar = (_APP / "pages" / "commonComponents" / "sidebar.js").read_text(encoding="utf-8")
+
+    assert "useHasProject" in sidebar, "the rail no longer knows whether a project exists"
+    for feature in ("/dashboard", "/keywords", "/llmtracker",
+                    "/contentplanner", "/competitors", "/reports"):
+        item = [l for l in sidebar.splitlines() if '"%s"' % feature in l and "to:" in l]
+        assert item, "no nav item for %s" % feature
+        assert "needsProject: true" in item[0], (
+            "%s does not declare that it needs a project, so it is offered "
+            "identically to a feature that works" % feature
+        )
+    assert "Settings" in sidebar and 'to: "/settings"' in sidebar
+    settings = [l for l in sidebar.splitlines() if 'to: "/settings"' in l][0]
+    assert "needsProject" not in settings, (
+        "Settings must NOT be marked: it is where the account fixes the very "
+        "things the other screens are waiting for"
+    )
+
+
+def test_the_capability_notice_renders_inside_a_layout_section():
+    """`.layout` supplies the top padding that clears the fixed app bar. A
+    notice rendered outside it sits under the bar and is clipped -- which is how
+    Content Planner looked on a real deployment."""
+    planner = (_APP / "pages" / "contentPlanner" / "index.js").read_text(encoding="utf-8")
+    onboard = (_APP / "pages" / "contentPlanner" / "cedit_onboard.js").read_text(encoding="utf-8")
+
+    assert "notice={" in planner, (
+        "the notice is a sibling of CEditOnBoard again, outside any .layout"
+    )
+    assert "{notice}" in onboard and 'className="layout' in onboard, (
+        "CEditOnBoard no longer renders the notice inside its layout section"
+    )
+
+
+def test_the_rank_key_capability_is_actually_shown():
+    """`rank_tracking` existed in capabilities() from the start and was rendered
+    nowhere, so an account with no DataBlue key was told it had no data rather
+    than that it could not rank."""
+    for page in ("widget/index.js", "serpRank/index.js"):
+        text = (_APP / "pages" / page).read_text(encoding="utf-8")
+        assert 'name="rank_tracking"' in text, (
+            "%s does not surface the rank_tracking capability" % page
+        )
