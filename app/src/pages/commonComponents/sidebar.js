@@ -25,6 +25,14 @@ import ProjectSwitcher from "./project_switcher";
 import { Button, Box, Drawer } from "@mui/material";
 import Popover from "@mui/material/Popover";
 import MenuList from "@mui/material/MenuList";
+// MUI's MenuItem, deliberately aliased. `MenuItem` in this file is
+// react-pro-sidebar's, which powers the rail and takes `onClick` but has no
+// `component`/`href`. The two links below sit inside a MUI <MenuList> and were
+// written with MUI's API, so those props were dropped on the floor and both
+// rows rendered inert -- the project's source and documentation were
+// unreachable from inside the app, which is the exact thing the comment below
+// says this menu exists to fix.
+import MuiMenuItem from "@mui/material/MenuItem";
 // import WallLogo from "../../assets/images/Walmart_Spark.png";
 
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -560,7 +568,7 @@ export function Sidebar({ children, ...props }) {
                                   straight back into the app, so the project's
                                   own site, source and documentation were
                                   unreachable from inside it. */}
-                              <MenuItem
+                              <MuiMenuItem
                                  className="p-r0 p-l0 submenuIcon"
                                  component="a"
                                  href={REPO_URL}
@@ -568,8 +576,8 @@ export function Sidebar({ children, ...props }) {
                                  rel="noopener noreferrer"
                               >
                                  <span className="item">Source on GitHub</span>
-                              </MenuItem>
-                              <MenuItem
+                              </MuiMenuItem>
+                              <MuiMenuItem
                                  className="p-r0 p-l0 submenuIcon"
                                  component="a"
                                  href={DOCS_URL}
@@ -577,7 +585,7 @@ export function Sidebar({ children, ...props }) {
                                  rel="noopener noreferrer"
                               >
                                  <span className="item">Documentation</span>
-                              </MenuItem>
+                              </MuiMenuItem>
                               <MenuItem className="logOutMenu p-r0 p-l0 submenuIcon" onClick={logout}>
                                  <NavLogout />
                                  <span className="item"> Logout</span>

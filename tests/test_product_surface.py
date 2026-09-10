@@ -1618,3 +1618,33 @@ def test_favourites_are_not_shipped():
         "through mongoengine -- removing a column on one side only makes every "
         "keyword unreadable to the ranking worker."
     )
+
+
+def test_the_profile_menu_links_use_a_component_that_can_be_a_link():
+    """`MenuItem` in sidebar.js is react-pro-sidebar's, which powers the rail
+    and accepts `onClick` but has no `component`/`href`.
+
+    The "Source on GitHub" and "Documentation" rows sit inside a MUI <MenuList>
+    and were written with MUI's API, so `component="a"` and `href` were dropped
+    and both rendered inert. The project's own source and documentation were
+    unreachable from inside the app -- which is the exact thing the comment
+    above them says that menu exists to fix. Logout worked only because it uses
+    onClick, which the other component does support.
+    """
+    source = _read("app/src/pages/commonComponents/sidebar.js")
+
+    assert 'import MuiMenuItem from "@mui/material/MenuItem"' in source, (
+        "the MUI MenuItem alias is gone; a react-pro-sidebar MenuItem cannot "
+        "render an href"
+    )
+
+    for anchor in ("href={REPO_URL}", "href={DOCS_URL}"):
+        assert anchor in source, "%s is no longer linked" % anchor
+        # the opening tag for that row must be the MUI one
+        before = source.split(anchor, 1)[0]
+        opening = before.rsplit("<", 2)[-2].split()[0] if "<" in before else ""
+        assert "MuiMenuItem" in before.rsplit("<MuiMenuItem", 1)[-1] or \
+               before.rstrip().endswith(('component="a"',)) or \
+               "<MuiMenuItem" in before[-400:], (
+            "%s hangs off a component that ignores href, so the row is inert" % anchor
+        )
