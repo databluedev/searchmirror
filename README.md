@@ -1,12 +1,36 @@
-# SearchMirror
+# SearchMirror — Open-source Google rank tracker
 
 [![CI](https://github.com/databluedev/searchmirror/actions/workflows/ci.yml/badge.svg)](https://github.com/databluedev/searchmirror/actions/workflows/ci.yml)
 [![Licence: AGPL v3](https://img.shields.io/badge/licence-AGPL--3.0-blue.svg)](LICENSE)
 
-SearchMirror is an open-source, self-hosted rank tracker built around the
-[DataBlue](https://datablue.dev) SERP API. It tracks Google positions by
-keyword, region, language, and device while keeping provider credentials under
-the control of the instance owner or each account.
+SearchMirror is an open-source, self-hosted Google rank tracker and AI visibility
+monitor powered by the
+[datablue.dev](https://www.datablue.dev/?utm_source=github&utm_medium=referral&utm_campaign=searchmirror&utm_content=readme)
+SERP API. Track keyword positions by country, language, and device, compare
+competitors, and explore brand mentions in AI responses using your own provider
+keys.
+
+Built for SEO practitioners, agencies, and developers who want to run their own
+rank-tracking dashboard while using DataBlue for Google search results.
+
+[Quick start](#quick-start) · [User guide](docs/USER-GUIDE.md) · [DataBlue integration](docs/DATABLUE-INTEGRATION.md)
+
+## What you can do
+
+- **Track Google keyword rankings:** follow position history for your projects
+  with country, language, and desktop/mobile targeting.
+- **Compare competitors:** review competitor rankings alongside your tracked
+  keywords.
+- **Explore AI visibility:** use Geo Citations to check brand mentions in AI
+  responses with account-supplied AI keys. This is separate from Google ranking.
+- **Plan content:** generate outlines and drafts with Content Planner and your
+  chosen AI provider.
+- **Keep control of your instance:** self-host the application and manage
+  projects, reports, provider keys, and team access.
+
+SearchMirror is AGPL-3.0 software. Live rank checks consume DataBlue credits;
+AI features use separately configured provider keys and may incur provider
+charges. Self-hosting does not make those API calls free.
 
 > **Status: pre-1.0.** The local Docker stack and supported product paths are
 > functional, but the project still carries a legacy Django 3.2 and MongoDB 4.4
@@ -31,6 +55,11 @@ parked until a proper server-side OAuth flow is provided; it is not advertised
 as ready.
 
 ## Bring your own keys
+
+**Need a DataBlue API key?** Sign up at
+[datablue.dev](https://www.datablue.dev/signup?utm_source=github&utm_medium=referral&utm_campaign=searchmirror&utm_content=readme_api_key),
+then save your key in SearchMirror under **Settings -> API Keys**. See the
+[integration guide](docs/DATABLUE-INTEGRATION.md) for setup and provider behavior.
 
 Live rank checks require DataBlue. Each account can save its own DataBlue key
 under **Settings -> API Keys**. Keys are encrypted at rest with
@@ -118,9 +147,8 @@ pnpm dev      # http://localhost:5180
 pnpm build    # production bundle in landing/dist
 ```
 
-Its outbound links live in `landing/src/lib/site.ts`. `REPO_URL` there is still a
-placeholder and has to be set to the real repository before the page is
-published — the licence, docs, and issues links are all derived from it.
+Its outbound links live in `landing/src/lib/site.ts`. `REPO_URL` points to this
+repository; the licence, docs, and issues links are derived from it.
 
 ## Configuration
 
